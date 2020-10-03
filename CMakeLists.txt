@@ -9,8 +9,10 @@ include(ExternalProject)
 
 IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
 set(DYNAMIXEL_BUILD_DIR c++/build/linux_sbc)
+set(DYNAMIXEL_OBJECT_FILE_NAME libdxl_sbc_cpp.so)
 ELSE(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
 set(DYNAMIXEL_BUILD_DIR c++/build/linux64)
+set(DYNAMIXEL_OBJECT_FILE_NAME libdxl_x64_cpp.so)
 ENDIF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
 
 ExternalProject_Add(DynamixelSDK
@@ -22,4 +24,15 @@ ExternalProject_Add(DynamixelSDK
   INSTALL_COMMAND   ""
 )
 
+ExternalProject_Get_property(DynamixelSDK SOURCE_DIR)
+set(DYNAMIXEL_DIR "${SOURCE_DIR}")
+include_directories("${DYNAMIXEL_DIR}/c++/include")
+
 add_executable(naminukas src/main.cpp)
+
+add_dependencies(naminukas DynamixelSDK)
+
+target_link_libraries(
+    naminukas
+    "${DYNAMIXEL_DIR}/${DYNAMIXEL_BUILD_DIR}/${DYNAMIXEL_OBJECT_FILE_NAME}"
+)
