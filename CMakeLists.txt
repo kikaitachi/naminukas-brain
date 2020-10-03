@@ -5,4 +5,4 @@ project(naminukas VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(naminukas main.cpp)
+add_executable(naminukas src/main.cpp)
