@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.13)
 
 project(naminukas VERSION 0.1.0)
 
@@ -7,13 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include(ExternalProject)
 
-IF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
 set(DYNAMIXEL_BUILD_DIR c++/build/linux_sbc)
 set(DYNAMIXEL_OBJECT_FILE_NAME libdxl_sbc_cpp.so)
-ELSE(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+else()
 set(DYNAMIXEL_BUILD_DIR c++/build/linux64)
 set(DYNAMIXEL_OBJECT_FILE_NAME libdxl_x64_cpp.so)
-ENDIF(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+endif()
 
 ExternalProject_Add(DynamixelSDK
   GIT_REPOSITORY    https://github.com/ROBOTIS-GIT/DynamixelSDK.git
