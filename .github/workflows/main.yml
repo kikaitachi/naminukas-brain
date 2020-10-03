@@ -17,4 +17,4 @@ jobs:
           cmake ../src
           cmake --build .
       - name: Test
-        run: echo "TODO: implement"
+        run: echo Not implemented
