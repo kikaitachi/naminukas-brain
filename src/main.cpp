@@ -1,8 +1,10 @@
 #include <string>
+#include <sys/epoll.h>
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include "robotcontrol.h"
 #include "Logger.hpp"
 #include "IOServer.hpp"
+#include "WebSocket.hpp"
 
 using namespace std;
 
@@ -22,6 +24,9 @@ int main(int argc, const char *argv[]) {
   }
 
   IOServer ioServer;
+  ioServer.add_handler(
+    websocket::create_server_socket(3001), EPOLLIN,
+    websocket::handle_client_connection);
   ioServer.start();
 
   return 0;

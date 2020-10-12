@@ -38,7 +38,8 @@ include_directories("${librobotcontrol_SOURCE_DIR}/library/include")
 
 add_executable(naminukas src/main.cpp
   src/Logger.cpp
-  src/IOServer.cpp)
+  src/IOServer.cpp
+  src/WebSocket.cpp)
 
 add_dependencies(naminukas DynamixelSDK)
 
