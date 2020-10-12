@@ -1,23 +1,28 @@
-#include <iostream>
+#include <string>
 #include "dynamixel_sdk/dynamixel_sdk.h"
 #include "robotcontrol.h"
+#include "Logger.hpp"
+#include "IOServer.hpp"
 
 using namespace std;
 
 int main(int argc, const char *argv[]) {
   if (rc_adc_init()) {
-    cout << "Failed to run rc_init_adc()" << endl;
+    logger::error("Failed to run rc_init_adc()");
   } else {
-    cout << "Battery voltage: " << rc_adc_batt() << endl;
+    logger::info("Battery voltage: %f", rc_adc_batt());
   }
 
   dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
   if (portHandler->openPort()) {
-    cout << "Succeeded to open the port" << endl;
+    logger::info("Succeeded to open the port");
   }
   else {
-    cout << "Failed to open the port!" << endl;
+    logger::error("Failed to open the port!");
   }
+
+  IOServer ioServer;
+  ioServer.start();
 
   return 0;
 }
