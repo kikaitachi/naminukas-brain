@@ -38,6 +38,9 @@ include_directories("${librobotcontrol_SOURCE_DIR}/library/include")
 
 find_package(Threads)
 
+set(OPENSSL_USE_STATIC_LIBS TRUE)
+find_package(OpenSSL REQUIRED)
+
 add_executable(naminukas src/main.cpp
   src/Logger.cpp
   src/IOServer.cpp
@@ -48,4 +51,5 @@ add_dependencies(naminukas DynamixelSDK)
 target_link_libraries(naminukas
   "${DYNAMIXEL_DIR}/${DYNAMIXEL_BUILD_DIR}/${DYNAMIXEL_OBJECT_FILE_NAME}"
   robotics_cape
-  Threads::Threads)
+  Threads::Threads
+  OpenSSL::Crypto)
