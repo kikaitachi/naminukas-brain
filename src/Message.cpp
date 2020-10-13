@@ -4,7 +4,7 @@
 
 namespace message {
 
-  int write_data(void **buf, int *buf_len, void *data, size_t len) {
+  int write_data(void **buf, int *buf_len, const void *data, size_t len) {
   	if (*buf_len < len) {
   		return -1;
   	}

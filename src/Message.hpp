@@ -7,7 +7,7 @@ namespace message {
   #define TELEMETRY_DEFINITION 0
   #define UPDATE_TELEMETRY 1
 
-  int write_data(void **buf, int *buf_len, void *data, size_t len);
+  int write_data(void **buf, int *buf_len, const void *data, size_t len);
   int read_data(void **buf, int *buf_len, void *data, size_t len);
 
   int write_int(void **buf, int *buf_len, int value);
