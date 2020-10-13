@@ -24,10 +24,13 @@ int main(int argc, const char *argv[]) {
   }
 
   IOServer ioServer;
-  ioServer.add_handler(
-    websocket::create_server_socket(3001), EPOLLIN,
-    websocket::handle_client_connection);
-  ioServer.start();
+  WebSocketServer webSocketServer(3001);
+  ioServer.add_handler(webSocketServer.server_fd, EPOLLIN,
+    [&](int fd) { webSocketServer.add_client(fd); return false; }
+  );
+  ioServer.start(
+    []() { return rc_get_state() == EXITING; }
+  );
 
   return 0;
 }
