@@ -56,8 +56,8 @@ static char* base64_encode(const unsigned char *data, size_t data_length, size_t
 
 WebSocketServer::WebSocketServer(int port,
     std::function<void(WebSocketServer*, int)> on_connect,
-    std::function<void(WebSocketServer*, int)> on_message) :
-    on_connect(on_connect), on_message(on_message) {
+    std::function<void(WebSocketServer*, int, void*, size_t)> on_binary_message) :
+    on_connect(on_connect), on_binary_message(on_binary_message) {
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd == -1) {
     logger::last("Failed to create WebSocket server socket");
@@ -122,7 +122,7 @@ void WebSocketServer::sendFrame(int fd, char opcode, void *data, size_t size) {
 }
 
 void WebSocketServer::sendBinary(int fd, void *data, size_t size) {
-  //
+  sendFrame(fd, OPCODE_BINARY, data, size);
 }
 
 void WebSocketServer::sendBinaryAll(void *data, size_t size) {
@@ -211,11 +211,49 @@ void WebSocketServer::handle_client(int fd) {
   clients.insert(fd);
   on_connect(this, fd);
 
-  for ( ; ; ) {
+  for (size = 0; ; ) {
     result = read(fd, &buffer[size], READ_BUFFER_SIZE - size);
     if (result == -1) {
       disconnect(fd, "Failed to read frame");
-      break;
+      return;
+    }
+
+    if (size >= 6) {
+      int opcode = buffer[0] & 0x0f;
+      if (opcode == OPCODE_CLOSE) {
+        disconnect(fd, "Closed by control frame");
+        return;
+      }
+      uint64_t data_length = buffer[1] & 127;
+      size_t header_length;
+      if (data_length == 126) {
+       header_length = 8;
+       data_length = buffer[2] << 8 | buffer[3];
+      } else if (data_length == 127) {
+        header_length = 14;
+        data_length = (uint64_t)buffer[2] << 56 | (uint64_t)buffer[3] << 48 |
+          (uint64_t)buffer[4] << 40 | (uint64_t)buffer[5] << 32 |
+          buffer[6] << 24 | buffer[7] << 16 |
+          buffer[7] << 8 | buffer[9];
+      } else {
+        header_length = 6;
+      }
+      size_t frame_length = data_length + header_length;
+
+      char mask[4];
+      mask[0] = buffer[header_length - 4];
+      mask[1] = buffer[header_length - 3];
+      mask[2] = buffer[header_length - 2];
+      mask[3] = buffer[header_length - 1];
+
+      if (size >= frame_length) {
+        for (int i = 0; i < data_length; i++) {
+          buffer[i + 6] ^= mask[i % 4];
+        }
+        on_binary_message(this, fd, buffer + header_length, data_length);
+        memmove(buffer + frame_length, buffer, frame_length);
+        size -= frame_length;
+      }
     }
   }
 }

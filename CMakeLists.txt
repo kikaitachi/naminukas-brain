@@ -44,7 +44,8 @@ find_package(OpenSSL REQUIRED)
 add_executable(naminukas src/main.cpp
   src/Logger.cpp
   src/IOServer.cpp
-  src/WebSocket.cpp)
+  src/WebSocket.cpp
+  src/MessageHandler.cpp)
 
 add_dependencies(naminukas DynamixelSDK)
 

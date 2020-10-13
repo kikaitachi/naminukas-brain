@@ -5,6 +5,7 @@
 #include "Logger.hpp"
 #include "IOServer.hpp"
 #include "WebSocket.hpp"
+#include "MessageHandler.hpp"
 
 using namespace std;
 
@@ -23,16 +24,22 @@ int main(int argc, const char *argv[]) {
     logger::error("Failed to open the port!");
   }
 
+  MessageHandler messageHandler;
   IOServer ioServer;
   WebSocketServer webSocketServer(3001,
     [&](WebSocketServer* server, int fd) {
       int test = 3;
       server->sendBinary(fd, &test, 4);
     },
-    [&](WebSocketServer* server, int fd) {}
+    [&](WebSocketServer* server, int fd, void *payload, size_t size) {
+      messageHandler.handle(server, fd, payload, size);
+    }
   );
   ioServer.add_handler(webSocketServer.server_fd, EPOLLIN,
-    [&](int fd) { webSocketServer.accept_client(); return true; }
+    [&](int fd) {
+      webSocketServer.accept_client();
+      return true;
+    }
   );
   ioServer.start(
     []() { return rc_get_state() == EXITING; }

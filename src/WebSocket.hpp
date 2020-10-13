@@ -10,13 +10,14 @@ class WebSocketServer {
 
     WebSocketServer(int port,
       std::function<void(WebSocketServer*, int)> on_connect,
-      std::function<void(WebSocketServer*, int)> on_message);
+      std::function<void(WebSocketServer*, int, void*, size_t)> on_binary_message);
     void accept_client();
     void sendBinary(int fd, void *data, size_t size);
     void sendBinaryAll(void *data, size_t size);
 
   private:
-    std::function<void(WebSocketServer*, int)> on_connect, on_message;
+    std::function<void(WebSocketServer*, int)> on_connect;
+    std::function<void(WebSocketServer*, int, void*, size_t)> on_binary_message;
     std::set<int> clients;
 
     void handle_client(int fd);
