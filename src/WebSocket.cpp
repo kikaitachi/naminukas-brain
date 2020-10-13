@@ -8,6 +8,11 @@
 #include "Logger.hpp"
 #include "WebSocket.hpp"
 
+#define OPCODE_BINARY 2
+#define OPCODE_CLOSE 8
+
+#define FINAL_FRAME 128
+
 #define READ_BUFFER_SIZE 1024 * 4
 
 const char* web_socket_guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -49,7 +54,10 @@ static char* base64_encode(const unsigned char *data, size_t data_length, size_t
   return encoded_data;
 }
 
-WebSocketServer::WebSocketServer(int port) {
+WebSocketServer::WebSocketServer(int port,
+    std::function<void(WebSocketServer*, int)> on_connect,
+    std::function<void(WebSocketServer*, int)> on_message) :
+    on_connect(on_connect), on_message(on_message) {
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd == -1) {
     logger::last("Failed to create WebSocket server socket");
@@ -82,6 +90,45 @@ void WebSocketServer::accept_client() {
   logger::info("New WebSocket connection %d", client_fd);
   std::thread client_thread([=]() { handle_client(client_fd); });
   client_thread.detach();
+}
+
+void WebSocketServer::sendFrame(int fd, char opcode, void *data, size_t size) {
+  char header[10];
+  int header_length;
+  header[0] = FINAL_FRAME | opcode;
+  if (size <= 125) {
+    header[1] = size;
+    header_length = 2;
+  } else if (size <= 65535) {
+    header[1] = 126;
+    header[2] = (size >> 8) & 255;
+    header[3] = size & 255;
+    header_length = 4;
+  } else {
+    header[1] = 127;
+    header[2] = 0;
+    header[3] = 0;
+    header[4] = 0;
+    header[5] = 0;
+    header[6] = (size >> 24) & 255;
+    header[7] = (size >> 16) & 255;
+    header[8] = (size >> 8) & 255;
+    header[9] = size & 255;
+    header_length = 10;
+  }
+  // TODO: check return codes, disconnect(fd, "Failed to write frame");
+  send(fd, header, header_length, 0);
+  send(fd, data, size, 0);
+}
+
+void WebSocketServer::sendBinary(int fd, void *data, size_t size) {
+  //
+}
+
+void WebSocketServer::sendBinaryAll(void *data, size_t size) {
+  for (auto fd : clients) {
+    sendBinary(fd, data, size);
+  }
 }
 
 /*
@@ -160,5 +207,21 @@ void WebSocketServer::handle_client(int fd) {
     return;
   }
 
+  // Make client available
   clients.insert(fd);
+  on_connect(this, fd);
+
+  for ( ; ; ) {
+    result = read(fd, &buffer[size], READ_BUFFER_SIZE - size);
+    if (result == -1) {
+      disconnect(fd, "Failed to read frame");
+      break;
+    }
+  }
+}
+
+void WebSocketServer::disconnect(int fd, std::string reason) {
+  clients.erase(fd);
+  close(fd);
+  logger::last("Disconnecting WebSocket %d: %s", fd, reason.c_str());
 }

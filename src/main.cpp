@@ -24,9 +24,15 @@ int main(int argc, const char *argv[]) {
   }
 
   IOServer ioServer;
-  WebSocketServer webSocketServer(3001);
-  ioServer.add_handler(webSocketServer.server_fd, EPOLLIN | EPOLLONESHOT,
-    [&](int fd) { webSocketServer.accept_client(); return false; }
+  WebSocketServer webSocketServer(3001,
+    [&](WebSocketServer* server, int fd) {
+      int test = 3;
+      server->sendBinary(fd, &test, 4);
+    },
+    [&](WebSocketServer* server, int fd) {}
+  );
+  ioServer.add_handler(webSocketServer.server_fd, EPOLLIN,
+    [&](int fd) { webSocketServer.accept_client(); return true; }
   );
   ioServer.start(
     []() { return rc_get_state() == EXITING; }
