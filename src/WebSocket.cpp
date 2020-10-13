@@ -34,6 +34,7 @@ WebSocketServer::WebSocketServer(int port) {
 
 void WebSocketServer::add_client(int fd) {
   std::thread client_thread([&]() { handle_client(fd); });
+  client_thread.detach();
 }
 
 void WebSocketServer::handle_client(int fd) {
