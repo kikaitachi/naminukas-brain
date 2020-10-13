@@ -25,7 +25,7 @@ int main(int argc, const char *argv[]) {
 
   IOServer ioServer;
   WebSocketServer webSocketServer(3001);
-  ioServer.add_handler(webSocketServer.server_fd, EPOLLIN,
+  ioServer.add_handler(webSocketServer.server_fd, EPOLLIN | EPOLLONESHOT,
     [&](int fd) { webSocketServer.add_client(fd); return false; }
   );
   ioServer.start(
