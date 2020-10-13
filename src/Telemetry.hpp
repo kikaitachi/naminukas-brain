@@ -1,6 +1,7 @@
 #ifndef NAMINUKAS_BRAIN_TELEMETRY_H_
 #define NAMINUKAS_BRAIN_TELEMETRY_H_
 
+#include <map>
 #include <string>
 
 namespace telemetry {
@@ -38,6 +39,14 @@ namespace telemetry {
       ItemString(int parent_id, int type, int string);
       void serialize_value(void **buf, int *buf_len);
   };
+
+  class Items {
+    public:
+      int add(Item item);
+
+    private:
+      std::map<int, Item> id_to_item;
+  }
 }
 
 #endif  // NAMINUKAS_BRAIN_TELEMETRY_H_

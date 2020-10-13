@@ -31,4 +31,8 @@ namespace telemetry {
   void ItemString::serialize_value(void **buf, int *buf_len) {
     message::write_data(buf, buf_len, value.c_str(), value.length());
   }
+
+  int Items::add(Item item) {
+    id_to_item[item.id] = item;
+  }
 }
