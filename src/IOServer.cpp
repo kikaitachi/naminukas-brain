@@ -1,5 +1,4 @@
 #include <sys/epoll.h>
-#include "robotcontrol.h"
 #include "Logger.hpp"
 #include "IOServer.hpp"
 
@@ -13,8 +12,8 @@ IOServer::IOServer() {
 	}
 }
 
-void IOServer::start() {
-  while (/*rc_get_state() != EXITING*/true) {
+void IOServer::start(std::function<bool()> is_terminated) {
+  while (!is_terminated()) {
 		struct epoll_event events[MAX_EPOLL_EVENTS];
 		int result = epoll_wait(epoll_fd, events, MAX_EPOLL_EVENTS, EPOLL_WAIT_MILLIS);
 		for (int i = 0; i < result; i++) {
@@ -23,13 +22,15 @@ void IOServer::start() {
       if (handler == fd_to_handler.end()) {
         logger::error("Got epoll event for descriptor %d which doesn't have handler", fd);
       } else {
-        handler->second(fd);
+        if (!handler->second(fd)) {
+          fd_to_handler.erase(fd);
+        }
       }
 		}
 	}
 }
 
-bool IOServer::add_handler(int fd, uint32_t events, void (*handler)(int fd)) {
+bool IOServer::add_handler(int fd, uint32_t events, std::function<bool(int)> handler) {
   struct epoll_event event;
 	event.data.fd = fd;
 	event.events = events;
