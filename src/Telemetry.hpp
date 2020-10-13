@@ -17,11 +17,16 @@ namespace telemetry {
       int id, parent_id, type;
       std::string name;
 
-      static int next_id;
-
       Item(int parent_id, int type, std::string name);
       virtual void serialize_definition(void **buf, int *buf_len);
-      virtual void serialize_value(void **buf, int *buf_len) = 0;
+      virtual void serialize_value(void **buf, int *buf_len);
+      bool is_dirty();
+
+    protected:
+      bool dirty = false;
+
+    private:
+      static int next_id;
   };
 
   class ItemInt: public Item {
@@ -30,6 +35,7 @@ namespace telemetry {
 
       ItemInt(int parent_id, std::string name, int value);
       void serialize_value(void **buf, int *buf_len);
+      void update(int value);
   };
 
   class ItemString: public Item {
@@ -39,6 +45,7 @@ namespace telemetry {
       ItemString(int parent_id, std::string name, std::string value);
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
+      void update(std::string value);
   };
 
   class Items {
