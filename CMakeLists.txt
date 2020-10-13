@@ -45,7 +45,8 @@ add_executable(naminukas src/main.cpp
   src/Logger.cpp
   src/IOServer.cpp
   src/WebSocket.cpp
-  src/MessageHandler.cpp)
+  src/Message.cpp
+  src/Telemetry.cpp)
 
 add_dependencies(naminukas DynamixelSDK)
 

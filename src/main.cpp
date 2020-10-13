@@ -5,7 +5,7 @@
 #include "Logger.hpp"
 #include "IOServer.hpp"
 #include "WebSocket.hpp"
-#include "MessageHandler.hpp"
+#include "Message.hpp"
 
 using namespace std;
 
