@@ -10,7 +10,7 @@ namespace telemetry {
   #define TYPE_STRING 2
   #define TYPE_STL 3
 
-  #define ROOT_ITEM_ID 0
+  const int ROOT_ITEM_ID = 0;
 
   class Item {
     public:
@@ -19,7 +19,7 @@ namespace telemetry {
 
       static int next_id;
 
-      Item(int parent_id, int type);
+      Item(int parent_id, int type, std::string name);
       virtual void serialize_definition(void **buf, int *buf_len);
       virtual void serialize_value(void **buf, int *buf_len) = 0;
   };
@@ -28,7 +28,7 @@ namespace telemetry {
     public:
       int value;
 
-      ItemInt(int parent_id, int type, int value);
+      ItemInt(int parent_id, std::string name, int value);
       void serialize_value(void **buf, int *buf_len);
   };
 
@@ -36,7 +36,8 @@ namespace telemetry {
     public:
       std::string value;
 
-      ItemString(int parent_id, int type, int string);
+      ItemString(int parent_id, std::string name, std::string value);
+      void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
   };
 
@@ -44,7 +45,6 @@ namespace telemetry {
     public:
       int add(Item* item);
 
-    private:
       std::map<int, Item*> id_to_item;
   };
 }

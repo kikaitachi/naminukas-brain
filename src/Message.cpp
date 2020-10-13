@@ -92,6 +92,11 @@ namespace message {
   int read_double(void **buf, int *buf_len, double *value) {
   	return read_data(buf, buf_len, value, 8);
   }
+
+  int write_string(void **buf, int *buf_len, std::string value) {
+    write_int(buf, buf_len, value.length());
+    write_data(buf, buf_len, value.c_str(), value.length());
+  }
 }
 
 void MessageHandler::handle(WebSocketServer *server, int fd, void *payload, size_t size) {
