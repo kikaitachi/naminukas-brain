@@ -1,4 +1,5 @@
 #include <cstring>
+#include <thread>
 #include <netinet/in.h>
 #include "Logger.hpp"
 #include "WebSocket.hpp"
@@ -32,5 +33,9 @@ WebSocketServer::WebSocketServer(int port) {
 }
 
 void WebSocketServer::add_client(int fd) {
+  std::thread client_thread([&]() { handle_client(fd); });
+}
+
+void WebSocketServer::handle_client(int fd) {
   clients.insert(fd);
 }

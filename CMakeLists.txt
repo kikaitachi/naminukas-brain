@@ -36,6 +36,8 @@ FetchContent_Declare(librobotcontrol
 FetchContent_MakeAvailable(librobotcontrol)
 include_directories("${librobotcontrol_SOURCE_DIR}/library/include")
 
+find_package(Threads)
+
 add_executable(naminukas src/main.cpp
   src/Logger.cpp
   src/IOServer.cpp
@@ -43,4 +45,7 @@ add_executable(naminukas src/main.cpp
 
 add_dependencies(naminukas DynamixelSDK)
 
-target_link_libraries(naminukas "${DYNAMIXEL_DIR}/${DYNAMIXEL_BUILD_DIR}/${DYNAMIXEL_OBJECT_FILE_NAME}" robotics_cape)
+target_link_libraries(naminukas
+  "${DYNAMIXEL_DIR}/${DYNAMIXEL_BUILD_DIR}/${DYNAMIXEL_OBJECT_FILE_NAME}"
+  robotics_cape
+  Threads::Threads)
