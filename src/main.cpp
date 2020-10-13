@@ -26,7 +26,7 @@ int main(int argc, const char *argv[]) {
   IOServer ioServer;
   WebSocketServer webSocketServer(3001);
   ioServer.add_handler(webSocketServer.server_fd, EPOLLIN | EPOLLONESHOT,
-    [&](int fd) { webSocketServer.add_client(fd); return false; }
+    [&](int fd) { webSocketServer.accept_client(); return false; }
   );
   ioServer.start(
     []() { return rc_get_state() == EXITING; }

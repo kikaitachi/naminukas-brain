@@ -8,7 +8,7 @@ class WebSocketServer {
     int server_fd;
 
     WebSocketServer(int port);
-    void add_client(int fd);
+    void accept_client();
 
   private:
     std::set<int> clients;
