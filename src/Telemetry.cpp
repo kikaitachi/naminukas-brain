@@ -32,7 +32,7 @@ namespace telemetry {
     message::write_data(buf, buf_len, value.c_str(), value.length());
   }
 
-  int Items::add(Item item) {
-    id_to_item[item.id] = item;
+  int Items::add(Item* item) {
+    id_to_item[item->id] = item;
   }
 }

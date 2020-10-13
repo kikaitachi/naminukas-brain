@@ -42,11 +42,11 @@ namespace telemetry {
 
   class Items {
     public:
-      int add(Item item);
+      int add(Item* item);
 
     private:
-      std::map<int, Item> id_to_item;
-  }
+      std::map<int, Item*> id_to_item;
+  };
 }
 
 #endif  // NAMINUKAS_BRAIN_TELEMETRY_H_
