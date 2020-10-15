@@ -55,7 +55,13 @@ int main(int argc, const char *argv[]) {
 
   MessageHandler messageHandler;
   IOServer ioServer;
-  WebSocketServer webSocketServer(3001,
+  int port;
+  if (const char* env_port = std::getenv("PORT")) {
+    port = atoi(env_port);
+  } else {
+    port = 3001;
+  }
+  WebSocketServer webSocketServer(port,
     &send_telemetry_definitions,
     [&](WebSocketServer* server, int fd, void *payload, size_t size) {
       messageHandler.handle(server, fd, payload, size);
