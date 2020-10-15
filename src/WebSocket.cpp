@@ -179,6 +179,10 @@ void WebSocketServer::handle_client(int fd) {
   char* start = strnstr(buffer, "Sec-WebSocket-Key: ", size);
   if (start == NULL) {
     logger::error("WebSocket %d request doesn't contain 'Sec-WebSocket-Key' header", fd);
+    snprintf(buffer, sizeof(buffer),
+        "HTTP/1.1 200 OK\r\nServer: naminukas\r\nContent-Type: text/plain\r\n\r\nNaminukas robot");
+     write(fd, buffer, strlen(buffer));
+     disconnect(fd, "Non WebSocket request");
     return;
   }
   start += 19;
