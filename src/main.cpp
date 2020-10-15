@@ -1,7 +1,7 @@
 #include <string>
 #include <sys/epoll.h>
 #include <sys/utsname.h>
-#include "dynamixel_sdk/dynamixel_sdk.h"
+#include "dynamixel_sdk.h"
 #include "robotcontrol.h"
 #include "Logger.hpp"
 #include "IOServer.hpp"
