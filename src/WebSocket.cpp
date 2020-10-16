@@ -77,7 +77,7 @@ WebSocketServer::WebSocketServer(int port,
     logger::last("Failed to bind WebSocket server socket");
     return;
   } else {
-    logger::debug("WebSocket was bount to port %d", port);
+    logger::debug("WebSocket was bound to port %d", port);
   }
   if (listen(server_fd, 10) == -1) {
     logger::last("Failed to listen to WebSocket server socket");
@@ -173,7 +173,7 @@ void WebSocketServer::handle_client(int fd) {
     }
   }
   std::string header(buffer, size);
-  logger::info("WebSocket header (%d bytes): %s", size, header.c_str());
+  logger::info("WebSocket %d header (%d bytes): %s", fd, size, header.c_str());
 
   // Find start of "Sec-WebSocket-Key" header value
   char* start = strnstr(buffer, "Sec-WebSocket-Key: ", size);
@@ -181,8 +181,8 @@ void WebSocketServer::handle_client(int fd) {
     logger::error("WebSocket %d request doesn't contain 'Sec-WebSocket-Key' header", fd);
     snprintf(buffer, sizeof(buffer),
         "HTTP/1.1 200 OK\r\nServer: naminukas\r\nContent-Type: text/plain\r\n\r\nNaminukas robot");
-     write(fd, buffer, strlen(buffer));
-     disconnect(fd, "Non WebSocket request");
+    write(fd, buffer, strlen(buffer));
+    disconnect(fd, false, "Non WebSocket request");
     return;
   }
   start += 19;
@@ -211,21 +211,21 @@ void WebSocketServer::handle_client(int fd) {
     return;
   }
 
+  on_connect(this, fd);
   // Make client available
   clients.insert(fd);
-  on_connect(this, fd);
 
   for (size = 0; ; ) {
     result = read(fd, &buffer[size], READ_BUFFER_SIZE - size);
     if (result == -1) {
-      disconnect(fd, "Failed to read frame");
+      disconnect(fd, true, "Failed to read frame");
       return;
     }
 
     if (size >= 6) {
       int opcode = buffer[0] & 0x0f;
       if (opcode == OPCODE_CLOSE) {
-        disconnect(fd, "Closed by control frame");
+        disconnect(fd, true, "Closed by control frame");
         return;
       }
       uint64_t data_length = buffer[1] & 127;
@@ -262,8 +262,12 @@ void WebSocketServer::handle_client(int fd) {
   }
 }
 
-void WebSocketServer::disconnect(int fd, std::string reason) {
+void WebSocketServer::disconnect(int fd, bool error, std::string reason) {
   clients.erase(fd);
   close(fd);
-  logger::last("Disconnecting WebSocket %d: %s", fd, reason.c_str());
+  if (error) {
+    logger::last("Disconnecting WebSocket %d: %s", fd, reason.c_str());
+  } else {
+    logger::info("Disconnecting WebSocket %d: %s", fd, reason.c_str());
+  }
 }

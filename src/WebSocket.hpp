@@ -22,7 +22,7 @@ class WebSocketServer {
 
     void handle_client(int fd);
     void sendFrame(int fd, char opcode, void *data, size_t size);
-    void disconnect(int fd, std::string reason);
+    void disconnect(int fd, bool error, std::string reason);
 };
 
 #endif  // NAMINUKAS_BRAIN_WEBSOCKET_H_
