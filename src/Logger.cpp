@@ -14,12 +14,12 @@ namespace logger {
   	clock_gettime(CLOCK_REALTIME, &now_timespec);
   	time_t now_t = now_timespec.tv_sec;
   	struct tm *now_tm = localtime(&now_t);
-  	printf("%02d-%02d-%02d %02d:%02d:%02d.%06ld %c ",
+  	fprintf(stderr, "%02d-%02d-%02d %02d:%02d:%02d.%06ld %c ",
   	now_tm->tm_year + 1900, now_tm->tm_mon + 1, now_tm->tm_mday,
   	now_tm->tm_hour, now_tm->tm_min, now_tm->tm_sec,
   	now_timespec.tv_nsec / 1000, level);
-  	vprintf(format, argptr);
-    printf("\n");
+  	vfprintf(stderr, format, argptr);
+    fprintf(stderr, "\n");
   }
 
   void debug(std::string format, ...) {
