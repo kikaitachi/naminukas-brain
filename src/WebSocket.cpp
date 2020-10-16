@@ -16,6 +16,7 @@
 #define READ_BUFFER_SIZE 1024 * 4
 
 const char* web_socket_guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+const std::string websocket_key_header = "sec-websocket-key";
 
 static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
                                 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -174,9 +175,11 @@ void WebSocketServer::handle_client(int fd) {
   }
   std::string header(buffer, size);
   logger::info("WebSocket %d header (%d bytes): %s", fd, size, header.c_str());
+  transform(header.begin(), header.end(), header.begin(), ::tolower);
+  size_t found = header.find(websocket_key_header);
+  char* start = found == std::string::npos ? NULL : buffer + found;
 
   // Find start of "Sec-WebSocket-Key" header value
-  char* start = strnstr(buffer, "Sec-WebSocket-Key: ", size);
   if (start == NULL) {
     logger::error("WebSocket %d request doesn't contain 'Sec-WebSocket-Key' header", fd);
     snprintf(buffer, sizeof(buffer),
@@ -219,6 +222,9 @@ void WebSocketServer::handle_client(int fd) {
     result = read(fd, &buffer[size], READ_BUFFER_SIZE - size);
     if (result == -1) {
       disconnect(fd, true, "Failed to read frame");
+      return;
+    } else if (result == 0) {
+      disconnect(fd, false, "read returned 0 bytes, assuming socked closed");
       return;
     }
 

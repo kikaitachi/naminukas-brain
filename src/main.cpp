@@ -32,7 +32,7 @@ void send_telemetry_definitions(WebSocketServer* server, int fd) {
     int buf_len = MAX_MESSAGE_SIZE;
     message::write_int(&buf, &buf_len, message::TELEMETRY_DEFINITION);
     item->serialize_definition(&buf, &buf_len);
-    server->sendBinaryAll(message, MAX_MESSAGE_SIZE - buf_len);
+    server->sendBinary(fd, message, MAX_MESSAGE_SIZE - buf_len);
   }
 }
 
