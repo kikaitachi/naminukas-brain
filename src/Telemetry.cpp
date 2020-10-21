@@ -41,8 +41,10 @@ namespace telemetry {
   }
 
   void ItemInt::update(int value) {
-    this->value = value;
-    dirty = true;
+    if (this->value != value) {
+      this->value = value;
+      dirty = true;
+    }
   }
 
   ItemString::ItemString(int parent_id, std::string name, std::string value) :
@@ -59,8 +61,10 @@ namespace telemetry {
   }
 
   void ItemString::update(std::string value) {
-    this->value = value;
-    dirty = true;
+    if (this->value != value) {
+      this->value = value;
+      dirty = true;
+    }
   }
 
   Item* Items::add(Item* item) {
