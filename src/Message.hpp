@@ -6,7 +6,7 @@
 
 namespace message {
   const int TELEMETRY_DEFINITION = 0;
-  const int UPDATE_TELEMETRY = 1;
+  const int TELEMETRY = 1;
 
   int write_data(void **buf, int *buf_len, const void *data, size_t len);
   int read_data(void **buf, int *buf_len, void *data, size_t len);

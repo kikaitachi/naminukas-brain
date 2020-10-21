@@ -19,6 +19,7 @@ namespace telemetry {
   }
 
   void Item::serialize_value(void **buf, int *buf_len) {
+    message::write_int(buf, buf_len, id);
     dirty = false;
   }
 
@@ -28,6 +29,11 @@ namespace telemetry {
 
   ItemInt::ItemInt(int parent_id, std::string name, int value) :
     Item(parent_id, TYPE_INT, name), value(value) { }
+
+  void ItemInt::serialize_definition(void **buf, int *buf_len) {
+    Item::serialize_definition(buf, buf_len);
+    serialize_value(buf, buf_len);
+  }
 
   void ItemInt::serialize_value(void **buf, int *buf_len) {
     Item::serialize_value(buf, buf_len);
@@ -57,8 +63,8 @@ namespace telemetry {
     dirty = true;
   }
 
-  int Items::add(Item* item) {
+  Item* Items::add(Item* item) {
     id_to_item[item->id] = item;
-    return item->id;
+    return item;
   }
 }

@@ -35,6 +35,7 @@ namespace telemetry {
       int value;
 
       ItemInt(int parent_id, std::string name, int value);
+      void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
       void update(int value);
   };
@@ -51,7 +52,7 @@ namespace telemetry {
 
   class Items {
     public:
-      int add(Item* item);
+      Item* add(Item* item);
 
       std::map<int, Item*> id_to_item;
   };

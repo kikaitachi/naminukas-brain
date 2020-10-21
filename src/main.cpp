@@ -1,5 +1,6 @@
 #include <string>
 #include <sys/epoll.h>
+#include <sys/sysinfo.h>
 #include <sys/utsname.h>
 #include "dynamixel_sdk.h"
 #include "robotcontrol.h"
@@ -21,8 +22,19 @@ void create_telemetry_definitions() {
     logger::last("Can't determine system name");
     return;
   }
-  telemetryItems.add(new telemetry::ItemString(telemetry::ROOT_ITEM_ID,
-    string(buf.nodename), string(buf.release) + " " + string(buf.version)));
+
+  struct sysinfo info;
+  if (sysinfo(&info) == -1) {
+    logger::last("Failed to retrieve system information");
+  }
+  float load_avg_1m = info.loads[0] * 1.f / (1 << SI_LOAD_SHIFT);
+
+  telemetry::Item* machine = telemetryItems.add(new telemetry::ItemString(
+    telemetry::ROOT_ITEM_ID, string(buf.nodename), string(buf.release) + " " + string(buf.version)));
+  telemetry::Item* uptime = telemetryItems.add(new telemetry::ItemString(
+    machine->id, "Uptime", "" + std::to_string(load_avg_1m) + " (" + to_string(info.uptime) + ")"));
+  telemetry::Item* freeMemory = telemetryItems.add(new telemetry::ItemInt(
+    machine->id, "Free memory, MiB", info.freeram));
 }
 
 void send_telemetry_definitions(WebSocketServer* server, int fd) {
