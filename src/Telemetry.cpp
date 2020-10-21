@@ -3,7 +3,7 @@
 
 namespace telemetry {
 
-  int Item::next_id = 1;
+  int Item::next_id = ROOT_ITEM_ID + 1;
 
   Item::Item(int parent_id, int type, std::string name) :
       parent_id(parent_id), type(type), name(name) {
