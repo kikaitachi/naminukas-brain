@@ -5,16 +5,7 @@ project(naminukas VERSION 0.1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-#include(ExternalProject)
 include(FetchContent)
-
-if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
-set(DYNAMIXEL_BUILD_DIR c++/build/linux_sbc)
-set(DYNAMIXEL_OBJECT_FILE_NAME libdxl_sbc_cpp.so)
-else()
-set(DYNAMIXEL_BUILD_DIR c++/build/linux64)
-set(DYNAMIXEL_OBJECT_FILE_NAME libdxl_x64_cpp.so)
-endif()
 
 FetchContent_Declare(DynamixelSDK
   GIT_REPOSITORY    https://github.com/ROBOTIS-GIT/DynamixelSDK.git
@@ -46,6 +37,7 @@ add_executable(naminukas
   src/Message.cpp
   src/Telemetry.cpp
   src/Dynamixel.cpp
+  src/Robot.cpp
   ${DynamixelSDK_SRC}
 )
 
