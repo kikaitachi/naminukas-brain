@@ -26,8 +26,8 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
     machine->getId(), "Load average", "");
   telemetryItems.add_item(load_average);
 
-  telemetry::ItemString* freeMemory = new telemetry::ItemString(
-    machine->getId(), "Free memory, MiB", "");
+  telemetry::ItemInt* freeMemory = new telemetry::ItemInt(
+    machine->getId(), "Free memory, MiB", -1);
   telemetryItems.add_item(freeMemory);
 
   telemetry::ItemString* battery = new telemetry::ItemString(
@@ -54,7 +54,7 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
         float load_avg_15m = system_info.loads[2] * 1.f / (1 << SI_LOAD_SHIFT);
         load_average->update(std::to_string(load_avg_1m) + ", " + std::to_string(load_avg_5m) + ", " + std::to_string(load_avg_15m));
 
-        freeMemory->update(std::to_string((system_info.freeram * system_info.mem_unit) / (1024.0 * 1024)));
+        freeMemory->update(system_info.freeram * system_info.mem_unit / (1024 * 1024));
 
         if (battery_supported) {
           battery->update(std::to_string(rc_adc_batt()));
