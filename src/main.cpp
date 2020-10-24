@@ -1,4 +1,5 @@
 #include <string>
+#include <signal.h>
 #include <sys/epoll.h>
 #include "dynamixel_sdk.h"
 #include "robotcontrol.h"
@@ -13,6 +14,23 @@ using namespace std;
 
 #define DAFAULT_PORT 3001
 #define MAX_MESSAGE_SIZE 64 * 1024
+
+static bool terminated = false;
+
+static  bool is_terminated() {
+  return terminated;
+}
+
+/**
+ * Interrupt handler to catch Ctrl+C.
+ */
+static void signal_handler(int signum) {
+  switch (signum) {
+    case SIGINT:
+      terminated = true;
+      break;
+  }
+}
 
 void send_telemetry_definitions(telemetry::Items &telemetryItems, WebSocketServer* server, int fd) {
   for (const auto & [id, item] : telemetryItems.id_to_item) {
@@ -40,8 +58,10 @@ int main(int argc, const char *argv[]) {
     logger::error("Failed to open the port!");
   }
 
+  signal(SIGINT, signal_handler);
+
   telemetry::Items telemetryItems;
-  SystemTelemetry systemTelemetry(telemetryItems);
+  SystemTelemetry systemTelemetry(telemetryItems, &is_terminated);
 
   MessageHandler messageHandler;
   IOServer ioServer;
@@ -65,9 +85,9 @@ int main(int argc, const char *argv[]) {
       return true;
     }
   );
-  ioServer.start(
-    []() { return rc_get_state() == EXITING; }
-  );
+  ioServer.start(&is_terminated);
+
+  logger::info("Gracefull shutdown");
 
   return 0;
 }

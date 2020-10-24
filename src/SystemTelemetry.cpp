@@ -4,7 +4,7 @@
 #include "Logger.hpp"
 #include "SystemTelemetry.hpp"
 
-SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems) {
+SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function<bool()> is_terminated) {
   struct utsname system_name;
   if (uname(&system_name) == -1) {
     logger::last("Can't determine system name");
@@ -27,24 +27,26 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems) {
   telemetryItems.add_item(freeMemory);
 
   std::thread update_thread([=]() {
-    struct sysinfo system_info;
-    if (sysinfo(&system_info) == -1) {
-      logger::last("Failed to retrieve system information");
-    } else {
-      long seconds = system_info.uptime % 60;
-      long minutes = (system_info.uptime / 60) % 60;
-      long hours = (system_info.uptime / 3600) % 24;
-      long days = (system_info.uptime / 3600) / 24;
-      uptime->update(std::to_string(days) + ":" + std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds));
+    while (!is_terminated()) {
+      struct sysinfo system_info;
+      if (sysinfo(&system_info) == -1) {
+        logger::last("Failed to retrieve system information");
+      } else {
+        long seconds = system_info.uptime % 60;
+        long minutes = (system_info.uptime / 60) % 60;
+        long hours = (system_info.uptime / 3600) % 24;
+        long days = (system_info.uptime / 3600) / 24;
+        uptime->update(std::to_string(days) + ":" + std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds));
 
-      float load_avg_1m = system_info.loads[0] * 1.f / (1 << SI_LOAD_SHIFT);
-      float load_avg_5m = system_info.loads[1] * 1.f / (1 << SI_LOAD_SHIFT);
-      float load_avg_15m = system_info.loads[2] * 1.f / (1 << SI_LOAD_SHIFT);
-      load_average->update(std::to_string(load_avg_1m) + ", " + std::to_string(load_avg_5m) + ", " + std::to_string(load_avg_15m));
+        float load_avg_1m = system_info.loads[0] * 1.f / (1 << SI_LOAD_SHIFT);
+        float load_avg_5m = system_info.loads[1] * 1.f / (1 << SI_LOAD_SHIFT);
+        float load_avg_15m = system_info.loads[2] * 1.f / (1 << SI_LOAD_SHIFT);
+        load_average->update(std::to_string(load_avg_1m) + ", " + std::to_string(load_avg_5m) + ", " + std::to_string(load_avg_15m));
 
-      freeMemory->update(std::to_string((system_info.freeram * system_info.mem_unit) / (1024.0 * 1024)));
+        freeMemory->update(std::to_string((system_info.freeram * system_info.mem_unit) / (1024.0 * 1024)));
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   });
   update_thread.detach();
 }

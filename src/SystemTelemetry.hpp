@@ -8,7 +8,7 @@
 
 class SystemTelemetry {
   public:
-    SystemTelemetry(telemetry::Items& telemetryItems);
+    SystemTelemetry(telemetry::Items& telemetryItems, std::function<bool()> is_terminated);
 };
 
 #endif  // NAMINUKAS_BRAIN_SYSTEMTELEMETRY_H_
