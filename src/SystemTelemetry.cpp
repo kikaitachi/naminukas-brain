@@ -1,6 +1,8 @@
 #include <string>
 #include <thread>
 
+#include "robotcontrol.h"
+
 #include "Logger.hpp"
 #include "SystemTelemetry.hpp"
 
@@ -9,6 +11,8 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
   if (uname(&system_name) == -1) {
     logger::last("Can't determine system name");
   }
+
+  battery_supported = rc_adc_init() == 0;
 
   telemetry::Item* machine = telemetryItems.add_item(new telemetry::ItemString(
     telemetry::ROOT_ITEM_ID, std::string(system_name.nodename),
@@ -25,6 +29,13 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
   telemetry::ItemString* freeMemory = new telemetry::ItemString(
     machine->getId(), "Free memory, MiB", "");
   telemetryItems.add_item(freeMemory);
+
+  telemetry::ItemString* battery = new telemetry::ItemString(
+    machine->getId(), "Battery, V", "");
+  telemetryItems.add_item(battery);
+  telemetry::ItemString* charger = new telemetry::ItemString(
+    machine->getId(), "Charger, V", "");
+  telemetryItems.add_item(charger);
 
   std::thread update_thread([=]() {
     while (!is_terminated()) {
@@ -44,9 +55,21 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
         load_average->update(std::to_string(load_avg_1m) + ", " + std::to_string(load_avg_5m) + ", " + std::to_string(load_avg_15m));
 
         freeMemory->update(std::to_string((system_info.freeram * system_info.mem_unit) / (1024.0 * 1024)));
+
+        if (battery_supported) {
+          battery->update(std::to_string(rc_adc_batt()));
+          charger->update(std::to_string(rc_adc_dc_jack()));
+        }
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
   });
   update_thread.detach();
+}
+
+SystemTelemetry::~SystemTelemetry() {
+  if (battery_supported) {
+    rc_adc_cleanup();
+    logger::debug("Cleaning up ADC");
+  }
 }

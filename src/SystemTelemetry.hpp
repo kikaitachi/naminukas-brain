@@ -9,6 +9,10 @@
 class SystemTelemetry {
   public:
     SystemTelemetry(telemetry::Items& telemetryItems, std::function<bool()> is_terminated);
+    ~SystemTelemetry();
+
+  private:
+    bool battery_supported;
 };
 
 #endif  // NAMINUKAS_BRAIN_SYSTEMTELEMETRY_H_
