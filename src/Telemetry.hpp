@@ -1,6 +1,8 @@
 #ifndef NAMINUKAS_BRAIN_TELEMETRY_H_
 #define NAMINUKAS_BRAIN_TELEMETRY_H_
 
+#include <functional>
+#include <list>
 #include <map>
 #include <string>
 
@@ -15,16 +17,16 @@ namespace telemetry {
 
   class Item {
     public:
-      int id, parent_id, type;
-      std::string name;
-
       Item(int parent_id, int type, std::string name);
       virtual void serialize_definition(void **buf, int *buf_len);
       virtual void serialize_value(void **buf, int *buf_len);
-      bool is_dirty();
+      void add_change_listener(std::function<void(Item&)> listener);
+      int getId();
 
     protected:
-      bool dirty = false;
+      int id, parent_id, type;
+      std::string name;
+      std::list<std::function<void(Item&)>> change_listeners;
 
     private:
       static int next_id;
@@ -52,9 +54,13 @@ namespace telemetry {
 
   class Items {
     public:
-      Item* add(Item* item);
-
       std::map<int, Item*> id_to_item;
+
+      Item* add_item(Item* item);
+      void add_change_listener(std::function<void(Item&)> listener);
+
+    protected:
+      std::list<std::function<void(Item&)>> change_listeners;
   };
 }
 

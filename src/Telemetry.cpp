@@ -3,6 +3,8 @@
 
 namespace telemetry {
 
+  // Item **********************************************************************
+
   int Item::next_id = ROOT_ITEM_ID + 1;
 
   Item::Item(int parent_id, int type, std::string name) :
@@ -20,12 +22,17 @@ namespace telemetry {
 
   void Item::serialize_value(void **buf, int *buf_len) {
     message::write_int(buf, buf_len, id);
-    dirty = false;
   }
 
-  bool Item::is_dirty() {
-    return dirty;
+  void Item::add_change_listener(std::function<void(Item&)> change_listener) {
+    change_listeners.push_back(change_listener);
   }
+
+  int Item::getId() {
+    return id;
+  }
+
+  // ItemInt *******************************************************************
 
   ItemInt::ItemInt(int parent_id, std::string name, int value) :
     Item(parent_id, TYPE_INT, name), value(value) { }
@@ -43,9 +50,13 @@ namespace telemetry {
   void ItemInt::update(int value) {
     if (this->value != value) {
       this->value = value;
-      dirty = true;
+      for (auto change_listener : change_listeners) {
+        change_listener(*this);
+      }
     }
   }
+
+  // ItemString ****************************************************************
 
   ItemString::ItemString(int parent_id, std::string name, std::string value) :
     Item(parent_id, TYPE_STRING, name), value(value) { }
@@ -63,12 +74,23 @@ namespace telemetry {
   void ItemString::update(std::string value) {
     if (this->value != value) {
       this->value = value;
-      dirty = true;
+      for (auto change_listener : change_listeners) {
+        change_listener(*this);
+      }
     }
   }
 
-  Item* Items::add(Item* item) {
-    id_to_item[item->id] = item;
+  // Items *********************************************************************
+
+  Item* Items::add_item(Item* item) {
+    id_to_item[item->getId()] = item;
+    for (auto change_listener : change_listeners) {
+      item->add_change_listener(change_listener);
+    }
     return item;
+  }
+
+  void Items::add_change_listener(std::function<void(Item&)> change_listener) {
+    change_listeners.push_back(change_listener);
   }
 }

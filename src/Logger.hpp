@@ -4,7 +4,6 @@
 #include <string>
 
 namespace logger {
-
   /**
    * Log debug message.
    */
