@@ -1,7 +1,5 @@
 #include <string>
 #include <sys/epoll.h>
-#include <sys/sysinfo.h>
-#include <sys/utsname.h>
 #include "dynamixel_sdk.h"
 #include "robotcontrol.h"
 #include "Logger.hpp"
@@ -9,35 +7,14 @@
 #include "WebSocket.hpp"
 #include "Message.hpp"
 #include "Telemetry.hpp"
+#include "SystemTelemetry.hpp"
 
 using namespace std;
 
+#define DAFAULT_PORT 3001
 #define MAX_MESSAGE_SIZE 64 * 1024
 
-telemetry::Items telemetryItems;
-
-void create_telemetry_definitions() {
-  struct utsname buf;
-  if (uname(&buf) == -1) {
-    logger::last("Can't determine system name");
-    return;
-  }
-
-  struct sysinfo info;
-  if (sysinfo(&info) == -1) {
-    logger::last("Failed to retrieve system information");
-  }
-  float load_avg_1m = info.loads[0] * 1.f / (1 << SI_LOAD_SHIFT);
-
-  telemetry::Item* machine = telemetryItems.add_item(new telemetry::ItemString(
-    telemetry::ROOT_ITEM_ID, string(buf.nodename), string(buf.release) + " " + string(buf.version)));
-  telemetry::Item* uptime = telemetryItems.add_item(new telemetry::ItemString(
-    machine->getId(), "Uptime", "" + std::to_string(load_avg_1m) + " (" + to_string(info.uptime) + ")"));
-  telemetry::Item* freeMemory = telemetryItems.add_item(new telemetry::ItemInt(
-    machine->getId(), "Free memory, MiB", info.freeram));
-}
-
-void send_telemetry_definitions(WebSocketServer* server, int fd) {
+void send_telemetry_definitions(telemetry::Items &telemetryItems, WebSocketServer* server, int fd) {
   for (const auto & [id, item] : telemetryItems.id_to_item) {
     char message[MAX_MESSAGE_SIZE];
     void *buf = &message;
@@ -63,7 +40,8 @@ int main(int argc, const char *argv[]) {
     logger::error("Failed to open the port!");
   }
 
-  create_telemetry_definitions();
+  telemetry::Items telemetryItems;
+  SystemTelemetry systemTelemetry(telemetryItems);
 
   MessageHandler messageHandler;
   IOServer ioServer;
@@ -71,10 +49,12 @@ int main(int argc, const char *argv[]) {
   if (const char* env_port = std::getenv("PORT")) {
     port = atoi(env_port);
   } else {
-    port = 3001;
+    port = DAFAULT_PORT;
   }
   WebSocketServer webSocketServer(port,
-    &send_telemetry_definitions,
+    [&](WebSocketServer* server, int fd) {
+      send_telemetry_definitions(telemetryItems, server, fd);
+    },
     [&](WebSocketServer* server, int fd, void *payload, size_t size) {
       messageHandler.handle(server, fd, payload, size);
     }

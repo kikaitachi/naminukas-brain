@@ -24,7 +24,7 @@ namespace message {
   	return 0;
   }
 
-  int write_int(void **buf, int *buf_len, int value) {
+  int write_int(void **buf, int *buf_len, long long value) {
   	if (*buf_len < 1) {
   		return -1;
   	}
@@ -53,7 +53,7 @@ namespace message {
   	return 0;
   }
 
-  int read_int(void **buf, int *buf_len, int *value) {
+  int read_int(void **buf, int *buf_len, long long *value) {
   	int negative;
   	for (int i = 0; *buf_len > 0; ) {
   		int byte = ((int8_t *)*buf)[0];

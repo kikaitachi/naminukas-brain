@@ -21,7 +21,10 @@ namespace telemetry {
   }
 
   void Item::serialize_value(void **buf, int *buf_len) {
-    message::write_int(buf, buf_len, id);
+    //message::write_int(buf, buf_len, id);
+  }
+
+  void Item::deserialize_value(void **buf, int *buf_len) {
   }
 
   void Item::add_change_listener(std::function<void(Item&)> change_listener) {
@@ -34,7 +37,7 @@ namespace telemetry {
 
   // ItemInt *******************************************************************
 
-  ItemInt::ItemInt(int parent_id, std::string name, int value) :
+  ItemInt::ItemInt(int parent_id, std::string name, long long value) :
     Item(parent_id, TYPE_INT, name), value(value) { }
 
   void ItemInt::serialize_definition(void **buf, int *buf_len) {
@@ -47,7 +50,7 @@ namespace telemetry {
     message::write_int(buf, buf_len, value);
   }
 
-  void ItemInt::update(int value) {
+  void ItemInt::update(long long value) {
     if (this->value != value) {
       this->value = value;
       for (auto change_listener : change_listeners) {
