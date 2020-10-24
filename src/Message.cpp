@@ -95,7 +95,7 @@ namespace message {
 
   int write_string(void **buf, int *buf_len, std::string value) {
     write_int(buf, buf_len, value.length());
-    write_data(buf, buf_len, value.c_str(), value.length());
+    return write_data(buf, buf_len, value.c_str(), value.length());
   }
 }
 
