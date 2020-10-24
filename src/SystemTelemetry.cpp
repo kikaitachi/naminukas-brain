@@ -16,7 +16,7 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
 
   telemetry::Item* machine = telemetryItems.add_item(new telemetry::ItemString(
     telemetry::ROOT_ITEM_ID, std::string(system_name.nodename),
-    std::string(system_name.release) + " " + std::string(system_name.version)));
+    std::string(system_name.sysname) + " " + std::string(system_name.release) + " " + std::string(system_name.version) + " " + std::string(system_name.machine)));
 
   telemetry::ItemString* uptime = new telemetry::ItemString(
     machine->getId(), "Uptime", "");
