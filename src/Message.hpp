@@ -3,6 +3,7 @@
 
 #include <string>
 #include "WebSocket.hpp"
+#include "Telemetry.hpp"
 
 namespace message {
   const int TELEMETRY_ADD = 0;
@@ -13,8 +14,8 @@ namespace message {
   int write_data(void **buf, int *buf_len, const void *data, size_t len);
   int read_data(void **buf, int *buf_len, void *data, size_t len);
 
-  int write_int(void **buf, int *buf_len, long long value);
-  int read_int(void **buf, int *buf_len, long long *value);
+  int write_int(void **buf, int *buf_len, int value);
+  int read_int(void **buf, int *buf_len, int *value);
 
   int write_float(void **buf, int *buf_len, float value);
   int read_float(void **buf, int *buf_len, float *value);
@@ -27,7 +28,11 @@ namespace message {
 
 class MessageHandler {
   public:
-    void handle(WebSocketServer *server, int fd, void *payload, size_t size);
+    MessageHandler(telemetry::Items& telemetryItems);
+    void handle(WebSocketServer *server, Client *client, void *payload, size_t size);
+
+  private:
+    telemetry::Items& telemetryItems;
 };
 
 #endif  // NAMINUKAS_BRAIN_MESSAGE_H_

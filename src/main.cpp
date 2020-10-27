@@ -16,7 +16,7 @@ using namespace std;
 
 static bool terminated = false;
 
-static  bool is_terminated() {
+static bool is_terminated() {
   return terminated;
 }
 
@@ -56,7 +56,7 @@ int main(int argc, const char *argv[]) {
   telemetry::Items telemetryItems;
   SystemTelemetry systemTelemetry(telemetryItems, &is_terminated);
 
-  MessageHandler messageHandler;
+  MessageHandler messageHandler(telemetryItems);
   IOServer ioServer;
   int port;
   if (const char* env_port = std::getenv("PORT")) {
@@ -68,8 +68,8 @@ int main(int argc, const char *argv[]) {
     [&](WebSocketServer* server, int fd) {
       send_telemetry_definitions(telemetryItems, server, fd);
     },
-    [&](WebSocketServer* server, int fd, void *payload, size_t size) {
-      messageHandler.handle(server, fd, payload, size);
+    [&](WebSocketServer* server, Client* client, void *payload, size_t size) {
+      messageHandler.handle(server, client, payload, size);
     }
   );
   ioServer.add_handler(webSocketServer.server_fd, EPOLLIN,

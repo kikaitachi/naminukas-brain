@@ -57,7 +57,7 @@ static char* base64_encode(const unsigned char *data, size_t data_length, size_t
 
 WebSocketServer::WebSocketServer(int port,
     std::function<void(WebSocketServer*, int)> on_connect,
-    std::function<void(WebSocketServer*, int, void*, size_t)> on_binary_message) :
+    std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message) :
     on_connect(on_connect), on_binary_message(on_binary_message) {
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd == -1) {
@@ -126,11 +126,11 @@ void WebSocketServer::sendBinary(int fd, void *data, size_t size) {
   sendFrame(fd, OPCODE_BINARY, data, size);
 }
 
-void WebSocketServer::sendBinaryAll(void *data, size_t size) {
+/*void WebSocketServer::sendBinaryAll(void *data, size_t size) {
   for (auto fd : clients) {
     sendBinary(fd, data, size);
   }
-}
+}*/
 
 /*
  * Find the first occurrence of find in s, where the search is limited to the
@@ -216,17 +216,19 @@ void WebSocketServer::handle_client(int fd) {
 
   on_connect(this, fd);
   // Make client available
-  clients.insert(fd);
+  Client client(fd);
+  fd_to_client[fd] = &client;
 
   for (size = 0; ; ) {
     result = read(fd, &buffer[size], READ_BUFFER_SIZE - size);
     if (result == -1) {
       disconnect(fd, true, "Failed to read frame");
-      return;
+      break;
     } else if (result == 0) {
       disconnect(fd, false, "read returned 0 bytes, assuming socked closed");
-      return;
+      break;
     }
+    size += result;
 
     if (size >= 6) {
       int opcode = buffer[0] & 0x0f;
@@ -260,16 +262,16 @@ void WebSocketServer::handle_client(int fd) {
         for (int i = 0; i < data_length; i++) {
           buffer[i + 6] ^= mask[i % 4];
         }
-        on_binary_message(this, fd, buffer + header_length, data_length);
+        on_binary_message(this, &client, buffer + header_length, data_length);
         memmove(buffer + frame_length, buffer, frame_length);
         size -= frame_length;
       }
     }
   }
+  fd_to_client.erase(fd);
 }
 
 void WebSocketServer::disconnect(int fd, bool error, std::string reason) {
-  clients.erase(fd);
   close(fd);
   if (error) {
     logger::last("Disconnecting WebSocket %d: %s", fd, reason.c_str());

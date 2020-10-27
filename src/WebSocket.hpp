@@ -1,8 +1,10 @@
 #ifndef NAMINUKAS_BRAIN_WEBSOCKET_H_
 #define NAMINUKAS_BRAIN_WEBSOCKET_H_
 
-#include <set>
+#include <map>
 #include <functional>
+
+#include "Client.hpp"
 
 class WebSocketServer {
   public:
@@ -10,15 +12,15 @@ class WebSocketServer {
 
     WebSocketServer(int port,
       std::function<void(WebSocketServer*, int)> on_connect,
-      std::function<void(WebSocketServer*, int, void*, size_t)> on_binary_message);
+      std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message);
     void accept_client();
     void sendBinary(int fd, void *data, size_t size);
-    void sendBinaryAll(void *data, size_t size);
+    //void sendBinaryAll(void *data, size_t size);
 
   private:
     std::function<void(WebSocketServer*, int)> on_connect;
-    std::function<void(WebSocketServer*, int, void*, size_t)> on_binary_message;
-    std::set<int> clients;
+    std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message;
+    std::map<int, Client*> fd_to_client;
 
     void handle_client(int fd);
     void sendFrame(int fd, char opcode, void *data, size_t size);

@@ -24,7 +24,7 @@ namespace message {
   	return 0;
   }
 
-  int write_int(void **buf, int *buf_len, long long value) {
+  int write_int(void **buf, int *buf_len, int value) {
   	if (*buf_len < 1) {
   		return -1;
   	}
@@ -53,7 +53,7 @@ namespace message {
   	return 0;
   }
 
-  int read_int(void **buf, int *buf_len, long long *value) {
+  int read_int(void **buf, int *buf_len, int *value) {
   	int negative;
   	for (int i = 0; *buf_len > 0; ) {
   		int byte = ((int8_t *)*buf)[0];
@@ -99,6 +99,22 @@ namespace message {
   }
 }
 
-void MessageHandler::handle(WebSocketServer *server, int fd, void *payload, size_t size) {
-  logger::info("Got message from %d of %d bytes", fd, size);
+MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
+    telemetryItems(telemetryItems) {
+};
+
+void MessageHandler::handle(WebSocketServer *server, Client *client, void *payload, size_t size) {
+  logger::info("Got message from %d of %d bytes", client->fd, size);
+  void *buf = payload;
+  int buf_len = size;
+  int msg_type;
+  message::read_int(&buf, &buf_len, &msg_type);
+  logger::debug("Message type: %d", msg_type);
+  switch (msg_type) {
+    case message::TELEMETRY_QUERY:
+      break;
+    default:
+      logger::warn("Received unsupported message type %d from %d", msg_type, client->fd);
+      break;
+  }
 }

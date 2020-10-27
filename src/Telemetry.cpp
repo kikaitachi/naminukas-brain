@@ -95,5 +95,8 @@ namespace telemetry {
 
   void Items::add_change_listener(std::function<void(Item&)> change_listener) {
     change_listeners.push_back(change_listener);
+    for (const auto & [id, item] : id_to_item) {
+      item->add_change_listener(change_listener);
+    }
   }
 }

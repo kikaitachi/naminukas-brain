@@ -39,6 +39,7 @@ add_executable(naminukas
   src/Dynamixel.cpp
   src/Robot.cpp
   src/SystemTelemetry.cpp
+  src/Client.cpp
   ${DynamixelSDK_SRC}
 )
 
