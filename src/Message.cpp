@@ -122,6 +122,7 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
 		      void *buf = buffer;
           int buf_len = sizeof(buffer);
           message::write_int(&buf, &buf_len, message::TELEMETRY_UPDATE);
+          message::write_int(&buf, &buf_len, it->second->getId());
           it->second->serialize_value(&buf, &buf_len);
 		      server->sendBinary(client->fd, buffer, sizeof(buffer) - buf_len);
         }
