@@ -78,6 +78,13 @@ int main(int argc, const char *argv[]) {
       return true;
     }
   );
+
+  telemetryItems.add_change_listener([&](telemetry::Item& item) {
+    for (const auto & [fd, client] : webSocketServer.fd_to_client) {
+      client->changed_telemetry_item_ids.insert(item.getId());
+    }
+  });
+
   ioServer.start(&is_terminated);
 
   logger::info("Gracefull shutdown");

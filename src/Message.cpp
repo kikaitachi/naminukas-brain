@@ -103,6 +103,8 @@ MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
     telemetryItems(telemetryItems) {
 };
 
+#define MAX_OUT_MSG_SIZE 1024 * 64
+
 void MessageHandler::handle(WebSocketServer *server, Client *client, void *payload, size_t size) {
   logger::info("Got message from %d of %d bytes", client->fd, size);
   void *buf = payload;
@@ -111,8 +113,22 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
   message::read_int(&buf, &buf_len, &msg_type);
   logger::debug("Message type: %d", msg_type);
   switch (msg_type) {
-    case message::TELEMETRY_QUERY:
+    case message::TELEMETRY_QUERY: {
+	    char buffer[MAX_OUT_MSG_SIZE];
+      logger::debug("Client %d has %d changed telemetry item ids", client->fd, client->changed_telemetry_item_ids.size());
+      for (auto &telemetry_item_id : client->changed_telemetry_item_ids) {
+        std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(telemetry_item_id);
+        if (it != telemetryItems.id_to_item.end()) {
+		      void *buf = buffer;
+          int buf_len = sizeof(buffer);
+          message::write_int(&buf, &buf_len, message::TELEMETRY_UPDATE);
+          it->second->serialize_value(&buf, &buf_len);
+		      server->sendBinary(client->fd, buffer, sizeof(buffer) - buf_len);
+        }
+      }
+      client->changed_telemetry_item_ids.clear();
       break;
+    }
     default:
       logger::warn("Received unsupported message type %d from %d", msg_type, client->fd);
       break;

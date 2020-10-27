@@ -94,6 +94,7 @@ void WebSocketServer::accept_client() {
 }
 
 void WebSocketServer::sendFrame(int fd, char opcode, void *data, size_t size) {
+  logger::debug("Sending frame of size %d to %d", size, fd);
   char header[10];
   int header_length;
   header[0] = FINAL_FRAME | opcode;
@@ -234,7 +235,7 @@ void WebSocketServer::handle_client(int fd) {
       int opcode = buffer[0] & 0x0f;
       if (opcode == OPCODE_CLOSE) {
         disconnect(fd, true, "Closed by control frame");
-        return;
+        break;
       }
       uint64_t data_length = buffer[1] & 127;
       size_t header_length;
