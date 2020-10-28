@@ -5,13 +5,14 @@
 #include <functional>
 
 #include "Client.hpp"
+#include "Telemetry.hpp"
 
 class WebSocketServer {
   public:
     int server_fd;
     std::map<int, Client*> fd_to_client;
 
-    WebSocketServer(int port,
+    WebSocketServer(telemetry::Items& telemetryItems, int port,
       std::function<void(WebSocketServer*, int)> on_connect,
       std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message);
     void accept_client();
@@ -19,6 +20,8 @@ class WebSocketServer {
     //void sendBinaryAll(void *data, size_t size);
 
   private:
+    telemetry::Items& telemetryItems;
+    telemetry::ItemInt* clientCount;
     std::function<void(WebSocketServer*, int)> on_connect;
     std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message;
 

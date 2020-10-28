@@ -64,7 +64,7 @@ int main(int argc, const char *argv[]) {
   } else {
     port = DAFAULT_PORT;
   }
-  WebSocketServer webSocketServer(port,
+  WebSocketServer webSocketServer(telemetryItems, port,
     [&](WebSocketServer* server, int fd) {
       send_telemetry_definitions(telemetryItems, server, fd);
     },

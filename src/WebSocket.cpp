@@ -55,10 +55,10 @@ static char* base64_encode(const unsigned char *data, size_t data_length, size_t
   return encoded_data;
 }
 
-WebSocketServer::WebSocketServer(int port,
+WebSocketServer::WebSocketServer(telemetry::Items& telemetryItems, int port,
     std::function<void(WebSocketServer*, int)> on_connect,
     std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message) :
-    on_connect(on_connect), on_binary_message(on_binary_message) {
+    telemetryItems(telemetryItems), on_connect(on_connect), on_binary_message(on_binary_message) {
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd == -1) {
     logger::last("Failed to create WebSocket server socket");
@@ -84,6 +84,9 @@ WebSocketServer::WebSocketServer(int port,
     logger::last("Failed to listen to WebSocket server socket");
     return;
   }
+
+  clientCount = new telemetry::ItemInt(telemetry::ROOT_ITEM_ID, "Connected clients", 0);
+  telemetryItems.add_item(clientCount);
 }
 
 void WebSocketServer::accept_client() {
@@ -215,10 +218,12 @@ void WebSocketServer::handle_client(int fd) {
     return;
   }
 
-  on_connect(this, fd);
   // Make client available
   Client client(fd);
   fd_to_client[fd] = &client;
+  clientCount->update(fd_to_client.size());
+
+  on_connect(this, fd);
 
   for (size = 0; ; ) {
     result = read(fd, &buffer[size], READ_BUFFER_SIZE - size);
@@ -270,6 +275,7 @@ void WebSocketServer::handle_client(int fd) {
     }
   }
   fd_to_client.erase(fd);
+  clientCount->update(fd_to_client.size());
 }
 
 void WebSocketServer::disconnect(int fd, bool error, std::string reason) {
