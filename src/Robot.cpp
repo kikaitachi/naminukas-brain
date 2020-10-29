@@ -30,11 +30,41 @@ Robot::Robot(telemetry::Items& telemetryItems) : telemetryItems(telemetryItems) 
     });
   telemetryItems.add_item(tilt_drive);
 
+  telemetry::ItemAction* arm = new telemetry::ItemAction(
+    mode->getId(), "Arm (velocity)", "Digit4", [=]() {
+      this->mode->update("arm");
+    });
+  telemetryItems.add_item(arm);
+
   telemetry::ItemAction* caterpillar = new telemetry::ItemAction(
-    mode->getId(), "Caterpilar", "Digit4", [=]() {
+    mode->getId(), "Caterpilar", "Digit5", [=]() {
       this->mode->update("caterpilar");
     });
   telemetryItems.add_item(caterpillar);
+
+  telemetry::ItemAction* up = new telemetry::ItemAction(
+    mode->getId(), "Up", "ArrowUp", [=]() {
+      // TODO: implement
+    });
+  telemetryItems.add_item(up);
+
+  telemetry::ItemAction* down = new telemetry::ItemAction(
+    mode->getId(), "Down", "ArrowDown", [=]() {
+      // TODO: implement
+    });
+  telemetryItems.add_item(down);
+
+  telemetry::ItemAction* left = new telemetry::ItemAction(
+    mode->getId(), "Left", "ArrowLeft", [=]() {
+      // TODO: implement
+    });
+  telemetryItems.add_item(left);
+
+  telemetry::ItemAction* right = new telemetry::ItemAction(
+    mode->getId(), "Right", "ArrowRight", [=]() {
+      // TODO: implement
+    });
+  telemetryItems.add_item(right);
 }
 
 void Robot::lockState() {
