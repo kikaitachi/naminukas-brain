@@ -35,6 +35,10 @@ namespace telemetry {
     return id;
   }
 
+  int Item::getType() {
+    return type;
+  }
+
   // ItemInt *******************************************************************
 
   ItemInt::ItemInt(int parent_id, std::string name, long long value) :
@@ -62,7 +66,8 @@ namespace telemetry {
   // ItemString ****************************************************************
 
   ItemString::ItemString(int parent_id, std::string name, std::string value) :
-    Item(parent_id, TYPE_STRING, name), value(value) { }
+      Item(parent_id, TYPE_STRING, name), value(value) {
+    }
 
   void ItemString::serialize_definition(void **buf, int *buf_len) {
     Item::serialize_definition(buf, buf_len);
@@ -81,6 +86,21 @@ namespace telemetry {
         change_listener(*this);
       }
     }
+  }
+
+  // ItemAction ****************************************************************
+
+  ItemAction::ItemAction(int parent_id, std::string name, std::string value, std::function<void()> action) :
+      Item(parent_id, TYPE_ACTION, name), value(value), action(action) {
+  }
+
+  void ItemAction::serialize_definition(void **buf, int *buf_len) {
+    Item::serialize_definition(buf, buf_len);
+    message::write_string(buf, buf_len, value);
+  }
+
+  void ItemAction::deserialize_value(void **buf, int *buf_len) {
+    this->action();
   }
 
   // Items *********************************************************************

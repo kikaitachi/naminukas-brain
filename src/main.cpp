@@ -5,6 +5,7 @@
 #include "Logger.hpp"
 #include "IOServer.hpp"
 #include "WebSocket.hpp"
+#include "Robot.hpp"
 #include "Message.hpp"
 #include "Telemetry.hpp"
 #include "SystemTelemetry.hpp"
@@ -84,6 +85,8 @@ int main(int argc, const char *argv[]) {
       client->changed_telemetry_item_ids.insert(item.getId());
     }
   });
+
+  Robot robot(telemetryItems);
 
   ioServer.start(&is_terminated);
 

@@ -7,11 +7,10 @@
 #include <string>
 
 namespace telemetry {
-  #define TYPE_INT 0
-  #define TYPE_STRING 1
-  #define TYPE_ACTION 2
-  #define TYPE_STL 3
-  #define TYPE_RATIO 4
+  const int TYPE_INT = 0;
+  const int TYPE_STRING = 1;
+  const int TYPE_ACTION = 2;
+  const int TYPE_STL = 3;
 
   const int ROOT_ITEM_ID = 0;
 
@@ -23,6 +22,7 @@ namespace telemetry {
       virtual void deserialize_value(void **buf, int *buf_len);
       void add_change_listener(std::function<void(Item&)> listener);
       int getId();
+      int getType();
 
     protected:
       int id, parent_id, type;
@@ -45,12 +45,25 @@ namespace telemetry {
 
   class ItemString: public Item {
     public:
-      std::string value;
-
       ItemString(int parent_id, std::string name, std::string value);
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
       void update(std::string value);
+    private:
+      std::string value;
+  };
+
+  class ItemAction: public Item {
+    public:
+      /**
+       * Allowed values are key codes: https://w3c.github.io/uievents-code/
+       */
+      ItemAction(int parent_id, std::string name, std::string value, std::function<void()> action);
+      void serialize_definition(void **buf, int *buf_len);
+      void deserialize_value(void **buf, int *buf_len);
+    private:
+      std::string value;
+      std::function<void()> action;
   };
 
   class Items {
