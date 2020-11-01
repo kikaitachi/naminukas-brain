@@ -13,7 +13,7 @@
 using namespace std;
 
 #define DAFAULT_PORT 3001
-#define MAX_MESSAGE_SIZE 64 * 1024
+#define MAX_MESSAGE_SIZE 1024 * 1024 * 4
 
 static bool terminated = false;
 
