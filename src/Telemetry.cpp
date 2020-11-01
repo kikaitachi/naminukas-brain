@@ -1,3 +1,6 @@
+#include <fstream>
+
+#include "Logger.hpp"
 #include "Message.hpp"
 #include "Telemetry.hpp"
 
@@ -88,19 +91,37 @@ namespace telemetry {
     }
   }
 
-  // ItemAction ****************************************************************
+  // ItemCommand ***************************************************************
 
-  ItemAction::ItemAction(int parent_id, std::string name, std::string value, std::function<void()> action) :
+  ItemCommand::ItemCommand(int parent_id, std::string name, std::string value, std::function<void()> action) :
       Item(parent_id, TYPE_ACTION, name), value(value), action(action) {
   }
 
-  void ItemAction::serialize_definition(void **buf, int *buf_len) {
+  void ItemCommand::serialize_definition(void **buf, int *buf_len) {
     Item::serialize_definition(buf, buf_len);
     message::write_string(buf, buf_len, value);
   }
 
-  void ItemAction::deserialize_value(void **buf, int *buf_len) {
+  void ItemCommand::deserialize_value(void **buf, int *buf_len) {
     this->action();
+  }
+
+  // ItemSTL *******************************************************************
+
+  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name) :
+      Item(parent_id, TYPE_STL, name), file_name(file_name) {
+  }
+
+  void ItemSTL::serialize_definition(void **buf, int *buf_len) {
+    Item::serialize_definition(buf, buf_len);
+    std::ifstream file(file_name, std::ios::binary | std::ios::ate);
+    std::streamsize size = file.tellg();
+    logger::debug("Loading STL model %s or %d", file_name, size);
+    message::write_int(buf, buf_len, size);
+    file.seekg(0, std::ios::beg);
+    file.read((char *)*buf, size);
+    *buf = ((char *)*buf) + size;
+    *buf_len -= size;
   }
 
   // Items *********************************************************************
