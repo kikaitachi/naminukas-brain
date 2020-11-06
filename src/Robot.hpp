@@ -3,6 +3,7 @@
 
 #include <mutex>
 
+#include "Hardware.hpp"
 #include "Telemetry.hpp"
 
 class Robot {
