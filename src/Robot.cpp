@@ -2,7 +2,8 @@
 
 std::mutex Robot::stateMutex;
 
-Robot::Robot(telemetry::Items& telemetryItems) : telemetryItems(telemetryItems) {
+Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics) :
+    telemetryItems(telemetryItems), kinematics(kinematics) {
   mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", "idle");
   telemetryItems.add_item(mode);
 

@@ -1,7 +1,7 @@
 #include <string>
 #include <signal.h>
 #include <sys/epoll.h>
-#include "dynamixel_sdk.h"
+#include "DynamixelKinematics.hpp"
 #include "Logger.hpp"
 #include "IOServer.hpp"
 #include "WebSocket.hpp"
@@ -44,16 +44,9 @@ void send_telemetry_definitions(telemetry::Items &telemetryItems, WebSocketServe
 }
 
 int main(int argc, const char *argv[]) {
-  dynamixel::PortHandler *portHandler = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
-  if (portHandler->openPort()) {
-    logger::info("Succeeded to open the port");
-  }
-  else {
-    logger::error("Failed to open the port!");
-  }
-
   signal(SIGINT, signal_handler);
 
+  DynamixelKinematics dynamixelKinematics;
   telemetry::Items telemetryItems;
   SystemTelemetry systemTelemetry(telemetryItems, &is_terminated);
 
@@ -86,7 +79,7 @@ int main(int argc, const char *argv[]) {
     }
   });
 
-  Robot robot(telemetryItems);
+  Robot robot(telemetryItems, dynamixelKinematics);
 
   ioServer.start(&is_terminated);
 

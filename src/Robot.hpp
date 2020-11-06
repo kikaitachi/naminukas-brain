@@ -8,12 +8,13 @@
 
 class Robot {
   public:
-    Robot(telemetry::Items& telemetryItems);
+    Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics);
     static void lockState();
     static void unlockState();
 
   private:
     static std::mutex stateMutex;
+    hardware::Kinematics& kinematics;
     telemetry::Items& telemetryItems;
     telemetry::ItemString* mode;
 };
