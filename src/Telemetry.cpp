@@ -116,7 +116,7 @@ namespace telemetry {
     Item::serialize_definition(buf, buf_len);
     std::ifstream file(file_name, std::ios::binary | std::ios::ate);
     std::streamsize size = file.tellg();
-    logger::debug("Loading STL model %s or %d", file_name, size);
+    logger::debug("Loading STL model %s (%d bytes)", file_name.c_str(), size);
     message::write_int(buf, buf_len, size);
     file.seekg(0, std::ios::beg);
     file.read((char *)*buf, size);
