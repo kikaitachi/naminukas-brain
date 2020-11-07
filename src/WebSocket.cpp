@@ -235,6 +235,7 @@ void WebSocketServer::handle_client(int fd) {
       break;
     }
     size += result;
+    logger::debug("Read %d bytes from %d", (int)result, fd);
 
     if (size >= 6) {
       int opcode = buffer[0] & 0x0f;
@@ -258,15 +259,15 @@ void WebSocketServer::handle_client(int fd) {
       }
       size_t frame_length = data_length + header_length;
 
-      char mask[4];
-      mask[0] = buffer[header_length - 4];
-      mask[1] = buffer[header_length - 3];
-      mask[2] = buffer[header_length - 2];
-      mask[3] = buffer[header_length - 1];
-
       if (size >= frame_length) {
+        char mask[4];
+        mask[0] = buffer[header_length - 4];
+        mask[1] = buffer[header_length - 3];
+        mask[2] = buffer[header_length - 2];
+        mask[3] = buffer[header_length - 1];
+
         for (int i = 0; i < data_length; i++) {
-          buffer[i + 6] ^= mask[i % 4];
+          buffer[i + header_length] ^= mask[i % 4];
         }
         logger::debug("Got frame with opcode %d, header length %d, payload length %d", opcode, header_length, (int)data_length);
         on_binary_message(this, &client, buffer + header_length, data_length);
