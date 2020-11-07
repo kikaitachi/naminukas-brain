@@ -237,7 +237,7 @@ void WebSocketServer::handle_client(int fd) {
     size += result;
     logger::debug("Read %d bytes from %d", (int)result, fd);
 
-    if (size >= 6) {
+    while (size >= 6) {
       int opcode = buffer[0] & 0x0f;
       if (opcode == OPCODE_CLOSE) {
         disconnect(fd, true, "Closed by control frame");
@@ -273,6 +273,8 @@ void WebSocketServer::handle_client(int fd) {
         on_binary_message(this, &client, buffer + header_length, data_length);
         memmove(buffer, buffer + frame_length, frame_length);
         size -= frame_length;
+      } else {
+        break;
       }
     }
   }
