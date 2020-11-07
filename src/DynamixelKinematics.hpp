@@ -15,7 +15,10 @@ class DynamixelKinematics: public hardware::Kinematics {
     double get_joint_position(hardware::Joint joint);
 
   private:
-    dynamixel::PortHandler *portHandler;
+    dynamixel::PortHandler *port_handler;
+    dynamixel::PacketHandler *packet_handler;
+
+    void enable_torque(int id, bool enable);
 };
 
 #endif  // NAMINUKAS_BRAIN_DYNAMIXEL_KINEMATICS_H_

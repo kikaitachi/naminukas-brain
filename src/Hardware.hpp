@@ -5,7 +5,7 @@ namespace hardware {
 
   enum class Joint { left_wheel, right_wheel, left_ankle, right_ankle };
 
-  enum class JointControlMode { position, velocity, time };
+  enum class JointControlMode { off, position, velocity, time };
 
   class Kinematics {
     public:

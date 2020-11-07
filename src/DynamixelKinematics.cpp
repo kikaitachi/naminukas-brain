@@ -1,6 +1,8 @@
 #include "DynamixelKinematics.hpp"
 #include "Logger.hpp"
 
+#define TORQUE_ENABLE 64
+
 static int joint2id(hardware::Joint joint) {
   switch (joint) {
     case hardware::Joint::left_wheel:
@@ -18,9 +20,10 @@ static int joint2id(hardware::Joint joint) {
 }
 
 DynamixelKinematics::DynamixelKinematics() {
-  portHandler = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
-  if (portHandler->openPort()) {
+  port_handler = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
+  if (port_handler->openPort()) {
     logger::info("Succeeded to open Dynamixel port");
+    packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0);
   }
   else {
     logger::error("Failed to open Dynamixel port");
@@ -28,12 +31,35 @@ DynamixelKinematics::DynamixelKinematics() {
 }
 
 DynamixelKinematics::~DynamixelKinematics() {
-  portHandler->closePort();
+  port_handler->closePort();
 }
 
 void DynamixelKinematics::set_joint_control_mode(
     hardware::Joint joint, hardware::JointControlMode mode, double max_acceleration, double max_rpm, double millis) {
-  // TODO: implement
+  int id = joint2id(joint);
+  switch (mode) {
+    case hardware::JointControlMode::off:
+      enable_torque(id, 0);
+      break;
+    case hardware::JointControlMode::position:
+      enable_torque(id, 0);
+      // TODO: change mode
+      enable_torque(id, 1);
+      break;
+    case hardware::JointControlMode::velocity:
+      enable_torque(id, 0);
+      // TODO: change mode
+      enable_torque(id, 1);
+      break;
+    case hardware::JointControlMode::time:
+      enable_torque(id, 0);
+      // TODO: change mode
+      enable_torque(id, 1);
+      break;
+    default:
+    logger::error("Can't set joint %d control to unsupported mode %d", (int)joint, (int)mode);
+      break;
+  }
 }
 
 void DynamixelKinematics::set_joint_position(hardware::Joint joint, double degrees) {
@@ -47,4 +73,17 @@ void DynamixelKinematics::set_joint_speed(hardware::Joint joint, double rpm) {
 double DynamixelKinematics::get_joint_position(hardware::Joint joint) {
   // TODO: implement
   return 0;
+}
+
+void DynamixelKinematics::enable_torque(int id, bool enable) {
+  uint8_t dxl_error = 0;
+  int value = enable ? 1 : 0;
+  int dxl_comm_result = packet_handler->write1ByteTxRx(port_handler, id, TORQUE_ENABLE, value, &dxl_error);
+  if (dxl_comm_result != COMM_SUCCESS) {
+    logger::error("Failed to change Dynamixel with id %d torque to value %d: %s",
+      id, value, packet_handler->getTxRxResult(dxl_comm_result));
+  } else if (dxl_error != 0) {
+    logger::error("Failed to change Dynamixel with id %d torque to value %d: %s",
+    id, value, packet_handler->getRxPacketError(dxl_error));
+  }
 }
