@@ -111,7 +111,7 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
   int buf_len = size;
   int msg_type;
   message::read_int(&buf, &buf_len, &msg_type);
-  logger::debug("Message type: %d", msg_type);
+  logger::debug("Message type: %d (non decoded: %d)", msg_type, (int)(((int8_t *)payload)[0]));
   switch (msg_type) {
     case message::TELEMETRY_QUERY: {
 	    char buffer[MAX_OUT_MSG_SIZE];
