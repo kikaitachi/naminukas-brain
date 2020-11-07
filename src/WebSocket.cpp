@@ -270,7 +270,7 @@ void WebSocketServer::handle_client(int fd) {
         }
         logger::debug("Got frame with opcode %d, header length %d, payload length %d", opcode, header_length, (int)data_length);
         on_binary_message(this, &client, buffer + header_length, data_length);
-        memmove(buffer + frame_length, buffer, frame_length);
+        memmove(buffer, buffer + frame_length, frame_length);
         size -= frame_length;
       }
     }
