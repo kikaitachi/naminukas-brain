@@ -8,7 +8,12 @@ Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
   telemetryItems.add_item(mode);
 
   telemetry::ItemCommand* idle = new telemetry::ItemCommand(
-    mode->getId(), "Idle", "Escape", [=]() {
+    mode->getId(), "Idle", "Escape", [&]() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
+      // TODO: add Pneumatics
       mode->update("idle");
     });
   telemetryItems.add_item(idle);
