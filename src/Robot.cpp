@@ -19,31 +19,51 @@ Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
   telemetryItems.add_item(idle);
 
   telemetry::ItemCommand* walk = new telemetry::ItemCommand(
-    mode->getId(), "Walk", "Digit1", [=]() {
+    mode->getId(), "Walk", "Digit1", [&]() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
       mode->update("walk");
     });
   telemetryItems.add_item(walk);
 
   telemetry::ItemCommand* balance = new telemetry::ItemCommand(
-    mode->getId(), "Balance", "Digit2", [=]() {
+    mode->getId(), "Balance", "Digit2", [&]() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
       mode->update("balance");
     });
   telemetryItems.add_item(balance);
 
   telemetry::ItemCommand* tilt_drive = new telemetry::ItemCommand(
-    mode->getId(), "Tilt drive", "Digit3", [=]() {
+    mode->getId(), "Tilt drive", "Digit3", [&]() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
       mode->update("tilt drive");
     });
   telemetryItems.add_item(tilt_drive);
 
   telemetry::ItemCommand* arm = new telemetry::ItemCommand(
-    mode->getId(), "Arm (velocity)", "Digit4", [=]() {
+    mode->getId(), "Arm (velocity)", "Digit4", [&]() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::velocity);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::velocity);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
       this->mode->update("arm");
     });
   telemetryItems.add_item(arm);
 
   telemetry::ItemCommand* caterpillar = new telemetry::ItemCommand(
-    mode->getId(), "Caterpilar", "Digit5", [=]() {
+    mode->getId(), "Caterpilar", "Digit5", [&]() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
       this->mode->update("caterpilar");
     });
   telemetryItems.add_item(caterpillar);
