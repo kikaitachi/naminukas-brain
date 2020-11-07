@@ -1,6 +1,10 @@
 #include "DynamixelKinematics.hpp"
 #include "Logger.hpp"
 
+#define DEVICENAME "/dev/ttyUSB0"
+#define PROTOCOL_VERSION 2.0
+#define BAUDRATE 4000000
+
 #define TORQUE_ENABLE 64
 
 static int joint2id(hardware::Joint joint) {
@@ -20,10 +24,13 @@ static int joint2id(hardware::Joint joint) {
 }
 
 DynamixelKinematics::DynamixelKinematics() {
-  port_handler = dynamixel::PortHandler::getPortHandler("/dev/ttyUSB0");
+  port_handler = dynamixel::PortHandler::getPortHandler(DEVICENAME);
   if (port_handler->openPort()) {
     logger::info("Succeeded to open Dynamixel port");
-    packet_handler = dynamixel::PacketHandler::getPacketHandler(2.0);
+    packet_handler = dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION);
+    if (!port_handler->setBaudRate(BAUDRATE)) {
+      logger::error("Failed to change baudrate");
+    }
   }
   else {
     logger::error("Failed to open Dynamixel port");
