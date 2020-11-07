@@ -12,6 +12,7 @@ namespace hardware {
       virtual void set_joint_control_mode(Joint joint, JointControlMode mode, double max_acceleration, double max_rpm, double millis) = 0;
       virtual void set_joint_position(Joint joint, double degrees) = 0;
       virtual void set_joint_speed(Joint joint, double rpm) = 0;
+      virtual double get_joint_position(Joint joint) = 0;
   };
 
   class Pneumatics {

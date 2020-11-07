@@ -12,6 +12,7 @@ class DynamixelKinematics: public hardware::Kinematics {
     void set_joint_control_mode(hardware::Joint joint, hardware::JointControlMode mode, double max_acceleration, double max_rpm, double millis);
     void set_joint_position(hardware::Joint joint, double degrees);
     void set_joint_speed(hardware::Joint joint, double rpm);
+    double get_joint_position(hardware::Joint joint);
 
   private:
     dynamixel::PortHandler *portHandler;
