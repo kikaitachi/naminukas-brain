@@ -103,7 +103,7 @@ MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
     telemetryItems(telemetryItems) {
 };
 
-#define MAX_OUT_MSG_SIZE 1024 * 1024 * 4
+#define MAX_OUT_MSG_SIZE 1024 * 4
 
 void MessageHandler::handle(WebSocketServer *server, Client *client, void *payload, size_t size) {
   void *buf = payload;
