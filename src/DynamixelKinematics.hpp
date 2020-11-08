@@ -18,7 +18,8 @@ class DynamixelKinematics: public hardware::Kinematics {
     dynamixel::PortHandler *port_handler;
     dynamixel::PacketHandler *packet_handler;
 
-    void enable_torque(int id, bool enable);
+    bool write_byte(int id, int address, int value);
+    bool enable_torque(int id, bool enable);
 };
 
 #endif  // NAMINUKAS_BRAIN_DYNAMIXEL_KINEMATICS_H_

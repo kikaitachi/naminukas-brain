@@ -5,7 +5,30 @@
 #define PROTOCOL_VERSION 2.0
 #define BAUDRATE 4000000
 
+#define POSITIONS_PER_RPM 4096
+
+#define DRIVE_MODE 10
+#define OPERATING_MODE 11
 #define TORQUE_ENABLE 64
+#define GOAL_VELOCITY 104
+#define PROFILE_ACCELERATION 108
+#define PROFILE_VELOCITY 112
+#define GOAL_POSITION 116
+#define MOVING 122
+#define MOVING_STATUS 123
+
+#define DRIVE_MODE_VELOCITY_BASED 0
+#define DRIVE_MODE_TIME_BASED 4
+
+#define OPERATING_MODE_CURRENT 0
+#define OPERATING_MODE_VELOCITY 1
+#define OPERATING_MODE_POSITION 3
+#define OPERATING_MODE_EXTENDED_POSITION 4
+#define OPERATING_MODE_CURRENT_BASED_POSITION 5
+#define OPERATING_MODE_PWM 16
+
+#define ACCELERATION 214.577 // rev/min^2
+#define VELOCITY 0.229 // rev/min
 
 static int joint2id(hardware::Joint joint) {
   switch (joint) {
@@ -50,17 +73,20 @@ void DynamixelKinematics::set_joint_control_mode(
       break;
     case hardware::JointControlMode::position:
       enable_torque(id, 0);
-      // TODO: change mode
+      write_byte(id, DRIVE_MODE, DRIVE_MODE_VELOCITY_BASED);
+      write_byte(id, OPERATING_MODE, OPERATING_MODE_POSITION);
       enable_torque(id, 1);
       break;
     case hardware::JointControlMode::velocity:
       enable_torque(id, 0);
-      // TODO: change mode
+      write_byte(id, DRIVE_MODE, DRIVE_MODE_VELOCITY_BASED);
+      write_byte(id, OPERATING_MODE, OPERATING_MODE_VELOCITY);
       enable_torque(id, 1);
       break;
     case hardware::JointControlMode::time:
       enable_torque(id, 0);
-      // TODO: change mode
+      write_byte(id, DRIVE_MODE, DRIVE_MODE_TIME_BASED);
+      write_byte(id, OPERATING_MODE, OPERATING_MODE_POSITION);
       enable_torque(id, 1);
       break;
     default:
@@ -82,15 +108,21 @@ double DynamixelKinematics::get_joint_position(hardware::Joint joint) {
   return 0;
 }
 
-void DynamixelKinematics::enable_torque(int id, bool enable) {
+bool DynamixelKinematics::write_byte(int id, int address, int value) {
   uint8_t dxl_error = 0;
-  int value = enable ? 1 : 0;
-  int dxl_comm_result = packet_handler->write1ByteTxRx(port_handler, id, TORQUE_ENABLE, value, &dxl_error);
+  int dxl_comm_result = packet_handler->write1ByteTxRx(port_handler, id, address, value, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {
-    logger::error("Failed to change Dynamixel with id %d torque to value %d: %s",
-      id, value, packet_handler->getTxRxResult(dxl_comm_result));
+    logger::error("Failed to write %d to addres %d for Dynamixel with id %d: %s",
+      value, address, id, packet_handler->getTxRxResult(dxl_comm_result));
+      return false;
   } else if (dxl_error != 0) {
-    logger::error("Failed to change Dynamixel with id %d torque to value %d: %s",
-    id, value, packet_handler->getRxPacketError(dxl_error));
+    logger::error("Failed to write %d to address %d for Dynamixel with id %d: %s",
+    value, address, id, packet_handler->getRxPacketError(dxl_error));
+    return false;
   }
+  return true;
+}
+
+bool DynamixelKinematics::enable_torque(int id, bool enable) {
+  return write_byte(id, TORQUE_ENABLE, enable ? 1 : 0);
 }
