@@ -1,24 +1,74 @@
+#include "Logger.hpp"
 #include "Robot.hpp"
 
-std::mutex Robot::stateMutex;
+class LocomotionIdle: public Locomotion {
+  public:
+    LocomotionIdle(hardware::Kinematics& kinematics) : kinematics(kinematics) {
+    }
 
-Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics) :
-    telemetryItems(telemetryItems), kinematics(kinematics) {
-  mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", "idle");
-  telemetryItems.add_item(mode);
+    std::string name() {
+      return "Idle";
+    }
 
-  telemetry::ItemCommand* idle = new telemetry::ItemCommand(
-    mode->getId(), "Idle", "Escape", [&]() {
+    void start() {
       kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
       kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
       kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
       kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
       // TODO: add Pneumatics
-      mode->update("idle");
-    });
-  telemetryItems.add_item(idle);
+    }
 
-  telemetry::ItemCommand* walk = new telemetry::ItemCommand(
+  protected:
+    hardware::Kinematics& kinematics;
+};
+
+class LocomotionTiltDrive: public Locomotion {
+  public:
+    LocomotionTiltDrive(hardware::Kinematics& kinematics) : kinematics(kinematics) {
+    }
+
+    std::string name() {
+      return "Tilt drive";
+    }
+
+    void start() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
+    }
+
+  protected:
+    hardware::Kinematics& kinematics;
+};
+
+std::mutex Robot::stateMutex;
+
+void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
+  telemetryItems.add_item(new telemetry::ItemCommand(
+    mode->getId(), locomotion->name(), key, [=]() {
+      logger::debug("Stopping locomotion: %s", current_locomotion_mode->name().c_str());
+      current_locomotion_mode->stop();
+      current_locomotion_mode = locomotion;
+      logger::debug("Starting locomotion: %s", current_locomotion_mode->name().c_str());
+      current_locomotion_mode->start();
+      mode->update(current_locomotion_mode->name());
+    }));
+}
+
+Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics) :
+    telemetryItems(telemetryItems), kinematics(kinematics) {
+  LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
+  LocomotionTiltDrive* locomotion_tilt_drive = new LocomotionTiltDrive(kinematics);
+  current_locomotion_mode = locomotion_idle;
+
+  mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", current_locomotion_mode->name());
+  telemetryItems.add_item(mode);
+
+  add_locomotion(locomotion_idle, "Escape");
+  add_locomotion(locomotion_tilt_drive, "Digit1");
+
+  /*telemetry::ItemCommand* walk = new telemetry::ItemCommand(
     mode->getId(), "Walk", "Digit1", [&]() {
       kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::position);
       kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
@@ -38,16 +88,6 @@ Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
     });
   telemetryItems.add_item(balance);
 
-  telemetry::ItemCommand* tilt_drive = new telemetry::ItemCommand(
-    mode->getId(), "Tilt drive", "Digit3", [&]() {
-      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
-      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
-      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
-      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
-      mode->update("tilt drive");
-    });
-  telemetryItems.add_item(tilt_drive);
-
   telemetry::ItemCommand* arm = new telemetry::ItemCommand(
     mode->getId(), "Arm (velocity)", "Digit4", [&]() {
       kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
@@ -66,7 +106,7 @@ Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
       kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
       this->mode->update("caterpilar");
     });
-  telemetryItems.add_item(caterpillar);
+  telemetryItems.add_item(caterpillar);*/
 
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
     mode->getId(), "Up", "ArrowUp", [=]() {

@@ -56,6 +56,7 @@ DynamixelKinematics::DynamixelKinematics() {
     }
   }
   else {
+    packet_handler = NULL;
     logger::error("Failed to open Dynamixel port");
   }
 }
@@ -109,6 +110,9 @@ double DynamixelKinematics::get_joint_position(hardware::Joint joint) {
 }
 
 bool DynamixelKinematics::write_byte(int id, int address, int value) {
+  if (packet_handler == NULL) {
+    return false;
+  }
   uint8_t dxl_error = 0;
   int dxl_comm_result = packet_handler->write1ByteTxRx(port_handler, id, address, value, &dxl_error);
   if (dxl_comm_result != COMM_SUCCESS) {

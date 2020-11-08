@@ -4,6 +4,7 @@
 #include <mutex>
 
 #include "Hardware.hpp"
+#include "Locomotion.hpp"
 #include "Telemetry.hpp"
 
 class Robot {
@@ -17,6 +18,9 @@ class Robot {
     hardware::Kinematics& kinematics;
     telemetry::Items& telemetryItems;
     telemetry::ItemString* mode;
+    Locomotion* current_locomotion_mode;
+
+    void add_locomotion(Locomotion* locomotion, std::string key);
 };
 
 #endif  // NAMINUKAS_BRAIN_ROBOT_H_
