@@ -4,17 +4,19 @@
 #include <mutex>
 
 #include "Hardware.hpp"
+#include "IMU.hpp"
 #include "Locomotion.hpp"
 #include "Telemetry.hpp"
 
 class Robot {
   public:
-    Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics);
+    Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics);
     static void lockState();
     static void unlockState();
 
   private:
     static std::mutex stateMutex;
+    IMU& imu;
     hardware::Kinematics& kinematics;
     telemetry::Items& telemetryItems;
     telemetry::ItemString* mode;

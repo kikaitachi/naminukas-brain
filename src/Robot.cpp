@@ -42,6 +42,31 @@ class LocomotionTiltDrive: public Locomotion {
     hardware::Kinematics& kinematics;
 };
 
+/**
+ * Skiing is an automotive driving stunt where the car is driven while balanced
+ * only on two wheels, either the pair on the driver side or on the passenger side.
+ * See: https://en.wikipedia.org/wiki/Ski_(driving_stunt)
+ */
+class LocomotionSki: public Locomotion {
+  public:
+    LocomotionSki(hardware::Kinematics& kinematics) : kinematics(kinematics) {
+    }
+
+    std::string name() {
+      return "Ski";
+    }
+
+    void start() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
+    }
+
+  protected:
+    hardware::Kinematics& kinematics;
+};
+
 std::mutex Robot::stateMutex;
 
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
@@ -56,10 +81,11 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
     }));
 }
 
-Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics) :
-    telemetryItems(telemetryItems), kinematics(kinematics) {
+Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics) :
+    telemetryItems(telemetryItems), imu(imu), kinematics(kinematics) {
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
   LocomotionTiltDrive* locomotion_tilt_drive = new LocomotionTiltDrive(kinematics);
+  LocomotionSki* locomotion_ski = new LocomotionSki(kinematics);
   current_locomotion_mode = locomotion_idle;
 
   mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", current_locomotion_mode->name());
@@ -67,6 +93,7 @@ Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
 
   add_locomotion(locomotion_idle, "Escape");
   add_locomotion(locomotion_tilt_drive, "Digit1");
+  add_locomotion(locomotion_ski, "Digit2");
 
   /*telemetry::ItemCommand* walk = new telemetry::ItemCommand(
     mode->getId(), "Walk", "Digit1", [&]() {

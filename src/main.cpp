@@ -1,6 +1,8 @@
 #include <string>
 #include <signal.h>
 #include <sys/epoll.h>
+
+#include "BeagleBoneBlueIMU.hpp"
 #include "DynamixelKinematics.hpp"
 #include "Logger.hpp"
 #include "IOServer.hpp"
@@ -46,6 +48,7 @@ void send_telemetry_definitions(telemetry::Items &telemetryItems, WebSocketServe
 int main(int argc, const char *argv[]) {
   signal(SIGINT, signal_handler);
 
+  BeagleBoneBlueIMU imu;
   DynamixelKinematics dynamixelKinematics;
   telemetry::Items telemetryItems;
   SystemTelemetry systemTelemetry(telemetryItems, &is_terminated);
@@ -79,7 +82,7 @@ int main(int argc, const char *argv[]) {
     }
   });
 
-  Robot robot(telemetryItems, dynamixelKinematics);
+  Robot robot(telemetryItems, imu, dynamixelKinematics);
 
   ioServer.start(&is_terminated);
 

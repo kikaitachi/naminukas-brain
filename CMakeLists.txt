@@ -41,6 +41,7 @@ add_executable(naminukas
   src/SystemTelemetry.cpp
   src/Client.cpp
   src/Locomotion.cpp
+  src/BeagleBoneBlueIMU.cpp
   ${DynamixelSDK_SRC}
 )
 
