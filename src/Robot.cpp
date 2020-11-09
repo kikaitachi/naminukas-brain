@@ -109,26 +109,26 @@ Robot::Robot(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
   telemetryItems.add_item(caterpillar);*/
 
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
-    mode->getId(), "Up", "ArrowUp", [=]() {
-      // TODO: implement
+    mode->getId(), "Up", "ArrowUp", [&]() {
+      current_locomotion_mode->up();
     });
   telemetryItems.add_item(up);
 
   telemetry::ItemCommand* down = new telemetry::ItemCommand(
-    mode->getId(), "Down", "ArrowDown", [=]() {
-      // TODO: implement
+    mode->getId(), "Down", "ArrowDown", [&]() {
+      current_locomotion_mode->down();
     });
   telemetryItems.add_item(down);
 
   telemetry::ItemCommand* left = new telemetry::ItemCommand(
-    mode->getId(), "Left", "ArrowLeft", [=]() {
-      // TODO: implement
+    mode->getId(), "Left", "ArrowLeft", [&]() {
+      current_locomotion_mode->left();
     });
   telemetryItems.add_item(left);
 
   telemetry::ItemCommand* right = new telemetry::ItemCommand(
-    mode->getId(), "Right", "ArrowRight", [=]() {
-      // TODO: implement
+    mode->getId(), "Right", "ArrowRight", [&]() {
+      current_locomotion_mode->right();
     });
   telemetryItems.add_item(right);
 
