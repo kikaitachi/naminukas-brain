@@ -1,4 +1,5 @@
 #include "DynamixelKinematics.hpp"
+#include "DynamixelUtil.hpp"
 #include "Logger.hpp"
 
 #define DEVICENAME "/dev/ttyUSB0"

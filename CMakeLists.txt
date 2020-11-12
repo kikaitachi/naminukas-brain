@@ -36,6 +36,7 @@ add_executable(naminukas
   src/WebSocket.cpp
   src/Message.cpp
   src/Telemetry.cpp
+  src/DynamixelUtil.cpp
   src/DynamixelKinematics.cpp
   src/Robot.cpp
   src/SystemTelemetry.cpp
