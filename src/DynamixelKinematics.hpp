@@ -1,8 +1,7 @@
 #ifndef NAMINUKAS_BRAIN_DYNAMIXEL_KINEMATICS_H_
 #define NAMINUKAS_BRAIN_DYNAMIXEL_KINEMATICS_H_
 
-#include "dynamixel_sdk.h"
-
+#include "DynamixelUtil.hpp"
 #include "Hardware.hpp"
 
 class DynamixelKinematics: public hardware::Kinematics {
@@ -15,11 +14,8 @@ class DynamixelKinematics: public hardware::Kinematics {
     double get_joint_position(hardware::Joint joint);
 
   private:
-    dynamixel::PortHandler *port_handler;
-    dynamixel::PacketHandler *packet_handler;
-
-    bool write_byte(int id, int address, int value);
-    bool enable_torque(int id, bool enable);
+    DynamixelConnection* dynamixel_connection;
+    DynamixelXM430W350* dynamixel_XM430W350;
 };
 
 #endif  // NAMINUKAS_BRAIN_DYNAMIXEL_KINEMATICS_H_
