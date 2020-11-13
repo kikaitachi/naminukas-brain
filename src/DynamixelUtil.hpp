@@ -7,6 +7,16 @@
 
 #include "dynamixel_sdk.h"
 
+#define DYNAMIXEL_DRIVE_MODE_VELOCITY_BASED 0
+#define DYNAMIXEL_DRIVE_MODE_TIME_BASED 4
+
+#define DYNAMIXEL_OPERATING_MODE_CURRENT 0
+#define DYNAMIXEL_OPERATING_MODE_VELOCITY 1
+#define DYNAMIXEL_OPERATING_MODE_POSITION 3
+#define DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION 4
+#define DYNAMIXEL_OPERATING_MODE_CURRENT_BASED_POSITION 5
+#define DYNAMIXEL_OPERATING_MODE_PWM 16
+
 class DynamixelControlItem {
   public:
     int address, size;
@@ -24,6 +34,19 @@ class DynamixelModel {
     virtual DynamixelControlItem drive_mode() = 0;
     virtual DynamixelControlItem operating_mode() = 0;
     virtual DynamixelControlItem torque_enable() = 0;
+    virtual DynamixelControlItem goal_pwm() = 0;
+    virtual DynamixelControlItem goal_current() = 0;
+    virtual DynamixelControlItem goal_velocity() = 0;
+    virtual DynamixelControlItem profile_acceleration() = 0;
+    virtual DynamixelControlItem profile_velocity() = 0;
+    virtual DynamixelControlItem goal_position() = 0;
+    virtual DynamixelControlItem moving() = 0;
+    virtual DynamixelControlItem moving_status() = 0;
+    virtual DynamixelControlItem present_current() = 0;
+    virtual DynamixelControlItem present_velocity() = 0;
+    virtual DynamixelControlItem present_position() = 0;
+    virtual DynamixelControlItem voltage() = 0;
+    virtual DynamixelControlItem temperature() = 0;
 };
 
 class DynamixelXM430W350: public DynamixelModel {
@@ -31,6 +54,19 @@ class DynamixelXM430W350: public DynamixelModel {
     DynamixelControlItem drive_mode();
     DynamixelControlItem operating_mode();
     DynamixelControlItem torque_enable();
+    DynamixelControlItem goal_pwm();
+    DynamixelControlItem goal_current();
+    DynamixelControlItem goal_velocity();
+    DynamixelControlItem profile_acceleration();
+    DynamixelControlItem profile_velocity();
+    DynamixelControlItem goal_position();
+    DynamixelControlItem moving();
+    DynamixelControlItem moving_status();
+    DynamixelControlItem present_current();
+    DynamixelControlItem present_velocity();
+    DynamixelControlItem present_position();
+    DynamixelControlItem voltage();
+    DynamixelControlItem temperature();
 };
 
 class DynamixelConnection {

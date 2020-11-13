@@ -23,6 +23,58 @@ DynamixelControlItem DynamixelXM430W350::torque_enable() {
   return DynamixelControlItem(64, 1);
 }
 
+DynamixelControlItem DynamixelXM430W350::goal_pwm() {
+  return DynamixelControlItem(100, 2);
+}
+
+DynamixelControlItem DynamixelXM430W350::goal_current() {
+  return DynamixelControlItem(102, 2);
+}
+
+DynamixelControlItem DynamixelXM430W350::goal_velocity() {
+  return DynamixelControlItem(104, 4);
+}
+
+DynamixelControlItem DynamixelXM430W350::profile_acceleration() {
+  return DynamixelControlItem(108, 4);
+}
+
+DynamixelControlItem DynamixelXM430W350::profile_velocity() {
+  return DynamixelControlItem(112, 4);
+}
+
+DynamixelControlItem DynamixelXM430W350::goal_position() {
+  return DynamixelControlItem(116, 4);
+}
+
+DynamixelControlItem DynamixelXM430W350::moving() {
+  return DynamixelControlItem(122, 1);
+}
+
+DynamixelControlItem DynamixelXM430W350::moving_status() {
+  return DynamixelControlItem(123, 1);
+}
+
+DynamixelControlItem DynamixelXM430W350::present_current() {
+  return DynamixelControlItem(126, 2);
+}
+
+DynamixelControlItem DynamixelXM430W350::present_velocity() {
+  return DynamixelControlItem(128, 4);
+}
+
+DynamixelControlItem DynamixelXM430W350::present_position() {
+  return DynamixelControlItem(132, 4);
+}
+
+DynamixelControlItem DynamixelXM430W350::voltage() {
+  return DynamixelControlItem(144, 2);
+}
+
+DynamixelControlItem DynamixelXM430W350::temperature() {
+  return DynamixelControlItem(146, 1);
+}
+
 DynamixelConnection::DynamixelConnection(std::string device, float protocol, int baudrate) {
   port_handler = dynamixel::PortHandler::getPortHandler(device.c_str());
   if (port_handler->openPort()) {
