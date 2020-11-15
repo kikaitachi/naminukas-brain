@@ -122,14 +122,16 @@ bool DynamixelConnection::write(DynamixelControlItem item, std::vector<Dynamixel
     if (!group_sync_write.addParam(value.id, data)) {
       logger::error("Failed to add value %d for writing to addresss %d of Dynamixel with id %d",
         value.value, item.address, value.id);
+      return false;
     }
   }
   int dxl_comm_result = group_sync_write.txPacket();
   if (dxl_comm_result != COMM_SUCCESS) {
     logger::error("Sync write to address %d failed: %s",
       item.address, packet_handler->getTxRxResult(dxl_comm_result));
+    return false;
   }
-  group_sync_write.clearParam();
+  return true;
 }
 
 std::vector<int> DynamixelConnection::read(DynamixelControlItem item, std::vector<int> ids) {
