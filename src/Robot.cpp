@@ -36,6 +36,10 @@ class LocomotionTiltDrive: public Locomotion {
       kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
       kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
       kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
+      kinematics.set_joint_position({
+        { hardware::Joint::left_ankle, initial_ankle_angle + 5 },
+        { hardware::Joint::right_ankle, initial_ankle_angle - 5 },
+      });
     }
 
     void stop() {
@@ -66,6 +70,7 @@ class LocomotionTiltDrive: public Locomotion {
 
   private:
     const double max_rpm = 2.5;
+    const double initial_ankle_angle = 360.0 / 16;
 };
 
 /**
