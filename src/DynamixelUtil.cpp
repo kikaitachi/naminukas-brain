@@ -17,11 +17,11 @@ int DynamixelXM430W350::positions_per_rotation() {
 }
 
 int DynamixelXM430W350::rpm_to_value(double rpm) {
-  return round(rpm * 0.229);
+  return round(rpm / 0.229);
 }
 
 int DynamixelXM430W350::rpm2_to_value(double rpm2) {
-  return round(rpm2 * 214.577);
+  return round(rpm2 / 214.577);
 }
 
 DynamixelControlItem DynamixelXM430W350::drive_mode() {
@@ -111,7 +111,7 @@ DynamixelConnection::~DynamixelConnection() {
   delete port_handler;
 }
 
-bool DynamixelConnection::write(DynamixelControlItem item, std::initializer_list<DynamixelControlValue> values) {
+bool DynamixelConnection::write(DynamixelControlItem item, std::vector<DynamixelControlValue> values) {
   dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler, item.address, item.size);
   for (auto& value : values) {
     uint8_t data[4];
@@ -132,7 +132,7 @@ bool DynamixelConnection::write(DynamixelControlItem item, std::initializer_list
   group_sync_write.clearParam();
 }
 
-std::vector<int> DynamixelConnection::read(DynamixelControlItem item, std::initializer_list<int> ids) {
+std::vector<int> DynamixelConnection::read(DynamixelControlItem item, std::vector<int> ids) {
   std::vector<int> result(ids.size());
   dynamixel::GroupSyncRead group_sync_read(port_handler, packet_handler, item.address, item.size);
   for (auto& id : ids) {

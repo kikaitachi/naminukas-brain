@@ -1,7 +1,6 @@
 #ifndef NAMINUKAS_BRAIN_DYNAMIXEL_UTIL_H_
 #define NAMINUKAS_BRAIN_DYNAMIXEL_UTIL_H_
 
-#include <initializer_list>
 #include <string>
 #include <vector>
 
@@ -81,8 +80,8 @@ class DynamixelConnection {
   public:
     DynamixelConnection(std::string device, float protocol, int baudrate);
     ~DynamixelConnection();
-    bool write(DynamixelControlItem item, std::initializer_list<DynamixelControlValue> values);
-    std::vector<int> read(DynamixelControlItem item, std::initializer_list<int> ids);
+    bool write(DynamixelControlItem item, std::vector<DynamixelControlValue> values);
+    std::vector<int> read(DynamixelControlItem item, std::vector<int> ids);
 
   private:
     dynamixel::PortHandler *port_handler;

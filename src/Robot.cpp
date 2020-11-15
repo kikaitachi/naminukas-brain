@@ -38,6 +38,29 @@ class LocomotionTiltDrive: public Locomotion {
       kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
     }
 
+    void stop() {
+      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
+    }
+
+    void up() {
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 2.5 }, { hardware::Joint::right_wheel, 2.5 } });
+    }
+
+    void down() {
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
+    }
+
+    void left() {
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 2.5 }, { hardware::Joint::right_wheel, -2.5 } });
+    }
+
+    void right() {
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -2.5 }, { hardware::Joint::right_wheel, 2.5 } });
+    }
+
   protected:
     hardware::Kinematics& kinematics;
 };
