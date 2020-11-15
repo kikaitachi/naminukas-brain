@@ -30,13 +30,13 @@ BeagleBoneBlueIMU::~BeagleBoneBlueIMU() {
 }
 
 double BeagleBoneBlueIMU::yaw() {
-  //
+  return mpu_data.dmp_TaitBryan[TB_YAW_Z] * RAD_TO_DEG;
 }
 
 double BeagleBoneBlueIMU::pitch() {
-  //
+  return mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
 }
 
 double BeagleBoneBlueIMU::roll() {
-  //
+  return mpu_data.dmp_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
 }
