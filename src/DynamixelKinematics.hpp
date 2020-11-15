@@ -9,7 +9,7 @@ class DynamixelKinematics: public hardware::Kinematics {
     DynamixelKinematics();
     ~DynamixelKinematics();
     void set_joint_control_mode(hardware::Joint joint, hardware::JointControlMode mode, double max_acceleration, double max_rpm, double millis);
-    void set_joint_position(hardware::Joint joint, double degrees);
+    void set_joint_position(std::vector<hardware::JointPosition> positions);
     void set_joint_speed(std::vector<hardware::JointSpeed> speeds);
     double get_joint_position(hardware::Joint joint);
 

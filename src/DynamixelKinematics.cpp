@@ -65,10 +65,12 @@ void DynamixelKinematics::set_joint_control_mode(
   }
 }
 
-void DynamixelKinematics::set_joint_position(hardware::Joint joint, double degrees) {
-  int id = joint2id(joint);
-  dynamixel_connection->write(dynamixel_XM430W350->goal_position(),
-    { { id, (int)round(degrees * dynamixel_XM430W350->positions_per_rotation() / 360.0) } });
+void DynamixelKinematics::set_joint_position(std::vector<hardware::JointPosition> positions) {
+  std::vector<DynamixelControlValue> values;
+  for (auto& position : positions) {
+    values.push_back({ joint2id(position.joint), (int)round(position.degrees * dynamixel_XM430W350->positions_per_rotation() / 360.0) });
+  }
+  dynamixel_connection->write(dynamixel_XM430W350->goal_position(), values);
 }
 
 void DynamixelKinematics::set_joint_speed(std::vector<hardware::JointSpeed> speeds) {
