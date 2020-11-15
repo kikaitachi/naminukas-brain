@@ -89,7 +89,7 @@ class LocomotionTiltDrive: public Locomotion {
     hardware::Kinematics& kinematics;
 
   private:
-    const double max_rpm = 5;
+    const double max_rpm = 20;
     const double initial_ankle_angle = 360.0 / 16;
 };
 
