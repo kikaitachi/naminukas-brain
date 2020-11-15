@@ -1,14 +1,11 @@
+#include <cmath>
+
 #include "DynamixelKinematics.hpp"
 #include "Logger.hpp"
 
 #define DEVICENAME "/dev/ttyUSB0"
 #define PROTOCOL_VERSION 2.0
 #define BAUDRATE 4000000
-
-#define POSITIONS_PER_RPM 4096
-
-#define ACCELERATION 214.577 // rev/min^2
-#define VELOCITY 0.229 // rev/min
 
 static int joint2id(hardware::Joint joint) {
   switch (joint) {
@@ -69,7 +66,9 @@ void DynamixelKinematics::set_joint_control_mode(
 }
 
 void DynamixelKinematics::set_joint_position(hardware::Joint joint, double degrees) {
-  // TODO: implement
+  int id = joint2id(joint);
+  dynamixel_connection->write(dynamixel_XM430W350->goal_position(),
+    { { id, (int)round(degrees * dynamixel_XM430W350->positions_per_rotation() / 360.0) } });
 }
 
 void DynamixelKinematics::set_joint_speed(hardware::Joint joint, double rpm) {

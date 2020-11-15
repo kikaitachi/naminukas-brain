@@ -1,4 +1,5 @@
 #include <climits>
+#include <cmath>
 
 #include "DynamixelUtil.hpp"
 #include "Logger.hpp"
@@ -9,6 +10,18 @@ DynamixelControlItem::DynamixelControlItem(int address, int size)
 
 DynamixelControlValue::DynamixelControlValue(int id, int value)
     : id(id), value(value) {
+}
+
+int DynamixelXM430W350::positions_per_rotation() {
+  return 4096;
+}
+
+int DynamixelXM430W350::rpm_to_value(double rpm) {
+  return round(rpm * 0.229);
+}
+
+int DynamixelXM430W350::rpm2_to_value(double rpm2) {
+  return round(rpm2 * 214.577);
 }
 
 DynamixelControlItem DynamixelXM430W350::drive_mode() {
