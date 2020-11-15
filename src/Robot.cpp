@@ -46,23 +46,26 @@ class LocomotionTiltDrive: public Locomotion {
     }
 
     void up() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 2.5 }, { hardware::Joint::right_wheel, 2.5 } });
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
     }
 
     void down() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
     }
 
     void left() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 2.5 }, { hardware::Joint::right_wheel, -2.5 } });
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
     }
 
     void right() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -2.5 }, { hardware::Joint::right_wheel, 2.5 } });
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
     }
 
   protected:
     hardware::Kinematics& kinematics;
+
+  private:
+    const double max_rpm = 2.5;
 };
 
 /**
