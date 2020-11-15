@@ -93,7 +93,7 @@ namespace telemetry {
 
   // ItemCommand ***************************************************************
 
-  ItemCommand::ItemCommand(int parent_id, std::string name, std::string value, std::function<void()> action) :
+  ItemCommand::ItemCommand(int parent_id, std::string name, std::string value, std::function<void(int value)> action) :
       Item(parent_id, TYPE_ACTION, name), value(value), action(action) {
   }
 
@@ -103,7 +103,9 @@ namespace telemetry {
   }
 
   void ItemCommand::deserialize_value(void **buf, int *buf_len) {
-    this->action();
+    int value;
+    message::read_int(buf, buf_len, &value);
+    this->action(value);
   }
 
   // ItemSTL *******************************************************************

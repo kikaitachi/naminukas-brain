@@ -37,8 +37,8 @@ class LocomotionTiltDrive: public Locomotion {
       kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
       kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
       kinematics.set_joint_position({
-        { hardware::Joint::left_ankle, initial_ankle_angle + 5 },
-        { hardware::Joint::right_ankle, initial_ankle_angle - 5 },
+        { hardware::Joint::left_ankle, initial_ankle_angle + 10 },
+        { hardware::Joint::right_ankle, initial_ankle_angle - 10 },
       });
     }
 
@@ -49,27 +49,47 @@ class LocomotionTiltDrive: public Locomotion {
       kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
     }
 
-    void up() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    void halt() {
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
     }
 
-    void down() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+    void up(bool key_down) {
+      if (key_down) {
+        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+      } else {
+        halt();
+      }
     }
 
-    void left() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+    void down(bool key_down) {
+      if (key_down) {
+        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+      } else {
+        halt();
+      }
     }
 
-    void right() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    void left(bool key_down) {
+      if (key_down) {
+        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+      } else {
+        halt();
+      }
+    }
+
+    void right(bool key_down) {
+      if (key_down) {
+        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+      } else {
+        halt();
+      }
     }
 
   protected:
     hardware::Kinematics& kinematics;
 
   private:
-    const double max_rpm = 2.5;
+    const double max_rpm = 5;
     const double initial_ankle_angle = 360.0 / 16;
 };
 
@@ -102,13 +122,15 @@ std::mutex Robot::stateMutex;
 
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
   telemetryItems.add_item(new telemetry::ItemCommand(
-    mode->getId(), locomotion->name(), key, [=]() {
-      logger::debug("Stopping locomotion: %s", current_locomotion_mode->name().c_str());
-      current_locomotion_mode->stop();
-      current_locomotion_mode = locomotion;
-      logger::debug("Starting locomotion: %s", current_locomotion_mode->name().c_str());
-      current_locomotion_mode->start();
-      mode->update(current_locomotion_mode->name());
+    mode->getId(), locomotion->name(), key, [=](int value) {
+      if (value == 1) {
+        logger::debug("Stopping locomotion: %s", current_locomotion_mode->name().c_str());
+        current_locomotion_mode->stop();
+        current_locomotion_mode = locomotion;
+        logger::debug("Starting locomotion: %s", current_locomotion_mode->name().c_str());
+        current_locomotion_mode->start();
+        mode->update(current_locomotion_mode->name());
+      }
     }));
 }
 
@@ -167,26 +189,26 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   telemetryItems.add_item(caterpillar);*/
 
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
-    mode->getId(), "Up", "ArrowUp", [&]() {
-      current_locomotion_mode->up();
+    mode->getId(), "Up", "ArrowUp", [&](int value) {
+      current_locomotion_mode->up(value == 1);
     });
   telemetryItems.add_item(up);
 
   telemetry::ItemCommand* down = new telemetry::ItemCommand(
-    mode->getId(), "Down", "ArrowDown", [&]() {
-      current_locomotion_mode->down();
+    mode->getId(), "Down", "ArrowDown", [&](int value) {
+      current_locomotion_mode->down(value == 1);
     });
   telemetryItems.add_item(down);
 
   telemetry::ItemCommand* left = new telemetry::ItemCommand(
-    mode->getId(), "Left", "ArrowLeft", [&]() {
-      current_locomotion_mode->left();
+    mode->getId(), "Left", "ArrowLeft", [&](int value) {
+      current_locomotion_mode->left(value == 1);
     });
   telemetryItems.add_item(left);
 
   telemetry::ItemCommand* right = new telemetry::ItemCommand(
-    mode->getId(), "Right", "ArrowRight", [&]() {
-      current_locomotion_mode->right();
+    mode->getId(), "Right", "ArrowRight", [&](int value) {
+      current_locomotion_mode->right(value == 1);
     });
   telemetryItems.add_item(right);
 
