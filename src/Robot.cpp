@@ -136,6 +136,8 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
 
 Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics) :
     telemetryItems(telemetryItems), imu(imu), kinematics(kinematics) {
+  model = new Model(telemetryItems);
+
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
   LocomotionTiltDrive* locomotion_tilt_drive = new LocomotionTiltDrive(kinematics);
   LocomotionSki* locomotion_ski = new LocomotionSki(kinematics);
@@ -211,15 +213,11 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
       current_locomotion_mode->right(value == 1);
     });
   telemetryItems.add_item(right);
+}
 
-  telemetry::ItemString* parts = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Parts", "2");
-  telemetryItems.add_item(parts);
-
-  telemetry::ItemSTL* left_foot = new telemetry::ItemSTL(parts->getId(), "Left foot", "../model/suction-cup-connector.stl");
-  telemetryItems.add_item(left_foot);
-
-  telemetry::ItemSTL* right_foot = new telemetry::ItemSTL(parts->getId(), "Right foot", "../model/suction-cup-connector.stl");
-  telemetryItems.add_item(right_foot);
+Robot::~Robot() {
+  delete model;
+  // TODO: delete locomotion modes
 }
 
 void Robot::lockState() {

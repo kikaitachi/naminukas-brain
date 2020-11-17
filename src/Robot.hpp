@@ -6,11 +6,13 @@
 #include "Hardware.hpp"
 #include "IMU.hpp"
 #include "Locomotion.hpp"
+#include "Model.hpp"
 #include "Telemetry.hpp"
 
 class Robot {
   public:
     Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics);
+    ~Robot();
     static void lockState();
     static void unlockState();
 
@@ -21,6 +23,7 @@ class Robot {
     telemetry::Items& telemetryItems;
     telemetry::ItemString* mode;
     Locomotion* current_locomotion_mode;
+    Model* model;
 
     void add_locomotion(Locomotion* locomotion, std::string key);
 };
