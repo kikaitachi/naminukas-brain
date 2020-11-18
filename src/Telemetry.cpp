@@ -125,17 +125,26 @@ namespace telemetry {
     file.read((char *)*buf, size);
     *buf = ((char *)*buf) + size;
     *buf_len -= size;
-    for (auto& transform : transforms) {
-      message::write_int(buf, buf_len, transform.type);
-      message::write_int(buf, buf_len, transform.axis);
-      message::write_double(buf, buf_len, transform.value);
-    }
+    serialize_transforms(buf, buf_len);
+  }
+
+  void ItemSTL::serialize_value(void **buf, int *buf_len) {
+    Item::serialize_value(buf, buf_len);
+    serialize_transforms(buf, buf_len);
   }
 
   void ItemSTL::update(std::vector<Transform> transforms) {
     this->transforms = transforms;
     for (auto change_listener : change_listeners) {
       change_listener(*this);
+    }
+  }
+
+  void ItemSTL::serialize_transforms(void **buf, int *buf_len) {
+    for (auto& transform : transforms) {
+      message::write_int(buf, buf_len, transform.type);
+      message::write_int(buf, buf_len, transform.axis);
+      message::write_double(buf, buf_len, transform.value);
     }
   }
 

@@ -64,6 +64,7 @@ namespace telemetry {
       ItemCommand(int parent_id, std::string name, std::string value, std::function<void(int value)> action);
       void serialize_definition(void **buf, int *buf_len);
       void deserialize_value(void **buf, int *buf_len);
+
     private:
       std::string value;
       std::function<void(int)> action;
@@ -73,10 +74,14 @@ namespace telemetry {
     public:
       ItemSTL(int parent_id, std::string name, std::string file_name, std::vector<Transform> transforms);
       void serialize_definition(void **buf, int *buf_len);
+      void serialize_value(void **buf, int *buf_len);
       void update(std::vector<Transform> transforms);
+
     private:
       std::string file_name;
       std::vector<Transform> transforms;
+
+      void serialize_transforms(void **buf, int *buf_len);
   };
 
   class Items {
