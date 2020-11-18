@@ -2,7 +2,9 @@
 
 ![Last build result](https://github.com/kikaitachi/naminukas-robot/workflows/CI/badge.svg)
 
-THIS REPOSITORY IS FOR TESTING ONLY, THERE IS NOTHING USEFULL INSIDE YET!
+Software running on naminukas robot.
+
+For remote control software see [kikaitachi-ui project](https://github.com/kikaitachi/kikaitachi-ui).
 
 ## Coding style
 
