@@ -1,4 +1,6 @@
+#include <cmath>
 #include <cstring>
+#include <string>
 #include "Logger.hpp"
 #include "Message.hpp"
 
@@ -86,7 +88,26 @@ namespace message {
   }
 
   int write_double(void **buf, int *buf_len, double value) {
-  	return write_data(buf, buf_len, &value, 8);
+    int sign = value < 0 ? -1 : 1;
+    std::string s = std::to_string(fabs(value));
+    //logger::debug("String: %s", s.c_str());
+    size_t index = s.find('.');
+    int numerator;
+    int denominator = 1;
+    if (index == std::string::npos) {
+      numerator = value;
+    } else {
+      s.erase(index, 1);
+      while (index < s.length()) {
+        denominator *= 10;
+        index++;
+      }
+      numerator = std::stoi(s);
+    }
+    // TODO: optimize no to send 0/1000000 or 75000000/1000000
+    //logger::debug("String: %s, ratio %d/%d", s.c_str(), numerator, denominator);
+    write_int(buf, buf_len, numerator * sign);
+    return write_int(buf, buf_len, denominator);
   }
 
   int read_double(void **buf, int *buf_len, double *value) {
