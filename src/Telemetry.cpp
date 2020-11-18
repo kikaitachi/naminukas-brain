@@ -132,6 +132,13 @@ namespace telemetry {
     }
   }
 
+  void ItemSTL::update(std::vector<Transform> transforms) {
+    this->transforms = transforms;
+    for (auto change_listener : change_listeners) {
+      change_listener(*this);
+    }
+  }
+
   // Items *********************************************************************
 
   Item* Items::add_item(Item* item) {

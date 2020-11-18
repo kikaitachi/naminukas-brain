@@ -73,6 +73,7 @@ namespace telemetry {
     public:
       ItemSTL(int parent_id, std::string name, std::string file_name, std::vector<Transform> transforms);
       void serialize_definition(void **buf, int *buf_len);
+      void update(std::vector<Transform> transforms);
     private:
       std::string file_name;
       std::vector<Transform> transforms;
