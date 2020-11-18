@@ -44,6 +44,7 @@ add_executable(naminukas
   src/Locomotion.cpp
   src/BeagleBoneBlueIMU.cpp
   src/Model.cpp
+  src/Transform.cpp
   ${DynamixelSDK_SRC}
 )
 

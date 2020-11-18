@@ -5,6 +5,9 @@
 #include <list>
 #include <map>
 #include <string>
+#include <vector>
+
+#include "Transform.hpp"
 
 namespace telemetry {
   const int TYPE_INT = 0;
@@ -68,14 +71,11 @@ namespace telemetry {
 
   class ItemSTL: public Item {
     public:
-      ItemSTL(int parent_id, std::string name, std::string file_name,
-        double rot_x, double rot_y, double rot_z,
-        double pos_x, double pos_y, double pos_z);
+      ItemSTL(int parent_id, std::string name, std::string file_name, std::vector<Transform> transforms);
       void serialize_definition(void **buf, int *buf_len);
     private:
       std::string file_name;
-      double rot_x, rot_y, rot_z;
-      double pos_x, pos_y, pos_z;
+      std::vector<Transform> transforms;
   };
 
   class Items {

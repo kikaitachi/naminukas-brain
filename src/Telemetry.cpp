@@ -110,12 +110,9 @@ namespace telemetry {
 
   // ItemSTL *******************************************************************
 
-  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name,
-        double rot_x, double rot_y, double rot_z,
-        double pos_x, double pos_y, double pos_z) :
+  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name, std::vector<Transform> transforms) :
       Item(parent_id, TYPE_STL, name), file_name(file_name),
-      rot_x(rot_x), rot_y(rot_y), rot_z(rot_z),
-      pos_x(pos_x), pos_y(pos_y), pos_z(pos_z) {
+      transforms(transforms) {
   }
 
   void ItemSTL::serialize_definition(void **buf, int *buf_len) {
@@ -128,12 +125,11 @@ namespace telemetry {
     file.read((char *)*buf, size);
     *buf = ((char *)*buf) + size;
     *buf_len -= size;
-    message::write_double(buf, buf_len, rot_x);
-    message::write_double(buf, buf_len, rot_y);
-    message::write_double(buf, buf_len, rot_z);
-    message::write_double(buf, buf_len, pos_x);
-    message::write_double(buf, buf_len, pos_y);
-    message::write_double(buf, buf_len, pos_z);
+    for (auto& transform : transforms) {
+      message::write_int(buf, buf_len, transform.type);
+      message::write_int(buf, buf_len, transform.axis);
+      message::write_double(buf, buf_len, transform.value);
+    }
   }
 
   // Items *********************************************************************

@@ -6,12 +6,12 @@ Model::Model(telemetry::Items& telemetryItems) {
 
   telemetry::ItemSTL* left_foot = new telemetry::ItemSTL(parts->getId(),
     "Left foot", "../model/suction-cup-connector.stl",
-    0, 0, 0, -75, 0, 0);
+    { { TRANSFORM_TYPE_MOVE, 0, -75 } });
   telemetryItems.add_item(left_foot);
 
   telemetry::ItemSTL* right_foot = new telemetry::ItemSTL(parts->getId(),
     "Right foot", "../model/suction-cup-connector.stl",
-    0, 0, 0, 75, 0, 0);
+    { { TRANSFORM_TYPE_MOVE, 0, 75 } });
   telemetryItems.add_item(right_foot);
 }
 
