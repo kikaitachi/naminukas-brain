@@ -1,6 +1,7 @@
 #ifndef NAMINUKAS_BRAIN_DYNAMIXEL_UTIL_H_
 #define NAMINUKAS_BRAIN_DYNAMIXEL_UTIL_H_
 
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -86,6 +87,8 @@ class DynamixelConnection {
   private:
     dynamixel::PortHandler *port_handler;
     dynamixel::PacketHandler *packet_handler;
+    std::mutex mutex;
+
 };
 
 #endif  // NAMINUKAS_BRAIN_DYNAMIXEL_UTIL_H_

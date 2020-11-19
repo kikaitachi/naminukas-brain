@@ -118,8 +118,6 @@ class LocomotionSki: public Locomotion {
     hardware::Kinematics& kinematics;
 };
 
-std::mutex Robot::stateMutex;
-
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
   telemetryItems.add_item(new telemetry::ItemCommand(
     mode->getId(), locomotion->name(), key, [=](int value) {
@@ -218,12 +216,4 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
 Robot::~Robot() {
   delete model;
   // TODO: delete locomotion modes
-}
-
-void Robot::lockState() {
-  stateMutex.lock();
-}
-
-void Robot::unlockState() {
-  stateMutex.unlock();
 }
