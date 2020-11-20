@@ -7,6 +7,7 @@
 #include "Logger.hpp"
 #include "IOServer.hpp"
 #include "WebSocket.hpp"
+#include "PointCloud.hpp"
 #include "Robot.hpp"
 #include "Message.hpp"
 #include "Telemetry.hpp"
@@ -81,6 +82,8 @@ int main(int argc, const char *argv[]) {
       client->changed_telemetry_item_ids.insert(item.getId());
     }
   });
+
+  PointCloud point_cloud(&is_terminated);
 
   Robot robot(telemetryItems, imu, dynamixelKinematics);
 

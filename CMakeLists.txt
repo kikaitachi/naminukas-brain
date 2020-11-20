@@ -47,6 +47,7 @@ add_executable(naminukas
   src/BeagleBoneBlueIMU.cpp
   src/Model.cpp
   src/Transform.cpp
+  src/PointCloud.cpp
   ${DynamixelSDK_SRC}
 )
 
