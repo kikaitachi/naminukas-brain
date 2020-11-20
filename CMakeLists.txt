@@ -29,6 +29,8 @@ find_package(Threads)
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 
+find_package(realsense2 REQUIRED)
+
 add_executable(naminukas
   src/main.cpp
   src/Logger.cpp
@@ -48,8 +50,9 @@ add_executable(naminukas
   ${DynamixelSDK_SRC}
 )
 
-target_link_libraries(naminukas
+target_link_libraries(${PROJECT_NAME}
   robotics_cape
   Threads::Threads
   OpenSSL::Crypto
+  ${realsense2_LIBRARY}
 )
