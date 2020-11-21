@@ -51,9 +51,9 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
       rs2_config* config = rs2_create_config(&e);
       check_error(e);
 
-      rs2_config_enable_stream(config, DEPTH_STREAM, DEPTH_STREAM_INDEX, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FORMAT, DEPTH_FPS, &e);
-      check_error(e);
       rs2_config_enable_stream(config, RGB_STREAM, RGB_STREAM_INDEX, RGB_WIDTH, RGB_HEIGHT, RGB_FORMAT, RGB_FPS, &e);
+      check_error(e);
+      rs2_config_enable_stream(config, DEPTH_STREAM, DEPTH_STREAM_INDEX, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FORMAT, DEPTH_FPS, &e);
       check_error(e);
 
       rs2_pipeline_profile* pipeline_profile = rs2_pipeline_start_with_config(pipeline, config, &e);
@@ -74,28 +74,26 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
             rs2_frame* frame = rs2_extract_frame(frames, i, &e);
             check_error(e);
 
+            // Get the depth frame's dimensions
+            int width = rs2_get_frame_width(frame, &e);
+            check_error(e);
+            int height = rs2_get_frame_height(frame, &e);
+            check_error(e);
+
             // Check if the given frame can be extended to depth frame interface
             // Accept only depth frames and skip other frames
             if (0 == rs2_is_frame_extendable_to(frame, RS2_EXTENSION_DEPTH_FRAME, &e)) {
-              logger::warn("Not depth frame received");
+              pc.map_to(frame);
+              logger::warn("Not depth frame %dx%d received", width, height);
             } else {
-              // Get the depth frame's dimensions
-              int width = rs2_get_frame_width(frame, &e);
-              check_error(e);
-              int height = rs2_get_frame_height(frame, &e);
-              check_error(e);
-              logger::debug("Frame dimensions: %dx%d", width, height);
-
-              //rs2::points points = pc.calculate(frame);
-              //logger::debug("Got %d points", points.size());
+              rs2::points points = pc.calculate(frame);
+              logger::debug("Got %d points for frame %dx%d", points.size(), width, height);
             }
             rs2_release_frame(frame);
           }
+
           rs2_release_frame(frames);
         }
-        /*auto frames = pipe.wait_for_frames();
-          auto depth = frames.get_depth_frame();
-          */
       }
 
       rs2_pipeline_stop(pipeline, &e);
