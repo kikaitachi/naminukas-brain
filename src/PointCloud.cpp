@@ -19,7 +19,7 @@ static void check_error(rs2_error* e) {
 #define DEPTH_STREAM_INDEX -1
 
 #define RGB_STREAM       RS2_STREAM_COLOR
-#define RGB_FORMAT       RS2_FORMAT_BGR8
+#define RGB_FORMAT       RS2_FORMAT_RGB8
 #define RGB_WIDTH        424
 #define RGB_HEIGHT       240
 #define RGB_FPS          6
@@ -68,7 +68,7 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
 
           int num_of_frames = rs2_embedded_frames_count(frames, &e);
 		      check_error(e);
-          logger::debug("Got %d frames", num_of_frames);
+          //logger::debug("Got %d frames", num_of_frames);
 
           for (int i = 0; i < num_of_frames; i++)	{
             rs2_frame* frame = rs2_extract_frame(frames, i, &e);
@@ -84,10 +84,24 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
             // Accept only depth frames and skip other frames
             if (0 == rs2_is_frame_extendable_to(frame, RS2_EXTENSION_DEPTH_FRAME, &e)) {
               //pc.map_to(frame);
-              logger::warn("Not depth frame %dx%d received", width, height);
+              unsigned char* color = (unsigned char*)rs2_get_frame_data(frame, &e);
+              check_error(e);
+
+              int frame_date_size = rs2_get_frame_data_size(frame, &e);
+              check_error(e);
+
+              int middle = width * 3 * (height / 2) + width / 2 * 3;
+              int r = color[middle];
+              int g = color[middle + 1];
+              int b = color[middle + 2];
+              logger::warn("Color of the center of frame %dx%d (%d bytes): %d, %d, %d", width, height, frame_date_size, r, g, b);
             } else {
               //rs2::points points = pc.calculate(frame);
-              logger::debug("Got %d points for frame %dx%d", 0/*points.size()*/, width, height);
+              //logger::debug("Got %d points for frame %dx%d", points.size(), width, height);
+              float dist_to_center = rs2_depth_frame_get_distance(frame, width / 2, height / 2, &e);
+		          check_error(e);
+
+              logger::debug("Distance to center of frame %dx%d: %fm", width, height, dist_to_center);
             }
             rs2_release_frame(frame);
           }
