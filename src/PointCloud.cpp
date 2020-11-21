@@ -11,12 +11,19 @@ static void check_error(rs2_error* e) {
 	}
 }
 
-#define STREAM       RS2_STREAM_DEPTH
-#define FORMAT       RS2_FORMAT_Z16
-#define WIDTH        480
-#define HEIGHT       270
-#define FPS          6
-#define STREAM_INDEX 0
+#define DEPTH_STREAM       RS2_STREAM_DEPTH
+#define DEPTH_FORMAT       RS2_FORMAT_Z16
+#define DEPTH_WIDTH        480
+#define DEPTH_HEIGHT       270
+#define DEPTH_FPS          6
+#define DEPTH_STREAM_INDEX -1
+
+#define RGB_STREAM       RS2_STREAM_COLOR
+#define RGB_FORMAT       RS2_FORMAT_BGR8
+#define RGB_WIDTH        424
+#define RGB_HEIGHT       240
+#define RGB_FPS          6
+#define RGB_STREAM_INDEX -1
 
 PointCloud::PointCloud(std::function<bool()> is_terminated) {
   std::thread video_thread([=]() {
@@ -44,7 +51,9 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
       rs2_config* config = rs2_create_config(&e);
       check_error(e);
 
-      rs2_config_enable_stream(config, STREAM, STREAM_INDEX, WIDTH, HEIGHT, FORMAT, FPS, &e);
+      rs2_config_enable_stream(config, DEPTH_STREAM, DEPTH_STREAM_INDEX, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FORMAT, DEPTH_FPS, &e);
+      check_error(e);
+      rs2_config_enable_stream(config, RGB_STREAM, RGB_STREAM_INDEX, RGB_WIDTH, RGB_HEIGHT, RGB_FORMAT, RGB_FPS, &e);
       check_error(e);
 
       rs2_pipeline_profile* pipeline_profile = rs2_pipeline_start_with_config(pipeline, config, &e);
@@ -59,17 +68,16 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
 
           int num_of_frames = rs2_embedded_frames_count(frames, &e);
 		      check_error(e);
+          logger::debug("Got %d frames", num_of_frames);
 
           for (int i = 0; i < num_of_frames; i++)	{
-            // The retunred object should be released with rs2_release_frame(...)
             rs2_frame* frame = rs2_extract_frame(frames, i, &e);
             check_error(e);
-            //logger::debug("Extracted frame: %d/%d", i + 1, num_of_frames);
 
             // Check if the given frame can be extended to depth frame interface
             // Accept only depth frames and skip other frames
             if (0 == rs2_is_frame_extendable_to(frame, RS2_EXTENSION_DEPTH_FRAME, &e)) {
-              logger::warn("Frame is not depth frame");
+              logger::warn("Not depth frame received");
             } else {
               // Get the depth frame's dimensions
               int width = rs2_get_frame_width(frame, &e);
@@ -77,6 +85,9 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
               int height = rs2_get_frame_height(frame, &e);
               check_error(e);
               logger::debug("Frame dimensions: %dx%d", width, height);
+
+              //rs2::points points = pc.calculate(frame);
+              //logger::debug("Got %d points", points.size());
             }
             rs2_release_frame(frame);
           }
@@ -84,8 +95,7 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
         }
         /*auto frames = pipe.wait_for_frames();
           auto depth = frames.get_depth_frame();
-          rs2::points points = pc.calculate(depth);
-          logger::debug("Got %d points", points.size());*/
+          */
       }
 
       rs2_pipeline_stop(pipeline, &e);
