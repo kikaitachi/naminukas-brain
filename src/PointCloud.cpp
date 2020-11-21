@@ -86,7 +86,7 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
               //pc.map_to(frame);
               logger::warn("Not depth frame %dx%d received", width, height);
             } else {
-              rs2::points points = pc.calculate(frame);
+              //rs2::points points = pc.calculate(frame);
               logger::debug("Got %d points for frame %dx%d", points.size(), width, height);
             }
             rs2_release_frame(frame);
