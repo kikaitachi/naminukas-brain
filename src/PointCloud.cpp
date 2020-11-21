@@ -83,7 +83,7 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
             // Check if the given frame can be extended to depth frame interface
             // Accept only depth frames and skip other frames
             if (0 == rs2_is_frame_extendable_to(frame, RS2_EXTENSION_DEPTH_FRAME, &e)) {
-              pc.map_to(frame);
+              //pc.map_to(frame);
               logger::warn("Not depth frame %dx%d received", width, height);
             } else {
               rs2::points points = pc.calculate(frame);
