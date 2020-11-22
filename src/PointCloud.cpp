@@ -1,15 +1,10 @@
+#include <limits>
+#include <cmath>
 #include <thread>
 #include <librealsense2/rs.hpp>
 
 #include "Logger.hpp"
 #include "PointCloud.hpp"
-
-static void check_error(rs2_error* e) {
-	if (e) {
-		logger::error("rs_error was raised when calling %s(%s): %s",
-			rs2_get_failed_function(e), rs2_get_failed_args(e), rs2_get_error_message(e));
-	}
-}
 
 #define DEPTH_STREAM       RS2_STREAM_DEPTH
 #define DEPTH_FORMAT       RS2_FORMAT_Z16
@@ -25,103 +20,104 @@ static void check_error(rs2_error* e) {
 #define RGB_FPS          6
 #define RGB_STREAM_INDEX -1
 
+std::tuple<int, int, int> get_rgb(rs2::video_frame frame, rs2::texture_coordinate texture_coordinates) {
+    int width  = frame.get_width();  // Frame width in pixels
+    int height = frame.get_height(); // Frame height in pixels
+
+    // Normals to Texture Coordinates conversion
+    int x_value = std::min(std::max(int(texture_coordinates.u * width  + .5f), 0), width - 1);
+    int y_value = std::min(std::max(int(texture_coordinates.v * height + .5f), 0), height - 1);
+
+    int bytes = x_value * frame.get_bytes_per_pixel();   // Get # of bytes per pixel
+    int strides = y_value * frame.get_stride_in_bytes(); // Get line width in bytes
+    int index =  (bytes + strides);
+
+    const auto texture = reinterpret_cast<const uint8_t*>(frame.get_data());
+
+    int r = texture[index];
+    int g = texture[index + 1];
+    int b = texture[index + 2];
+
+    return std::tuple<int, int, int>(r, g, b);
+}
+
 PointCloud::PointCloud(std::function<bool()> is_terminated) {
   std::thread video_thread([=]() {
     rs2_error* e = NULL;
 
-    rs2_context* ctx = rs2_create_context(RS2_API_VERSION, &e);
-    check_error(e);
+    rs2::context ctx;
 
-    rs2_device_list* device_list = rs2_query_devices(ctx, &e);
-    check_error(e);
+    rs2::device_list device_list = ctx.query_devices();
 
-    int dev_count = rs2_get_device_count(device_list, &e);
-    check_error(e);
-    if (dev_count > 0) {
-      rs2_device* dev = rs2_create_device(device_list, 0, &e);
-      check_error(e);
+    if (device_list.size() > 0) {
+      rs2::device dev = device_list[0];
 
-      const char* camera_name = rs2_get_device_info(dev, RS2_CAMERA_INFO_NAME, &e);
-      check_error(e);
-      logger::info("Using RealSense device 0: %s", camera_name);
+      logger::info("Using RealSense device 0: %s", dev.get_info(RS2_CAMERA_INFO_NAME));
 
-      rs2_pipeline* pipeline = rs2_create_pipeline(ctx, &e);
-      check_error(e);
+      rs2::pipeline pipeline(ctx);
 
-      rs2_config* config = rs2_create_config(&e);
-      check_error(e);
+      rs2::config config;
 
-      rs2_config_enable_stream(config, RGB_STREAM, RGB_STREAM_INDEX, RGB_WIDTH, RGB_HEIGHT, RGB_FORMAT, RGB_FPS, &e);
-      check_error(e);
-      rs2_config_enable_stream(config, DEPTH_STREAM, DEPTH_STREAM_INDEX, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FORMAT, DEPTH_FPS, &e);
-      check_error(e);
-
-      rs2_pipeline_profile* pipeline_profile = rs2_pipeline_start_with_config(pipeline, config, &e);
-      check_error(e);
+      config.enable_stream(RGB_STREAM, RGB_STREAM_INDEX, RGB_WIDTH, RGB_HEIGHT, RGB_FORMAT, RGB_FPS);
+      config.enable_stream(DEPTH_STREAM, DEPTH_STREAM_INDEX, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FORMAT, DEPTH_FPS);
 
       rs2::pointcloud pc;
 
+      pipeline.start(config);
+
       while (!is_terminated()) {
-        rs2_frame* frames = NULL;
-        if (rs2_pipeline_try_wait_for_frames(pipeline, &frames, 1000000, &e)) {
-          check_error(e);
+        rs2::frameset frameset;
+        if (pipeline.try_wait_for_frames(&frameset, 1000000)) {
+          auto color_frame = frameset.get_color_frame();
+          auto depth_frame = frameset.get_depth_frame();
 
-          int num_of_frames = rs2_embedded_frames_count(frames, &e);
-		      check_error(e);
-          //logger::debug("Got %d frames", num_of_frames);
+          pc.map_to(color_frame);
+          rs2::points points = pc.calculate(depth_frame);
+          auto texture_coordinates = points.get_texture_coordinates();
 
-          for (int i = 0; i < num_of_frames; i++)	{
-            rs2_frame* frame = rs2_extract_frame(frames, i, &e);
-            check_error(e);
-
-            // Get the depth frame's dimensions
-            int width = rs2_get_frame_width(frame, &e);
-            check_error(e);
-            int height = rs2_get_frame_height(frame, &e);
-            check_error(e);
-
-            // Check if the given frame can be extended to depth frame interface
-            // Accept only depth frames and skip other frames
-            if (0 == rs2_is_frame_extendable_to(frame, RS2_EXTENSION_DEPTH_FRAME, &e)) {
-              //pc.map_to(frame);
-              unsigned char* color = (unsigned char*)rs2_get_frame_data(frame, &e);
-              check_error(e);
-
-              int frame_date_size = rs2_get_frame_data_size(frame, &e);
-              check_error(e);
-
-              int middle = width * 3 * (height / 2) + width / 2 * 3;
-              int r = color[middle];
-              int g = color[middle + 1];
-              int b = color[middle + 2];
-              logger::warn("Color of the center of frame %dx%d (%d bytes): %d, %d, %d", width, height, frame_date_size, r, g, b);
-            } else {
-              //rs2::points points = pc.calculate(frame);
-              //logger::debug("Got %d points for frame %dx%d", points.size(), width, height);
-              float dist_to_center = rs2_depth_frame_get_distance(frame, width / 2, height / 2, &e);
-		          check_error(e);
-
-              logger::debug("Distance to center of frame %dx%d: %fm", width, height, dist_to_center);
+          int count = 0;
+          float
+            min_x = std::numeric_limits<float>::max(),
+            max_x = std::numeric_limits<float>::min(),
+            min_y = std::numeric_limits<float>::max(),
+            max_y = std::numeric_limits<float>::min(),
+            min_z = std::numeric_limits<float>::max(),
+            max_z = std::numeric_limits<float>::min();
+          for (int i = 0; i < points.size(); i++) {
+            rs2::vertex v = points.get_vertices()[i];
+            if (v.z > 0 && v.z < 1000) {
+              if (v.x < min_x) {
+                min_x = v.x;
+              } else if (v.x > max_x) {
+                max_x = v.x;
+              }
+              if (v.y < min_y) {
+                min_y = v.y;
+              } else if (v.y > max_y) {
+                max_y = v.y;
+              }
+              if (v.z < min_z) {
+                min_z = v.z;
+              } else if (v.z > max_z) {
+                max_z = v.z;
+              }
+              count++;
+              get_rgb(color_frame, texture_coordinates[i]);
             }
-            rs2_release_frame(frame);
           }
 
-          rs2_release_frame(frames);
+          logger::debug("Got color frame %dx%d, depth frame %dx%d and %d (%d valid) points: %f, %f, %f, %f, %f, %f",
+            color_frame.get_width(), color_frame.get_height(),
+            depth_frame.get_width(), depth_frame.get_height(),
+            points.size(), count,
+            min_x, max_x, min_y, max_y, min_z, max_z);
         }
       }
 
-      rs2_pipeline_stop(pipeline, &e);
-      check_error(e);
-
-      rs2_delete_pipeline_profile(pipeline_profile);
-      rs2_delete_config(config);
-      rs2_delete_pipeline(pipeline);
-      rs2_delete_device(dev);
+      pipeline.stop();
     } else {
       logger::info("No RealSense devices found");
     }
-    rs2_delete_device_list(device_list);
-    rs2_delete_context(ctx);
   });
   video_thread.detach();
 }
