@@ -8,9 +8,9 @@
 
 #define DEPTH_STREAM       RS2_STREAM_DEPTH
 #define DEPTH_FORMAT       RS2_FORMAT_Z16
-#define DEPTH_WIDTH        480
-#define DEPTH_HEIGHT       270
-#define DEPTH_FPS          6
+#define DEPTH_WIDTH        256 // 480
+#define DEPTH_HEIGHT       144 // 270
+#define DEPTH_FPS          90 // 6
 #define DEPTH_STREAM_INDEX -1
 
 #define RGB_STREAM       RS2_STREAM_COLOR
