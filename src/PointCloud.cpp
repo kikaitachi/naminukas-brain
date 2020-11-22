@@ -8,9 +8,9 @@
 
 #define DEPTH_STREAM       RS2_STREAM_DEPTH
 #define DEPTH_FORMAT       RS2_FORMAT_Z16
-#define DEPTH_WIDTH        256 // 480
-#define DEPTH_HEIGHT       144 // 270
-#define DEPTH_FPS          90 // 6
+#define DEPTH_WIDTH        480
+#define DEPTH_HEIGHT       270
+#define DEPTH_FPS          6
 #define DEPTH_STREAM_INDEX -1
 
 #define RGB_STREAM       RS2_STREAM_COLOR
@@ -71,6 +71,10 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
           auto color_frame = frameset.get_color_frame();
           auto depth_frame = frameset.get_depth_frame();
 
+          int bytes_per_pixel = color_frame.get_bytes_per_pixel(); // Get # of bytes per pixel
+          int stride_in_bytes = color_frame.get_stride_in_bytes(); // Get line width in bytes
+          const auto texture = reinterpret_cast<const uint8_t*>(color_frame.get_data());
+
           pc.map_to(color_frame);
           rs2::points points = pc.calculate(depth_frame);
           auto texture_coordinates = points.get_texture_coordinates();
@@ -85,7 +89,26 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
             max_z = std::numeric_limits<float>::min();
           for (int i = 0; i < points.size(); i++) {
             rs2::vertex v = points.get_vertices()[i];
-            if (v.z > 0 && v.z < 1000) {
+            if (v.z > 0 && v.z < 1000) { // 0 - 10m
+              auto texture_coordinate = texture_coordinates[i];
+
+              int x_value = int(texture_coordinate.u * RGB_WIDTH  + .5f);
+              if (x_value < 0 || x_value > RGB_WIDTH - 1) {
+                continue;
+              }
+              int y_value = int(texture_coordinate.v * RGB_HEIGHT + .5f);
+              if (y_value < 0 || y_value > RGB_HEIGHT - 1) {
+                continue;
+              }
+
+              int bytes = x_value * bytes_per_pixel;
+              int strides = y_value * stride_in_bytes;
+              int index = bytes + strides;
+
+              int r = texture[index];
+              int g = texture[index + 1];
+              int b = texture[index + 2];
+
               if (v.x < min_x) {
                 min_x = v.x;
               } else if (v.x > max_x) {
@@ -101,8 +124,8 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
               } else if (v.z > max_z) {
                 max_z = v.z;
               }
+
               count++;
-              get_rgb(color_frame, texture_coordinates[i]);
             }
           }
 
