@@ -148,6 +148,41 @@ namespace telemetry {
     }
   }
 
+  // ItemPointCloud ************************************************************
+
+  ItemPoints::ItemPoints(int parent_id, std::string name, std::vector<ColoredPoint> points) :
+      Item(parent_id, TYPE_POINTS, name), points(points) {
+  }
+
+  void ItemPoints::serialize_definition(void **buf, int *buf_len) {
+    Item::serialize_definition(buf, buf_len);
+    serialize_points(buf, buf_len);
+  }
+
+  void ItemPoints::serialize_value(void **buf, int *buf_len) {
+    Item::serialize_value(buf, buf_len);
+    serialize_points(buf, buf_len);
+  }
+
+  void ItemPoints::update(std::vector<ColoredPoint> points) {
+    this->points = points;
+    // TODO: think how to update point cloud efficiently
+    /*for (auto change_listener : change_listeners) {
+      change_listener(*this);
+    }*/
+  }
+
+  void ItemPoints::serialize_points(void **buf, int *buf_len) {
+    for (auto& point : points) {
+      message::write_double(buf, buf_len, point.x);
+      message::write_double(buf, buf_len, point.y);
+      message::write_double(buf, buf_len, point.z);
+      message::write_int(buf, buf_len, point.r);
+      message::write_int(buf, buf_len, point.g);
+      message::write_int(buf, buf_len, point.b);
+    }
+  }
+
   // Items *********************************************************************
 
   Item* Items::add_item(Item* item) {

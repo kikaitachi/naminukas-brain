@@ -14,6 +14,7 @@ namespace telemetry {
   const int TYPE_STRING = 1;
   const int TYPE_ACTION = 2;
   const int TYPE_STL = 3;
+  const int TYPE_POINTS = 4;
 
   const int ROOT_ITEM_ID = 0;
 
@@ -82,6 +83,25 @@ namespace telemetry {
       std::vector<Transform> transforms;
 
       void serialize_transforms(void **buf, int *buf_len);
+  };
+
+  class ColoredPoint {
+    public:
+      double x, y, z;
+      int r, g, b;
+  };
+
+  class ItemPoints: public Item {
+    public:
+      ItemPoints(int parent_id, std::string name, std::vector<ColoredPoint> points);
+      void serialize_definition(void **buf, int *buf_len);
+      void serialize_value(void **buf, int *buf_len);
+      void update(std::vector<ColoredPoint> points);
+
+    private:
+      std::vector<ColoredPoint> points;
+
+      void serialize_points(void **buf, int *buf_len);
   };
 
   class Items {

@@ -20,31 +20,11 @@
 #define RGB_FPS          6
 #define RGB_STREAM_INDEX -1
 
-std::tuple<int, int, int> get_rgb(rs2::video_frame frame, rs2::texture_coordinate texture_coordinates) {
-    int width  = frame.get_width();  // Frame width in pixels
-    int height = frame.get_height(); // Frame height in pixels
+PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> is_terminated) {
+  points_telemetry = new telemetry::ItemPoints(telemetry::ROOT_ITEM_ID, "Point cloud", {});
+  telemetry::Item* machine = telemetryItems.add_item(points_telemetry);
 
-    // Normals to Texture Coordinates conversion
-    int x_value = std::min(std::max(int(texture_coordinates.u * width  + .5f), 0), width - 1);
-    int y_value = std::min(std::max(int(texture_coordinates.v * height + .5f), 0), height - 1);
-
-    int bytes = x_value * frame.get_bytes_per_pixel();   // Get # of bytes per pixel
-    int strides = y_value * frame.get_stride_in_bytes(); // Get line width in bytes
-    int index =  (bytes + strides);
-
-    const auto texture = reinterpret_cast<const uint8_t*>(frame.get_data());
-
-    int r = texture[index];
-    int g = texture[index + 1];
-    int b = texture[index + 2];
-
-    return std::tuple<int, int, int>(r, g, b);
-}
-
-PointCloud::PointCloud(std::function<bool()> is_terminated) {
   std::thread video_thread([=]() {
-    rs2_error* e = NULL;
-
     rs2::context ctx;
 
     rs2::device_list device_list = ctx.query_devices();
@@ -87,6 +67,9 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
             max_y = std::numeric_limits<float>::min(),
             min_z = std::numeric_limits<float>::max(),
             max_z = std::numeric_limits<float>::min();
+
+          std::vector<telemetry::ColoredPoint> colored_points;
+
           for (int i = 0; i < points.size(); i++) {
             rs2::vertex v = points.get_vertices()[i];
             if (v.z > 0 && v.z < 1000) { // 0 - 10m
@@ -126,8 +109,11 @@ PointCloud::PointCloud(std::function<bool()> is_terminated) {
               }
 
               count++;
+              colored_points.push_back({v.x, v.y, v.z, r, g, b});
             }
           }
+
+          points_telemetry->update(colored_points);
 
           logger::debug("Got color frame %dx%d, depth frame %dx%d and %d (%d valid) points: %f, %f, %f, %f, %f, %f",
             color_frame.get_width(), color_frame.get_height(),
