@@ -24,6 +24,8 @@ namespace message {
   int read_double(void **buf, int *buf_len, double *value);
 
   int write_string(void **buf, int *buf_len, std::string value);
+
+  int write_byte(void **buf, int *buf_len, uint8_t byte);
 }
 
 class MessageHandler {

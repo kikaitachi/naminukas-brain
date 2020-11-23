@@ -118,6 +118,16 @@ namespace message {
     write_int(buf, buf_len, value.length());
     return write_data(buf, buf_len, value.c_str(), value.length());
   }
+
+  int write_byte(void **buf, int *buf_len, uint8_t byte) {
+    if (*buf_len > 0) {
+      ((int8_t *)*buf)[0] = byte;
+      *buf = (int8_t *)*buf + 1;
+      *buf_len = *buf_len - 1;
+      return 0;
+    }
+    return -1;
+  }
 }
 
 MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :

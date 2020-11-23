@@ -177,9 +177,9 @@ namespace telemetry {
       message::write_double(buf, buf_len, point.x);
       message::write_double(buf, buf_len, point.y);
       message::write_double(buf, buf_len, point.z);
-      message::write_int(buf, buf_len, point.r);
-      message::write_int(buf, buf_len, point.g);
-      message::write_int(buf, buf_len, point.b);
+      message::write_byte(buf, buf_len, point.r);
+      message::write_byte(buf, buf_len, point.g);
+      message::write_byte(buf, buf_len, point.b);
     }
   }
 

@@ -88,7 +88,7 @@ namespace telemetry {
   class ColoredPoint {
     public:
       double x, y, z;
-      int r, g, b;
+      uint8_t r, g, b;
   };
 
   class ItemPoints: public Item {

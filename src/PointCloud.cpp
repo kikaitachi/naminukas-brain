@@ -88,9 +88,9 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
               int strides = y_value * stride_in_bytes;
               int index = bytes + strides;
 
-              int r = texture[index];
-              int g = texture[index + 1];
-              int b = texture[index + 2];
+              uint8_t r = texture[index];
+              uint8_t g = texture[index + 1];
+              uint8_t b = texture[index + 2];
 
               if (v.x < min_x) {
                 min_x = v.x;
