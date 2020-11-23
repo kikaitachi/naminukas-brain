@@ -31,8 +31,11 @@ find_package(OpenSSL REQUIRED)
 
 find_package(realsense2 REQUIRED)
 
-add_executable(naminukas
-  src/main.cpp
+enable_testing()
+find_package(GTest REQUIRED)
+include(GoogleTest)
+
+set(COMMON_SOURCES
   src/Logger.cpp
   src/IOServer.cpp
   src/WebSocket.cpp
@@ -48,12 +51,30 @@ add_executable(naminukas
   src/Model.cpp
   src/Transform.cpp
   src/PointCloud.cpp
-  ${DynamixelSDK_SRC}
+  ${DynamixelSDK_SRC})
+
+add_executable(${PROJECT_NAME}
+  ${COMMON_SOURCES}
+  src/main.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}
+add_executable(tests
+  ${COMMON_SOURCES}
+  test/main.cpp
+)
+
+set(COMMON_LIBRARIES
   robotics_cape
   Threads::Threads
   OpenSSL::Crypto
   ${realsense2_LIBRARY}
+)
+
+target_link_libraries(${PROJECT_NAME}
+  ${COMMON_LIBRARIES}
+)
+
+target_link_libraries(tests
+  ${COMMON_LIBRARIES}
+  GTest::GTest
 )
