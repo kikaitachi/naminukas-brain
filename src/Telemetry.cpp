@@ -44,7 +44,7 @@ namespace telemetry {
 
   // ItemInt *******************************************************************
 
-  ItemInt::ItemInt(int parent_id, std::string name, long long value) :
+  ItemInt::ItemInt(int parent_id, std::string name, int64_t value) :
     Item(parent_id, TYPE_INT, name), value(value) { }
 
   void ItemInt::serialize_definition(void **buf, int *buf_len) {
@@ -57,7 +57,7 @@ namespace telemetry {
     message::write_signed_integer(buf, buf_len, value);
   }
 
-  void ItemInt::update(long long value) {
+  void ItemInt::update(int64_t value) {
     if (this->value != value) {
       this->value = value;
       for (auto change_listener : change_listeners) {
@@ -144,7 +144,7 @@ namespace telemetry {
     for (auto& transform : transforms) {
       message::write_signed_integer(buf, buf_len, transform.type);
       message::write_signed_integer(buf, buf_len, transform.axis);
-      message::write_double(buf, buf_len, transform.value);
+      message::write_float(buf, buf_len, transform.value);
     }
   }
 
@@ -174,9 +174,9 @@ namespace telemetry {
 
   void ItemPoints::serialize_points(void **buf, int *buf_len) {
     for (auto& point : points) {
-      message::write_double(buf, buf_len, point.x);
-      message::write_double(buf, buf_len, point.y);
-      message::write_double(buf, buf_len, point.z);
+      message::write_float(buf, buf_len, point.x);
+      message::write_float(buf, buf_len, point.y);
+      message::write_float(buf, buf_len, point.z);
       message::write_byte(buf, buf_len, point.r);
       message::write_byte(buf, buf_len, point.g);
       message::write_byte(buf, buf_len, point.b);

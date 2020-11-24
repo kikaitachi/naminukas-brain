@@ -39,12 +39,12 @@ namespace telemetry {
 
   class ItemInt: public Item {
     public:
-      long long value;
+      int64_t value;
 
-      ItemInt(int parent_id, std::string name, long long value);
+      ItemInt(int parent_id, std::string name, int64_t value);
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
-      void update(long long value);
+      void update(int64_t value);
   };
 
   class ItemString: public Item {
@@ -87,7 +87,7 @@ namespace telemetry {
 
   class ColoredPoint {
     public:
-      double x, y, z;
+      float x, y, z;
       uint8_t r, g, b;
   };
 

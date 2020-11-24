@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstring>
 #include <string>
+#include <endian.h>
 #include "Logger.hpp"
 #include "Message.hpp"
 
@@ -48,14 +49,6 @@ namespace message {
   		}
   	}
   	return -1;
-  }
-
-  int write_float(void **buf, int *buf_len, float value) {
-  	return write_data(buf, buf_len, &value, 4);
-  }
-
-  int read_float(void **buf, int *buf_len, float *value) {
-  	return read_data(buf, buf_len, value, 4);
   }
 
   int write_byte(void **buf, int *buf_len, uint8_t byte) {
@@ -106,29 +99,19 @@ namespace message {
     return write_data(buf, buf_len, value.c_str(), value.length());
   }
 
-  int write_double(void **buf, int *buf_len, double value) {
-    int sign = value < 0 ? -1 : 1;
-    std::string s = std::to_string(fabs(value));
-    //logger::debug("String: %s", s.c_str());
-    size_t index = s.find('.');
-    int numerator;
-    int denominator = 1;
-    if (index == std::string::npos) {
-      numerator = value;
-    } else {
-      s.erase(index, 1);
-      while (index < s.length()) {
-        denominator *= 10;
-        index++;
-      }
-      numerator = std::stoi(s);
-    }
-    // TODO: optimize no to send 0/1000000 or 75000000/1000000
-    //logger::debug("String: %s, ratio %d/%d", s.c_str(), numerator, denominator);
-    if (write_signed_integer(buf, buf_len, numerator * sign) == -1) {
+  int write_float(void **buf, int *buf_len, float value) {
+    uint32_t big_endian = htobe32(reinterpret_cast<uint32_t&>(value));
+    return write_data(buf, buf_len, &big_endian, 4);
+  }
+
+  int read_float(void **buf, int *buf_len, float *value) {
+    uint32_t big_endian;
+    if (write_data(buf, buf_len, &big_endian, 4) == -1) {
       return -1;
     }
-    return write_unsigned_integer(buf, buf_len, denominator);
+    big_endian = be32toh(big_endian);
+    *value = reinterpret_cast<float&>(big_endian);
+    return 0;
   }
 }
 
