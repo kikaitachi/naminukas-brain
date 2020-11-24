@@ -14,21 +14,14 @@ namespace message {
   int write_data(void **buf, int *buf_len, const void *data, size_t len);
   int read_data(void **buf, int *buf_len, void *data, size_t len);
 
-  int write_int(void **buf, int *buf_len, int value);
   int read_int(void **buf, int *buf_len, int *value);
-
-  int write_float(void **buf, int *buf_len, float value);
-  int read_float(void **buf, int *buf_len, float *value);
-
-  int write_double(void **buf, int *buf_len, double value);
-  int read_double(void **buf, int *buf_len, double *value);
-
-  int write_string(void **buf, int *buf_len, std::string value);
 
   int write_byte(void **buf, int *buf_len, uint8_t byte);
 
   int write_unsigned_integer(void **buf, int *buf_len, uint64_t value);
   int write_signed_integer(void **buf, int *buf_len, int64_t value);
+  int write_string(void **buf, int *buf_len, std::string value);
+  int write_double(void **buf, int *buf_len, double value);
 }
 
 class MessageHandler {

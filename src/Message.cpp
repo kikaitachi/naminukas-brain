@@ -26,35 +26,6 @@ namespace message {
   	return 0;
   }
 
-  int write_int(void **buf, int *buf_len, int value) {
-  	if (*buf_len < 1) {
-  		return -1;
-  	}
-  	int sign;
-  	if (value < 0) {
-  		sign = 1 << 6;
-  		value = -value;
-  	} else {
-  		sign = 0;
-  	}
-  	int8_t byte = ((value > 63 ? 1 : 0) << 7) | sign | (value & 63);
-  	memcpy(*buf, &byte, 1);
-  	value >>= 6;
-  	*buf = (int8_t *)*buf + 1;
-  	*buf_len = *buf_len - 1;
-  	while (value > 0) {
-  		if (*buf_len < 1) {
-  			return -1;
-  		}
-  		int8_t byte = ((value > 127 ? 1 : 0) << 7) | (value & 127);
-  		memcpy(*buf, &byte, 1);
-  		value >>= 7;
-  		*buf = (int8_t *)*buf + 1;
-  		*buf_len = *buf_len - 1;
-  	}
-  	return 0;
-  }
-
   int read_int(void **buf, int *buf_len, int *value) {
   	int negative;
   	for (int i = 0; *buf_len > 0; ) {
@@ -85,38 +56,6 @@ namespace message {
 
   int read_float(void **buf, int *buf_len, float *value) {
   	return read_data(buf, buf_len, value, 4);
-  }
-
-  int write_double(void **buf, int *buf_len, double value) {
-    int sign = value < 0 ? -1 : 1;
-    std::string s = std::to_string(fabs(value));
-    //logger::debug("String: %s", s.c_str());
-    size_t index = s.find('.');
-    int numerator;
-    int denominator = 1;
-    if (index == std::string::npos) {
-      numerator = value;
-    } else {
-      s.erase(index, 1);
-      while (index < s.length()) {
-        denominator *= 10;
-        index++;
-      }
-      numerator = std::stoi(s);
-    }
-    // TODO: optimize no to send 0/1000000 or 75000000/1000000
-    //logger::debug("String: %s, ratio %d/%d", s.c_str(), numerator, denominator);
-    write_int(buf, buf_len, numerator * sign);
-    return write_int(buf, buf_len, denominator);
-  }
-
-  int read_double(void **buf, int *buf_len, double *value) {
-  	return read_data(buf, buf_len, value, 8);
-  }
-
-  int write_string(void **buf, int *buf_len, std::string value) {
-    write_int(buf, buf_len, value.length());
-    return write_data(buf, buf_len, value.c_str(), value.length());
   }
 
   int write_byte(void **buf, int *buf_len, uint8_t byte) {
@@ -159,6 +98,38 @@ namespace message {
     }
     return 0;
   }
+
+  int write_string(void **buf, int *buf_len, std::string value) {
+    if (write_unsigned_integer(buf, buf_len, value.length()) == -1) {
+      return -1;
+    }
+    return write_data(buf, buf_len, value.c_str(), value.length());
+  }
+
+  int write_double(void **buf, int *buf_len, double value) {
+    int sign = value < 0 ? -1 : 1;
+    std::string s = std::to_string(fabs(value));
+    //logger::debug("String: %s", s.c_str());
+    size_t index = s.find('.');
+    int numerator;
+    int denominator = 1;
+    if (index == std::string::npos) {
+      numerator = value;
+    } else {
+      s.erase(index, 1);
+      while (index < s.length()) {
+        denominator *= 10;
+        index++;
+      }
+      numerator = std::stoi(s);
+    }
+    // TODO: optimize no to send 0/1000000 or 75000000/1000000
+    //logger::debug("String: %s, ratio %d/%d", s.c_str(), numerator, denominator);
+    if (write_signed_integer(buf, buf_len, numerator * sign) == -1) {
+      return -1;
+    }
+    return write_unsigned_integer(buf, buf_len, denominator);
+  }
 }
 
 MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
@@ -183,8 +154,8 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
         if (it != telemetryItems.id_to_item.end()) {
 		      void *buf = buffer;
           int buf_len = sizeof(buffer);
-          message::write_int(&buf, &buf_len, message::TELEMETRY_UPDATE);
-          message::write_int(&buf, &buf_len, it->second->getId());
+          message::write_unsigned_integer(&buf, &buf_len, message::TELEMETRY_UPDATE);
+          message::write_signed_integer(&buf, &buf_len, it->second->getId());
           it->second->serialize_value(&buf, &buf_len);
 		      server->sendBinary(client->fd, buffer, sizeof(buffer) - buf_len);
         }

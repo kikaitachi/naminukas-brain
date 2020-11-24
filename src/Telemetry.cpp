@@ -17,9 +17,9 @@ namespace telemetry {
   }
 
   void Item::serialize_definition(void **buf, int *buf_len) {
-    message::write_int(buf, buf_len, id);
-    message::write_int(buf, buf_len, parent_id);
-    message::write_int(buf, buf_len, type);
+    message::write_signed_integer(buf, buf_len, id);
+    message::write_signed_integer(buf, buf_len, parent_id);
+    message::write_signed_integer(buf, buf_len, type);
     message::write_string(buf, buf_len, name);
   }
 
@@ -54,7 +54,7 @@ namespace telemetry {
 
   void ItemInt::serialize_value(void **buf, int *buf_len) {
     Item::serialize_value(buf, buf_len);
-    message::write_int(buf, buf_len, value);
+    message::write_signed_integer(buf, buf_len, value);
   }
 
   void ItemInt::update(long long value) {
@@ -120,7 +120,7 @@ namespace telemetry {
     std::ifstream file(file_name, std::ios::binary | std::ios::ate);
     std::streamsize size = file.tellg();
     logger::debug("Loading STL model %s (%d bytes)", file_name.c_str(), size);
-    message::write_int(buf, buf_len, size);
+    message::write_unsigned_integer(buf, buf_len, size);
     file.seekg(0, std::ios::beg);
     file.read((char *)*buf, size);
     *buf = ((char *)*buf) + size;
@@ -142,8 +142,8 @@ namespace telemetry {
 
   void ItemSTL::serialize_transforms(void **buf, int *buf_len) {
     for (auto& transform : transforms) {
-      message::write_int(buf, buf_len, transform.type);
-      message::write_int(buf, buf_len, transform.axis);
+      message::write_signed_integer(buf, buf_len, transform.type);
+      message::write_signed_integer(buf, buf_len, transform.axis);
       message::write_double(buf, buf_len, transform.value);
     }
   }
