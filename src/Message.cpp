@@ -130,19 +130,33 @@ namespace message {
   }
 
   int write_unsigned_integer(void **buf, int *buf_len, uint64_t value) {
-    if (*buf_len < 1) {
-      return -1;
-    }
     do {
-      if (*buf_len < 1) {
+      if (write_byte(buf, buf_len, ((value > 127 ? 1 : 0) << 7) | (value & 127)) == -1) {
         return -1;
       }
-      int8_t byte = ((value > 127 ? 1 : 0) << 7) | (value & 127);
-      ((int8_t *)*buf)[0] = byte;
       value >>= 7;
-      *buf = (int8_t *)*buf + 1;
-      *buf_len = *buf_len - 1;
     } while (value > 0);
+    return 0;
+  }
+
+  int write_signed_integer(void **buf, int *buf_len, int64_t value) {
+    int sign;
+    if (value < 0) {
+      sign = 1 << 6;
+      value = -value;
+    } else {
+      sign = 0;
+    }
+    if (write_byte(buf, buf_len, ((value > 63 ? 1 : 0) << 7) | sign | (value & 63)) == -1) {
+      return -1;
+    }
+    value >>= 6;
+    while (value > 0) {
+      if (write_byte(buf, buf_len, ((value > 127 ? 1 : 0) << 7) | (value & 127)) == -1) {
+        return -1;
+      }
+      value >>= 7;
+    }
     return 0;
   }
 }
