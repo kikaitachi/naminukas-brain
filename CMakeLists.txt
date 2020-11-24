@@ -29,6 +29,9 @@ find_package(Threads)
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 
+message("${WebP_INCLUDE_DIRS}")
+message("${WebP_LIBRARIES}")
+
 find_package(realsense2 REQUIRED)
 
 enable_testing()
@@ -50,7 +53,7 @@ set(COMMON_SOURCES
   src/BeagleBoneBlueIMU.cpp
   src/Model.cpp
   src/Transform.cpp
-  src/PointCloud.cpp
+  src/Camera.cpp
   ${DynamixelSDK_SRC})
 
 add_executable(${PROJECT_NAME}
@@ -65,8 +68,10 @@ add_executable(tests
 
 set(COMMON_LIBRARIES
   robotics_cape
+  webp
   Threads::Threads
   OpenSSL::Crypto
+  ${WebP_LIBRARIES}
   ${realsense2_LIBRARY}
 )
 

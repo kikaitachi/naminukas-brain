@@ -7,7 +7,7 @@
 #include "Logger.hpp"
 #include "IOServer.hpp"
 #include "WebSocket.hpp"
-#include "PointCloud.hpp"
+#include "Camera.hpp"
 #include "Robot.hpp"
 #include "Message.hpp"
 #include "Telemetry.hpp"

@@ -1,5 +1,5 @@
-#ifndef NAMINUKAS_BRAIN_POINTCLOUD_H_
-#define NAMINUKAS_BRAIN_POINTCLOUD_H_
+#ifndef NAMINUKAS_BRAIN_CAMERA_H_
+#define NAMINUKAS_BRAIN_CAMERA_H_
 
 #include "Telemetry.hpp"
 
@@ -11,4 +11,4 @@ class PointCloud {
     telemetry::ItemPoints* points_telemetry;
 };
 
-#endif  // NAMINUKAS_BRAIN_POINTCLOUD_H_
+#endif  // NAMINUKAS_BRAIN_CAMERA_H_

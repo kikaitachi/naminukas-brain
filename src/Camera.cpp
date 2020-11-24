@@ -1,10 +1,13 @@
-#include <limits>
 #include <cmath>
+#include <fstream>
+#include <limits>
+#include <string>
 #include <thread>
+#include "webp/encode.h"
 #include <librealsense2/rs.hpp>
 
 #include "Logger.hpp"
-#include "PointCloud.hpp"
+#include "Camera.hpp"
 
 #define DEPTH_STREAM       RS2_STREAM_DEPTH
 #define DEPTH_FORMAT       RS2_FORMAT_Z16
@@ -21,11 +24,19 @@
 #define RGB_STREAM_INDEX -1
 
 #define INFRARED_STREAM       RS2_STREAM_INFRARED
-#define INFRARED_FORMAT       RS2_FORMAT_Y8
+#define INFRARED_FORMAT       RS2_FORMAT_RGB8
 #define INFRARED_WIDTH        480
 #define INFRARED_HEIGHT       270
 #define INFRARED_FPS          6
 #define INFRARED_STREAM_INDEX -1
+
+static void image2file(std::string file_name, const uint8_t* rgb, int width, int height, int stride) {
+  uint8_t* output;
+  size_t size = WebPEncodeRGB(rgb, width, height, stride, 75, &output);
+  std::ofstream file(file_name, std::ios::out | std::ios::binary);
+  file.write((const char *)output, size);
+  WebPFree(output);
+}
 
 PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> is_terminated) {
   points_telemetry = new telemetry::ItemPoints(telemetry::ROOT_ITEM_ID, "Point cloud", {});
@@ -50,6 +61,7 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
       config.enable_stream(INFRARED_STREAM, INFRARED_STREAM_INDEX, INFRARED_WIDTH, INFRARED_HEIGHT, INFRARED_FORMAT, INFRARED_FPS);
 
       rs2::pointcloud pc;
+      rs2::colorizer color_map;
 
       pipeline.start(config);
 
@@ -63,6 +75,14 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
           int bytes_per_pixel = color_frame.get_bytes_per_pixel(); // Get # of bytes per pixel
           int stride_in_bytes = color_frame.get_stride_in_bytes(); // Get line width in bytes
           const auto texture = reinterpret_cast<const uint8_t*>(color_frame.get_data());
+
+          const auto infrared = reinterpret_cast<const uint8_t*>(infrared_frame.get_data());
+          const auto colored_depth_frame = color_map.process(depth_frame);
+          const auto colored_depth = reinterpret_cast<const uint8_t*>(colored_depth_frame.get_data());
+
+          image2file("rgb.webp", texture, RGB_WIDTH, RGB_HEIGHT, stride_in_bytes);
+          image2file("infrared.webp", infrared, INFRARED_WIDTH, INFRARED_HEIGHT, infrared_frame.get_stride_in_bytes());
+          image2file("depth.webp", colored_depth, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_WIDTH * 3);
 
           pc.map_to(color_frame);
           rs2::points points = pc.calculate(depth_frame);
