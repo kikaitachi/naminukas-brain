@@ -20,6 +20,13 @@
 #define RGB_FPS          6
 #define RGB_STREAM_INDEX -1
 
+#define INFRARED_STREAM       RS2_STREAM_INFRARED
+#define INFRARED_FORMAT       RS2_FORMAT_Y8
+#define INFRARED_WIDTH        480
+#define INFRARED_HEIGHT       270
+#define INFRARED_FPS          6
+#define INFRARED_STREAM_INDEX -1
+
 PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> is_terminated) {
   points_telemetry = new telemetry::ItemPoints(telemetry::ROOT_ITEM_ID, "Point cloud", {});
   telemetry::Item* machine = telemetryItems.add_item(points_telemetry);
@@ -40,6 +47,7 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
 
       config.enable_stream(RGB_STREAM, RGB_STREAM_INDEX, RGB_WIDTH, RGB_HEIGHT, RGB_FORMAT, RGB_FPS);
       config.enable_stream(DEPTH_STREAM, DEPTH_STREAM_INDEX, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FORMAT, DEPTH_FPS);
+      config.enable_stream(INFRARED_STREAM, INFRARED_STREAM_INDEX, INFRARED_WIDTH, INFRARED_HEIGHT, INFRARED_FORMAT, INFRARED_FPS);
 
       rs2::pointcloud pc;
 
@@ -50,6 +58,7 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
         if (pipeline.try_wait_for_frames(&frameset, 1000000)) {
           auto color_frame = frameset.get_color_frame();
           auto depth_frame = frameset.get_depth_frame();
+          auto infrared_frame = frameset.get_infrared_frame();
 
           int bytes_per_pixel = color_frame.get_bytes_per_pixel(); // Get # of bytes per pixel
           int stride_in_bytes = color_frame.get_stride_in_bytes(); // Get line width in bytes
@@ -115,9 +124,10 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
 
           points_telemetry->update(colored_points);
 
-          logger::debug("Got color frame %dx%d, depth frame %dx%d and %d (%d valid) points: %f, %f, %f, %f, %f, %f",
+          logger::debug("Got color %dx%d, depth %dx%d and infrared %dx%d frames, %d (%d valid) points: %f, %f, %f, %f, %f, %f",
             color_frame.get_width(), color_frame.get_height(),
             depth_frame.get_width(), depth_frame.get_height(),
+            infrared_frame.get_width(), infrared_frame.get_height(),
             points.size(), count,
             min_x, max_x, min_y, max_y, min_z, max_z);
         }
