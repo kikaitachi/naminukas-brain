@@ -26,6 +26,8 @@ namespace message {
   int write_string(void **buf, int *buf_len, std::string value);
 
   int write_byte(void **buf, int *buf_len, uint8_t byte);
+
+  int write_unsigned_integer(void **buf, int *buf_len, uint64_t value);
 }
 
 class MessageHandler {

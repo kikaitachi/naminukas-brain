@@ -128,6 +128,23 @@ namespace message {
     }
     return -1;
   }
+
+  int write_unsigned_integer(void **buf, int *buf_len, uint64_t value) {
+    if (*buf_len < 1) {
+      return -1;
+    }
+    do {
+      if (*buf_len < 1) {
+        return -1;
+      }
+      int8_t byte = ((value > 127 ? 1 : 0) << 7) | (value & 127);
+      ((int8_t *)*buf)[0] = byte;
+      value >>= 7;
+      *buf = (int8_t *)*buf + 1;
+      *buf_len = *buf_len - 1;
+    } while (value > 0);
+    return 0;
+  }
 }
 
 MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
