@@ -62,13 +62,14 @@ namespace telemetry {
       /**
        * Allowed values are key codes: https://w3c.github.io/uievents-code/
        */
-      ItemCommand(int parent_id, std::string name, std::string value, std::function<void(int value)> action);
+      ItemCommand(int parent_id, std::string name, std::string value, std::function<void(int value)> action, std::vector<std::string> modifiers);
       void serialize_definition(void **buf, int *buf_len);
       void deserialize_value(void **buf, int *buf_len);
 
     private:
       std::string value;
       std::function<void(int)> action;
+      std::vector<std::string> modifiers;
   };
 
   class ItemSTL: public Item {

@@ -31,10 +31,12 @@
 #define INFRARED_FPS          6
 #define INFRARED_STREAM_INDEX -1
 
+static const std::string TIMELAPSE_DIR = "/tmp/";
+
 /**
- * ffmpeg -f concat -safe 0 -i /tmp/timelapse-rgb.txt timelapse-rgb.mp4
- * ffmpeg -f concat -safe 0 -i /tmp/timelapse-depth.txt timelapse-depth.mp4
- * ffmpeg -f concat -safe 0 -i /tmp/timelapse-infrared.txt timelapse-infrared.mp4
+ * ffmpeg -f concat -safe 0 -i timelapse-rgb.txt timelapse-rgb.mp4
+ * ffmpeg -f concat -safe 0 -i timelapse-depth.txt timelapse-depth.mp4
+ * ffmpeg -f concat -safe 0 -i timelapse-infrared.txt timelapse-infrared.mp4
  */
 static void image2file(std::string file_name, const uint8_t* rgb, int width, int height, int stride) {
   uint8_t* output;
@@ -50,9 +52,9 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
 
   std::thread video_thread([=]() {
     int frame_index = 0;
-    std::ofstream timelapse_rgb("/tmp/timelapse-rgb.txt", std::ios::out);
-    std::ofstream timelapse_depth("/tmp/timelapse-depth.txt", std::ios::out);
-    std::ofstream timelapse_infrared("/tmp/timelapse-infrared.txt", std::ios::out);
+    std::ofstream timelapse_rgb(TIMELAPSE_DIR + "timelapse-rgb.txt", std::ios::out);
+    std::ofstream timelapse_depth(TIMELAPSE_DIR + "timelapse-depth.txt", std::ios::out);
+    std::ofstream timelapse_infrared(TIMELAPSE_DIR + "timelapse-infrared.txt", std::ios::out);
 
     rs2::context ctx;
 
@@ -89,9 +91,9 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
             timelapse_depth << "duration " << duration << std::endl;
             timelapse_infrared << "duration " << duration << std::endl;
           }
-          std::string file_name_rgb = "/tmp/rgb" + std::to_string(frame_index) + ".webp";
-          std::string file_name_depth = "/tmp/depth" + std::to_string(frame_index) + ".webp";
-          std::string file_name_infrared = "/tmp/infrared" + std::to_string(frame_index) + ".webp";
+          std::string file_name_rgb = "rgb" + std::to_string(frame_index) + ".webp";
+          std::string file_name_depth = "depth" + std::to_string(frame_index) + ".webp";
+          std::string file_name_infrared = "infrared" + std::to_string(frame_index) + ".webp";
           timelapse_rgb << "file '" << file_name_rgb << "'" << std::endl;
           timelapse_depth << "file '" << file_name_depth << "'" << std::endl;
           timelapse_infrared << "file '" << file_name_infrared << "'" << std::endl;
@@ -110,9 +112,9 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
           const auto colored_depth_frame = color_map.process(depth_frame);
           const auto colored_depth = reinterpret_cast<const uint8_t*>(colored_depth_frame.get_data());
 
-          image2file(file_name_rgb, texture, RGB_WIDTH, RGB_HEIGHT, stride_in_bytes);
-          image2file(file_name_depth, colored_depth, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_WIDTH * 3);
-          image2file(file_name_infrared, infrared, INFRARED_WIDTH, INFRARED_HEIGHT, infrared_frame.get_stride_in_bytes());
+          image2file(TIMELAPSE_DIR + file_name_rgb, texture, RGB_WIDTH, RGB_HEIGHT, stride_in_bytes);
+          image2file(TIMELAPSE_DIR + file_name_depth, colored_depth, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_WIDTH * 3);
+          image2file(TIMELAPSE_DIR + file_name_infrared, infrared, INFRARED_WIDTH, INFRARED_HEIGHT, infrared_frame.get_stride_in_bytes());
 
           pc.map_to(color_frame);
           rs2::points points = pc.calculate(depth_frame);

@@ -93,13 +93,16 @@ namespace telemetry {
 
   // ItemCommand ***************************************************************
 
-  ItemCommand::ItemCommand(int parent_id, std::string name, std::string value, std::function<void(int value)> action) :
-      Item(parent_id, TYPE_ACTION, name), value(value), action(action) {
+  ItemCommand::ItemCommand(int parent_id, std::string name, std::string value, std::function<void(int value)> action, std::vector<std::string> modifiers) :
+      Item(parent_id, TYPE_ACTION, name), value(value), action(action), modifiers(modifiers) {
   }
 
   void ItemCommand::serialize_definition(void **buf, int *buf_len) {
     Item::serialize_definition(buf, buf_len);
     message::write_string(buf, buf_len, value);
+    for (auto modifier : modifiers) {
+      message::write_string(buf, buf_len, modifier);
+    }
   }
 
   void ItemCommand::deserialize_value(void **buf, int *buf_len) {
