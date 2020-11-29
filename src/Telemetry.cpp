@@ -113,8 +113,8 @@ namespace telemetry {
 
   // ItemSTL *******************************************************************
 
-  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name, std::vector<Transform> transforms) :
-      Item(parent_id, TYPE_STL, name), file_name(file_name),
+  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name, int color, std::vector<Transform> transforms) :
+      Item(parent_id, TYPE_STL, name), color(color), file_name(file_name),
       transforms(transforms) {
   }
 
@@ -128,6 +128,7 @@ namespace telemetry {
     file.read((char *)*buf, size);
     *buf = ((char *)*buf) + size;
     *buf_len -= size;
+     message::write_unsigned_integer(buf, buf_len, color);
     serialize_transforms(buf, buf_len);
   }
 

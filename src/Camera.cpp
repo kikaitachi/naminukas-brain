@@ -41,8 +41,8 @@ static const std::string TIMELAPSE_DIR = "/tmp/";
 static void image2file(std::string file_name, const uint8_t* rgb, int width, int height, int stride) {
   uint8_t* output;
   size_t size = WebPEncodeRGB(rgb, width, height, stride, 75, &output);
-  std::ofstream file(file_name, std::ios::out | std::ios::binary);
-  file.write((const char *)output, size);
+  //std::ofstream file(file_name, std::ios::out | std::ios::binary);
+  //file.write((const char *)output, size);
   WebPFree(output);
 }
 

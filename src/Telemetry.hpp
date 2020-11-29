@@ -74,12 +74,13 @@ namespace telemetry {
 
   class ItemSTL: public Item {
     public:
-      ItemSTL(int parent_id, std::string name, std::string file_name, std::vector<Transform> transforms);
+      ItemSTL(int parent_id, std::string name, std::string file_name, int color, std::vector<Transform> transforms);
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
       void update(std::vector<Transform> transforms);
 
     private:
+      int color;
       std::string file_name;
       std::vector<Transform> transforms;
 
