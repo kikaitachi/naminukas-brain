@@ -15,8 +15,17 @@ Model::Model(telemetry::Items& telemetryItems) {
     0x1E90FF,
     { { TRANSFORM_TYPE_ROTATE, 0, -90 }, { TRANSFORM_TYPE_MOVE, 0, 75 }, { TRANSFORM_TYPE_MOVE, 2, 20 } });
   telemetryItems.add_item(right_foot);
+
+  reset();
 }
 
 void Model::reset() {
-  // TODO: implement
+  pos_x = pos_y = pos_z = 0;
+  rot_x = rot_y = rot_z = 0;
+}
+
+void Model::move(double delta_x, double delta_y, double delta_z) {
+  pos_x += delta_x;
+  pos_y += delta_y;
+  pos_z += delta_z;
 }
