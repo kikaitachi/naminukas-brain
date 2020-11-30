@@ -79,7 +79,15 @@ void DynamixelKinematics::set_joint_speed(std::vector<hardware::JointSpeed> spee
   dynamixel_connection->write(dynamixel_XM430W350.goal_velocity(), values);
 }
 
-double DynamixelKinematics::get_joint_position(hardware::Joint joint) {
-  // TODO: implement
-  return 0;
+std::vector<double> DynamixelKinematics::get_joint_position(std::vector<hardware::Joint> joints) {
+  std::vector<int> ids;
+  for (auto& joint : joints) {
+    ids.push_back(joint2id(joint));
+  }
+  std::vector<double> result;
+  std::vector<int> positions = dynamixel_connection->read(dynamixel_XM430W350.present_position(), ids);
+  for (auto& position : positions) {
+    result.push_back(position * 360.0 / dynamixel_XM430W350.positions_per_rotation());
+  }
+  return result;
 }
