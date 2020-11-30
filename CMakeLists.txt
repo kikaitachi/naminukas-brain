@@ -50,6 +50,7 @@ set(COMMON_SOURCES
   src/SystemTelemetry.cpp
   src/Client.cpp
   src/Locomotion.cpp
+  src/LocomotionIdle.cpp
   src/BeagleBoneBlueIMU.cpp
   src/Model.cpp
   src/Transform.cpp

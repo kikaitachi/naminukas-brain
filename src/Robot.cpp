@@ -1,26 +1,6 @@
+#include "LocomotionIdle.hpp"
 #include "Logger.hpp"
 #include "Robot.hpp"
-
-class LocomotionIdle: public Locomotion {
-  public:
-    LocomotionIdle(hardware::Kinematics& kinematics) : kinematics(kinematics) {
-    }
-
-    std::string name() {
-      return "Idle";
-    }
-
-    void start() {
-      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
-      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
-      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
-      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
-      // TODO: add Pneumatics
-    }
-
-  protected:
-    hardware::Kinematics& kinematics;
-};
 
 class LocomotionTiltDrive: public Locomotion {
   public:
