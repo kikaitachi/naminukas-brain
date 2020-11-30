@@ -23,6 +23,9 @@ namespace message {
 
   int write_float(void **buf, int *buf_len, float value);
   int read_float(void **buf, int *buf_len, float *value);
+
+  int write_double(void **buf, int *buf_len, double value);
+  int read_double(void **buf, int *buf_len, double *value);
 }
 
 class MessageHandler {

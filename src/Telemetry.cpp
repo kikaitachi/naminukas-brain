@@ -148,7 +148,7 @@ namespace telemetry {
     for (auto& transform : transforms) {
       message::write_signed_integer(buf, buf_len, transform.type);
       message::write_signed_integer(buf, buf_len, transform.axis);
-      message::write_float(buf, buf_len, transform.value);
+      message::write_double(buf, buf_len, transform.value);
     }
   }
 

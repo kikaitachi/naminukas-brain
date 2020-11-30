@@ -8,9 +8,9 @@ class Transform {
   public:
     int type;
     int axis;
-    float value;
+    double value;
 
-    Transform(int type, int axis, float value);
+    Transform(int type, int axis, double value);
 };
 
 #endif  // NAMINUKAS_BRAIN_TRANSFORM_H_

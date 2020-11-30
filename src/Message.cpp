@@ -113,6 +113,21 @@ namespace message {
     *value = reinterpret_cast<float&>(big_endian);
     return 0;
   }
+
+  int write_double(void **buf, int *buf_len, double value) {
+    uint64_t big_endian = htobe64(reinterpret_cast<uint64_t&>(value));
+    return write_data(buf, buf_len, &big_endian, 8);
+  }
+
+  int read_double(void **buf, int *buf_len, double *value) {
+    uint64_t big_endian;
+    if (write_data(buf, buf_len, &big_endian, 8) == -1) {
+      return -1;
+    }
+    big_endian = be64toh(big_endian);
+    *value = reinterpret_cast<float&>(big_endian);
+    return 0;
+  }
 }
 
 MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
