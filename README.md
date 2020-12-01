@@ -1,8 +1,6 @@
-# naminukas
-
 ![Last build result](https://github.com/kikaitachi/naminukas-robot/workflows/CI/badge.svg)
 
-Software running on naminukas robot.
+Software running on [naminukas robot](https://youtu.be/_OW7n3E4VMU).
 
 For remote control software see [kikaitachi-ui project](https://github.com/kikaitachi/kikaitachi-ui).
 
