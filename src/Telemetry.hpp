@@ -15,6 +15,7 @@ namespace telemetry {
   const int TYPE_ACTION = 2;
   const int TYPE_STL = 3;
   const int TYPE_POINTS = 4;
+  // TODO: introduce "reference" type to avoid sending duplicate STL files
 
   const int ROOT_ITEM_ID = 0;
 
@@ -74,13 +75,13 @@ namespace telemetry {
 
   class ItemSTL: public Item {
     public:
-      ItemSTL(int parent_id, std::string name, std::string file_name, int color, std::vector<Transform> transforms);
+      ItemSTL(int parent_id, std::string name, std::string file_name, uint32_t color, std::vector<Transform> transforms);
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
       void update(std::vector<Transform> transforms);
 
     private:
-      int color;
+      uint32_t color;
       std::string file_name;
       std::vector<Transform> transforms;
 

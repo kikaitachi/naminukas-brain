@@ -113,7 +113,7 @@ namespace telemetry {
 
   // ItemSTL *******************************************************************
 
-  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name, int color, std::vector<Transform> transforms) :
+  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name, uint32_t color, std::vector<Transform> transforms) :
       Item(parent_id, TYPE_STL, name), color(color), file_name(file_name),
       transforms(transforms) {
   }
