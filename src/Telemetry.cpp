@@ -66,6 +66,30 @@ namespace telemetry {
     }
   }
 
+  // ItemFloat *****************************************************************
+
+  ItemFloat::ItemFloat(int parent_id, std::string name, float value) :
+    Item(parent_id, TYPE_FLOAT, name), value(value) { }
+
+  void ItemFloat::serialize_definition(void **buf, int *buf_len) {
+    Item::serialize_definition(buf, buf_len);
+    serialize_value(buf, buf_len);
+  }
+
+  void ItemFloat::serialize_value(void **buf, int *buf_len) {
+    Item::serialize_value(buf, buf_len);
+    message::write_float(buf, buf_len, value);
+  }
+
+  void ItemFloat::update(float value) {
+    if (this->value != value) {
+      this->value = value;
+      for (auto change_listener : change_listeners) {
+        change_listener(*this);
+      }
+    }
+  }
+
   // ItemString ****************************************************************
 
   ItemString::ItemString(int parent_id, std::string name, std::string value) :

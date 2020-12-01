@@ -1,3 +1,4 @@
+#include <fstream>
 #include <string>
 #include <thread>
 
@@ -30,11 +31,11 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
     machine->getId(), "Free memory, MiB", -1);
   telemetryItems.add_item(freeMemory);
 
-  telemetry::ItemString* battery = new telemetry::ItemString(
-    machine->getId(), "Battery, V", "");
+  telemetry::ItemFloat* battery = new telemetry::ItemFloat(
+    machine->getId(), "Battery, V", 0);
   telemetryItems.add_item(battery);
-  telemetry::ItemString* charger = new telemetry::ItemString(
-    machine->getId(), "Charger, V", "");
+  telemetry::ItemFloat* charger = new telemetry::ItemFloat(
+    machine->getId(), "Charger, V", 0);
   telemetryItems.add_item(charger);
 
   std::thread update_thread([=]() {
@@ -57,8 +58,15 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
         freeMemory->update(system_info.freeram * system_info.mem_unit / (1024 * 1024));
 
         if (battery_supported) {
-          battery->update(std::to_string(rc_adc_batt()));
-          charger->update(std::to_string(rc_adc_dc_jack()));
+          battery->update(rc_adc_batt());
+          charger->update(rc_adc_dc_jack());
+        } else {
+          std::ifstream battery_voltage_file("/sys/class/power_supply/BAT0/voltage_now");
+          if (!battery_voltage_file.fail()) {
+            float voltage;
+            battery_voltage_file >> voltage;
+            battery->update(voltage / 1000000);
+          }
         }
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));

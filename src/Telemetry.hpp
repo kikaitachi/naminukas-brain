@@ -12,9 +12,10 @@
 namespace telemetry {
   const int TYPE_INT = 0;
   const int TYPE_STRING = 1;
-  const int TYPE_ACTION = 2;
-  const int TYPE_STL = 3;
-  const int TYPE_POINTS = 4;
+  const int TYPE_FLOAT = 2;
+  const int TYPE_ACTION = 3;
+  const int TYPE_STL = 4;
+  const int TYPE_POINTS = 5;
   // TODO: introduce "reference" type to avoid sending duplicate STL files
 
   const int ROOT_ITEM_ID = 0;
@@ -40,12 +41,24 @@ namespace telemetry {
 
   class ItemInt: public Item {
     public:
-      int64_t value;
-
       ItemInt(int parent_id, std::string name, int64_t value);
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
       void update(int64_t value);
+
+    private:
+      int64_t value;
+  };
+
+  class ItemFloat: public Item {
+    public:
+      ItemFloat(int parent_id, std::string name, float value);
+      void serialize_definition(void **buf, int *buf_len);
+      void serialize_value(void **buf, int *buf_len);
+      void update(float value);
+
+    private:
+      float value;
   };
 
   class ItemString: public Item {
@@ -54,6 +67,7 @@ namespace telemetry {
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
       void update(std::string value);
+
     private:
       std::string value;
   };
