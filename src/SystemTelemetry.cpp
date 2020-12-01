@@ -61,7 +61,7 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
           charger->update(std::to_string(rc_adc_dc_jack()));
         }
       }
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
+      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
   });
   update_thread.detach();
