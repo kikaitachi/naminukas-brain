@@ -112,6 +112,9 @@ DynamixelConnection::~DynamixelConnection() {
 }
 
 bool DynamixelConnection::write(DynamixelControlItem item, std::vector<DynamixelControlValue> values) {
+  if (packet_handler == NULL) {
+    return false;
+  }
   const std::lock_guard<std::mutex> lock(mutex);
   dynamixel::GroupSyncWrite group_sync_write(port_handler, packet_handler, item.address, item.size);
   for (auto& value : values) {
@@ -136,8 +139,11 @@ bool DynamixelConnection::write(DynamixelControlItem item, std::vector<Dynamixel
 }
 
 std::vector<int> DynamixelConnection::read(DynamixelControlItem item, std::vector<int> ids) {
-  const std::lock_guard<std::mutex> lock(mutex);
   std::vector<int> result(ids.size());
+  if (packet_handler == NULL) {
+    return result;
+  }
+  const std::lock_guard<std::mutex> lock(mutex);
   dynamixel::GroupSyncRead group_sync_read(port_handler, packet_handler, item.address, item.size);
   for (auto& id : ids) {
     if (!group_sync_read.addParam(id)) {

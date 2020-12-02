@@ -58,7 +58,7 @@ void DynamixelKinematics::set_joint_control_mode(
       dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 1 } });
       break;
     default:
-    logger::error("Can't set joint %d control to unsupported mode %d", (int)joint, (int)mode);
+      logger::error("Can't set joint %d control to unsupported mode %d", (int)joint, (int)mode);
       break;
   }
 }
