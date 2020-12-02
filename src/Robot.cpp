@@ -1,77 +1,7 @@
 #include "LocomotionIdle.hpp"
+#include "LocomotionPole.hpp"
 #include "Logger.hpp"
 #include "Robot.hpp"
-
-class LocomotionTiltDrive: public Locomotion {
-  public:
-    LocomotionTiltDrive(hardware::Kinematics& kinematics) : kinematics(kinematics) {
-    }
-
-    std::string name() {
-      return "Tilt drive";
-    }
-
-    void start() {
-      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
-      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
-      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
-      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
-      kinematics.set_joint_position({
-        { hardware::Joint::left_ankle, initial_ankle_angle + 10 },
-        { hardware::Joint::right_ankle, initial_ankle_angle - 10 },
-      });
-    }
-
-    void stop() {
-      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
-      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
-      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
-      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
-    }
-
-    void halt() {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
-    }
-
-    void up(bool key_down) {
-      if (key_down) {
-        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
-      } else {
-        halt();
-      }
-    }
-
-    void down(bool key_down) {
-      if (key_down) {
-        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
-      } else {
-        halt();
-      }
-    }
-
-    void left(bool key_down) {
-      if (key_down) {
-        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
-      } else {
-        halt();
-      }
-    }
-
-    void right(bool key_down) {
-      if (key_down) {
-        kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
-      } else {
-        halt();
-      }
-    }
-
-  protected:
-    hardware::Kinematics& kinematics;
-
-  private:
-    const double max_rpm = 20;
-    const double initial_ankle_angle = 360.0 / 16;
-};
 
 /**
  * Skiing is an automotive driving stunt where the car is driven while balanced
@@ -117,16 +47,16 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   model = new Model(telemetryItems);
 
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
-  LocomotionTiltDrive* locomotion_tilt_drive = new LocomotionTiltDrive(kinematics);
-  LocomotionSki* locomotion_ski = new LocomotionSki(kinematics);
+  LocomotionPole* locomotion_pole = new LocomotionPole(kinematics);
+  //LocomotionSki* locomotion_ski = new LocomotionSki(kinematics);
   current_locomotion_mode = locomotion_idle;
 
   mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", current_locomotion_mode->name());
   telemetryItems.add_item(mode);
 
   add_locomotion(locomotion_idle, "Escape");
-  add_locomotion(locomotion_tilt_drive, "Digit1");
-  add_locomotion(locomotion_ski, "Digit2");
+  add_locomotion(locomotion_pole, "Digit1");
+  //add_locomotion(locomotion_ski, "Digit2");
 
   /*telemetry::ItemCommand* walk = new telemetry::ItemCommand(
     mode->getId(), "Walk", "Digit1", [&]() {

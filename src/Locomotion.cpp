@@ -1,5 +1,8 @@
 #include "Locomotion.hpp"
 
+Locomotion::~Locomotion() {
+}
+
 void Locomotion::start() {
 }
 

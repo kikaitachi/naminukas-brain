@@ -7,6 +7,7 @@
 
 class Locomotion {
   public:
+    virtual ~Locomotion();
     virtual std::string name() = 0;
     virtual void start();
     virtual void stop();
