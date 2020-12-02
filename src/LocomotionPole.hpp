@@ -1,6 +1,8 @@
 #ifndef NAMINUKAS_BRAIN_LOCOMOTION_POLE_H_
 #define NAMINUKAS_BRAIN_LOCOMOTION_POLE_H_
 
+#include <thread>
+
 #include "Locomotion.hpp"
 
 class LocomotionPole: public Locomotion {
@@ -16,6 +18,8 @@ class LocomotionPole: public Locomotion {
 
   private:
     hardware::Kinematics& kinematics;
+    std::thread* odometry_thread;
+    bool stopped = true;
     const double max_rpm = 20;
     const double initial_ankle_angle = 360.0 / 16;
 
