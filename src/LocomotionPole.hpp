@@ -4,10 +4,11 @@
 #include <thread>
 
 #include "Locomotion.hpp"
+#include "Model.hpp"
 
 class LocomotionPole: public Locomotion {
   public:
-    LocomotionPole(hardware::Kinematics& kinematics);
+    LocomotionPole(hardware::Kinematics& kinematics, Model& model);
     std::string name();
     void start();
     void stop();
@@ -18,6 +19,7 @@ class LocomotionPole: public Locomotion {
 
   private:
     hardware::Kinematics& kinematics;
+    Model& model;
     std::thread* odometry_thread;
     bool stopped = true;
     const double max_rpm = 20;

@@ -47,7 +47,7 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   model = new Model(telemetryItems);
 
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
-  LocomotionPole* locomotion_pole = new LocomotionPole(kinematics);
+  LocomotionPole* locomotion_pole = new LocomotionPole(kinematics, *model);
   //LocomotionSki* locomotion_ski = new LocomotionSki(kinematics);
   current_locomotion_mode = locomotion_idle;
 
