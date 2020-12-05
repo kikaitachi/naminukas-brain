@@ -1,5 +1,6 @@
 #include "LocomotionIdle.hpp"
 #include "LocomotionPole.hpp"
+#include "LocomotionPoleGestures.hpp"
 #include "Logger.hpp"
 #include "Robot.hpp"
 
@@ -42,13 +43,13 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
     }, { }));
 }
 
-Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics) :
+Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, PointCloud& camera) :
     telemetryItems(telemetryItems), imu(imu), kinematics(kinematics) {
   model = new Model(telemetryItems);
 
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
   LocomotionPole* locomotion_pole = new LocomotionPole(kinematics, *model);
-  //LocomotionSki* locomotion_ski = new LocomotionSki(kinematics);
+  LocomotionPoleGestures* locomotion_pole_gestures = new LocomotionPoleGestures(kinematics, *model, camera);
   current_locomotion_mode = locomotion_idle;
 
   mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", current_locomotion_mode->name());
@@ -56,7 +57,7 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
 
   add_locomotion(locomotion_idle, "Escape");
   add_locomotion(locomotion_pole, "Digit1");
-  //add_locomotion(locomotion_ski, "Digit2");
+  add_locomotion(locomotion_pole_gestures, "Digit2");
 
   /*telemetry::ItemCommand* walk = new telemetry::ItemCommand(
     mode->getId(), "Walk", "Digit1", [&]() {

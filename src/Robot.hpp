@@ -1,6 +1,7 @@
 #ifndef NAMINUKAS_BRAIN_ROBOT_H_
 #define NAMINUKAS_BRAIN_ROBOT_H_
 
+#include "Camera.hpp"
 #include "Hardware.hpp"
 #include "IMU.hpp"
 #include "Locomotion.hpp"
@@ -9,7 +10,7 @@
 
 class Robot {
   public:
-    Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics);
+    Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, PointCloud& camera);
     ~Robot();
 
   private:

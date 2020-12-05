@@ -85,7 +85,7 @@ int main(int argc, const char *argv[]) {
 
   PointCloud point_cloud(telemetryItems, &is_terminated);
 
-  Robot robot(telemetryItems, imu, dynamixelKinematics);
+  Robot robot(telemetryItems, imu, dynamixelKinematics, point_cloud);
 
   ioServer.start(&is_terminated);
 

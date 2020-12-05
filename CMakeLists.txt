@@ -52,6 +52,7 @@ set(COMMON_SOURCES
   src/Locomotion.cpp
   src/LocomotionIdle.cpp
   src/LocomotionPole.cpp
+  src/LocomotionPoleGestures.cpp
   src/BeagleBoneBlueIMU.cpp
   src/Model.cpp
   src/Transform.cpp

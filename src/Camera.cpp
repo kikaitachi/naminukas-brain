@@ -5,7 +5,6 @@
 #include <thread>
 #include <time.h>
 #include "webp/encode.h"
-#include <librealsense2/rs.hpp>
 
 #include "Logger.hpp"
 #include "Camera.hpp"
@@ -69,21 +68,21 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
 
       rs2::config config;
 
-      config.enable_stream(RGB_STREAM, RGB_STREAM_INDEX, RGB_WIDTH, RGB_HEIGHT, RGB_FORMAT, RGB_FPS);
+      //config.enable_stream(RGB_STREAM, RGB_STREAM_INDEX, RGB_WIDTH, RGB_HEIGHT, RGB_FORMAT, RGB_FPS);
       config.enable_stream(DEPTH_STREAM, DEPTH_STREAM_INDEX, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_FORMAT, DEPTH_FPS);
-      config.enable_stream(INFRARED_STREAM, INFRARED_STREAM_INDEX, INFRARED_WIDTH, INFRARED_HEIGHT, INFRARED_FORMAT, INFRARED_FPS);
+      //config.enable_stream(INFRARED_STREAM, INFRARED_STREAM_INDEX, INFRARED_WIDTH, INFRARED_HEIGHT, INFRARED_FORMAT, INFRARED_FPS);
 
       rs2::pointcloud pc;
       rs2::colorizer color_map;
 
       pipeline.start(config);
 
-      struct timespec last_frame_time;
+      //struct timespec last_frame_time;
 
       while (!is_terminated()) {
         rs2::frameset frameset;
         if (pipeline.try_wait_for_frames(&frameset, 1000000)) {
-          struct timespec now;
+          /*struct timespec now;
           clock_gettime(CLOCK_REALTIME, &now);
           if (frame_index != 0) {
             double duration = now.tv_sec - last_frame_time.tv_sec + (now.tv_nsec - last_frame_time.tv_nsec) / 1000000000.0 - 1 / 25.0;
@@ -98,25 +97,25 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
           timelapse_depth << "file '" << file_name_depth << "'" << std::endl;
           timelapse_infrared << "file '" << file_name_infrared << "'" << std::endl;
           frame_index++;
-          last_frame_time = now;
+          last_frame_time = now;*/
 
-          auto color_frame = frameset.get_color_frame();
-          auto depth_frame = frameset.get_depth_frame();
-          auto infrared_frame = frameset.get_infrared_frame();
+          //auto color_frame = frameset.get_color_frame();
+          rs2::depth_frame depth_frame = frameset.get_depth_frame();
+          //auto infrared_frame = frameset.get_infrared_frame();
 
-          int bytes_per_pixel = color_frame.get_bytes_per_pixel(); // Get # of bytes per pixel
-          int stride_in_bytes = color_frame.get_stride_in_bytes(); // Get line width in bytes
-          const auto texture = reinterpret_cast<const uint8_t*>(color_frame.get_data());
+          //int bytes_per_pixel = color_frame.get_bytes_per_pixel(); // Get # of bytes per pixel
+          //int stride_in_bytes = color_frame.get_stride_in_bytes(); // Get line width in bytes
+          //const auto texture = reinterpret_cast<const uint8_t*>(color_frame.get_data());
 
-          const auto infrared = reinterpret_cast<const uint8_t*>(infrared_frame.get_data());
-          const auto colored_depth_frame = color_map.process(depth_frame);
-          const auto colored_depth = reinterpret_cast<const uint8_t*>(colored_depth_frame.get_data());
+          //const auto infrared = reinterpret_cast<const uint8_t*>(infrared_frame.get_data());
+          //const auto colored_depth_frame = color_map.process(depth_frame);
+          //const auto colored_depth = reinterpret_cast<const uint8_t*>(colored_depth_frame.get_data());
 
-          image2file(TIMELAPSE_DIR + file_name_rgb, texture, RGB_WIDTH, RGB_HEIGHT, stride_in_bytes);
-          image2file(TIMELAPSE_DIR + file_name_depth, colored_depth, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_WIDTH * 3);
-          image2file(TIMELAPSE_DIR + file_name_infrared, infrared, INFRARED_WIDTH, INFRARED_HEIGHT, infrared_frame.get_stride_in_bytes());
+          //image2file(TIMELAPSE_DIR + file_name_rgb, texture, RGB_WIDTH, RGB_HEIGHT, stride_in_bytes);
+          //image2file(TIMELAPSE_DIR + file_name_depth, colored_depth, DEPTH_WIDTH, DEPTH_HEIGHT, DEPTH_WIDTH * 3);
+          //image2file(TIMELAPSE_DIR + file_name_infrared, infrared, INFRARED_WIDTH, INFRARED_HEIGHT, infrared_frame.get_stride_in_bytes());
 
-          pc.map_to(color_frame);
+          /*pc.map_to(color_frame);
           rs2::points points = pc.calculate(depth_frame);
           auto texture_coordinates = points.get_texture_coordinates();
 
@@ -181,7 +180,7 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
             depth_frame.get_width(), depth_frame.get_height(),
             infrared_frame.get_width(), infrared_frame.get_height(),
             points.size(), count,
-            min_x, max_x, min_y, max_y, min_z, max_z);
+            min_x, max_x, min_y, max_y, min_z, max_z);*/
         }
       }
 
@@ -191,4 +190,12 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
     }
   });
   video_thread.detach();
+}
+
+void PointCloud::add_depth_listener(std::function<void(rs2::depth_frame&)> listener) {
+  depth_listeners.push_back(listener);
+}
+
+void PointCloud::remove_depth_listener(std::function<void(rs2::depth_frame&)> listener) {
+  // TODO: implement
 }
