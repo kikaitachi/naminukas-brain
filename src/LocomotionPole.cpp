@@ -11,10 +11,10 @@ std::string LocomotionPole::name() {
 
 void LocomotionPole::start() {
   if (stopped) {
-    kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity, 500);
+    kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity, 5000);
     kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
-    kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position, 500);
-    kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
+    kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+    kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity, 5000);
     kinematics.set_joint_position({
       { hardware::Joint::left_ankle, initial_ankle_angle + 10 },
       { hardware::Joint::right_ankle, initial_ankle_angle - 10 },
