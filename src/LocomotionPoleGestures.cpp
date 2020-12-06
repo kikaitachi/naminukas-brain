@@ -29,9 +29,9 @@ LocomotionPoleGestures::LocomotionPoleGestures(hardware::Kinematics& kinematics,
       if (min_left == std::numeric_limits<float>::max() && min_right == std::numeric_limits<float>::max()) {
         halt();
       } else if (min_left == std::numeric_limits<float>::max()) {
-        up(true);
-      } else if (min_right == std::numeric_limits<float>::max()) {
         down(true);
+      } else if (min_right == std::numeric_limits<float>::max()) {
+        up(true);
       } else {
         if (min_left < min_right) {
           left(true);
