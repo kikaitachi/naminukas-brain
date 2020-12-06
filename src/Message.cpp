@@ -141,12 +141,12 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
   int buf_len = size;
   int msg_type;
   message::read_int(&buf, &buf_len, &msg_type);
-  logger::debug("Got message from %d of type %d (non decoded: %d) of %d bytes",
-    client->fd, msg_type, (int)(((int8_t *)payload)[0]), (int)size);
+  //logger::debug("Got message from %d of type %d (non decoded: %d) of %d bytes",
+  //  client->fd, msg_type, (int)(((int8_t *)payload)[0]), (int)size);
   switch (msg_type) {
     case message::TELEMETRY_QUERY: {
 	    char buffer[MAX_OUT_MSG_SIZE];
-      logger::debug("Client %d has %d changed telemetry item ids", client->fd, client->changed_telemetry_item_ids.size());
+      //logger::debug("Client %d has %d changed telemetry item ids", client->fd, client->changed_telemetry_item_ids.size());
       for (auto &telemetry_item_id : client->changed_telemetry_item_ids) {
         std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(telemetry_item_id);
         if (it != telemetryItems.id_to_item.end()) {

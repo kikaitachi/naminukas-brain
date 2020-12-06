@@ -8,8 +8,6 @@ class LocomotionPoleGestures: public LocomotionPole {
   public:
     LocomotionPoleGestures(hardware::Kinematics& kinematics, Model& model, PointCloud& camera);
     std::string name();
-    void start();
-    void stop();
 
   private:
 };

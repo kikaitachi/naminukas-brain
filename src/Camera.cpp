@@ -101,6 +101,10 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
 
           //auto color_frame = frameset.get_color_frame();
           rs2::depth_frame depth_frame = frameset.get_depth_frame();
+
+          for (auto listener : depth_listeners) {
+            listener(depth_frame);
+          }
           //auto infrared_frame = frameset.get_infrared_frame();
 
           //int bytes_per_pixel = color_frame.get_bytes_per_pixel(); // Get # of bytes per pixel

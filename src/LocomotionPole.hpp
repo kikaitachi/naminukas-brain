@@ -17,7 +17,7 @@ class LocomotionPole: public Locomotion {
     void left(bool key_down);
     void right(bool key_down);
 
-  private:
+  protected:
     hardware::Kinematics& kinematics;
     Model& model;
     std::thread* odometry_thread;

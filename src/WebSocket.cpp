@@ -97,7 +97,7 @@ void WebSocketServer::accept_client() {
 }
 
 void WebSocketServer::sendFrame(int fd, char opcode, void *data, size_t size) {
-  logger::debug("Sending frame of size %d to %d", size, fd);
+  //logger::debug("Sending frame of size %d to %d", size, fd);
   char header[10];
   int header_length;
   header[0] = FINAL_FRAME | opcode;
@@ -235,7 +235,7 @@ void WebSocketServer::handle_client(int fd) {
       break;
     }
     size += result;
-    logger::debug("Read %d bytes from %d", (int)result, fd);
+    //logger::debug("Read %d bytes from %d", (int)result, fd);
 
     while (size >= 6) {
       int opcode = buffer[0] & 0x0f;
@@ -269,7 +269,7 @@ void WebSocketServer::handle_client(int fd) {
         for (int i = 0; i < data_length; i++) {
           buffer[i + header_length] ^= mask[i % 4];
         }
-        logger::debug("Got frame with opcode %d, header length %d, payload length %d", opcode, header_length, (int)data_length);
+        //logger::debug("Got frame with opcode %d, header length %d, payload length %d", opcode, header_length, (int)data_length);
         on_binary_message(this, &client, buffer + header_length, data_length);
         memmove(buffer, buffer + frame_length, frame_length);
         size -= frame_length;

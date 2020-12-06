@@ -14,6 +14,7 @@ class Model {
     void reset();
 
     void move(double delta_x, double delta_y, double delta_z);
+    void rotate(double delta_x, double delta_y, double delta_z);
 
   private:
     telemetry::ItemSTL* left_foot;
