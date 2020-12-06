@@ -22,7 +22,7 @@ class LocomotionPole: public Locomotion {
     Model& model;
     std::thread* odometry_thread;
     bool stopped = true;
-    const double max_rpm = 40;
+    const double max_rpm = 20;
     const double initial_ankle_angle = 360.0 / 16;
 
     void halt();
