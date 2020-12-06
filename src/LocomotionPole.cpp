@@ -39,7 +39,7 @@ void LocomotionPole::start() {
           double angular_dist = current_angles[0] - previous_angles[0];
           double delta_x = 0; // TODO: sin(heading) * (angular_dist * degrees_to_dist)
           double delta_y = 0;
-          model.move(delta_x, 0, delta_y);
+          //model.move(delta_x, 0, delta_y);
           // TODO: implement rotation and moving of ankles
           current_angles = previous_angles;
         } else {

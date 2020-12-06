@@ -4,7 +4,7 @@
 #include "Logger.hpp"
 #include "LocomotionPoleGestures.hpp"
 
-#define MAX_RPM 30
+#define MAX_RPM 40
 
 LocomotionPoleGestures::LocomotionPoleGestures(hardware::Kinematics& kinematics, Model& model, PointCloud& camera)
     : LocomotionPole(kinematics, model) {
