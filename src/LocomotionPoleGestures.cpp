@@ -4,7 +4,7 @@
 #include "Logger.hpp"
 #include "LocomotionPoleGestures.hpp"
 
-#define MAX_RPM 20
+#define MAX_RPM 30
 
 LocomotionPoleGestures::LocomotionPoleGestures(hardware::Kinematics& kinematics, Model& model, PointCloud& camera)
     : LocomotionPole(kinematics, model) {
@@ -41,7 +41,7 @@ LocomotionPoleGestures::LocomotionPoleGestures(hardware::Kinematics& kinematics,
         float rpm = MAX_RPM * min_left_index / (width / 2);
         kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -rpm }, { hardware::Joint::right_wheel, rpm } });
       } else {
-        float rpm = MAX_RPM * (fabs(min_left) - fabs(min_right)) / 0.15;
+        float rpm = MAX_RPM * (fabs(min_left - min_right)) / 0.15;
         if (min_left < min_right) {
           kinematics.set_joint_speed({ { hardware::Joint::left_wheel, rpm }, { hardware::Joint::right_wheel, rpm } });
         } else {
