@@ -25,11 +25,13 @@ void LocomotionSki::start() {
     });
     odometry_thread = new std::thread([&]() {
       stopped = false;
+      float prev_error = 0;
       while (!stopped) {
         float pitch = imu.get_pitch();
         float error = pitch - expected_pitch;
         float p = 2.5;
-        float input = error * p;
+        float d = 0.1;
+        float input = error * p + (error - prev_error) * d;
         //logger::debug("pitch: %f, error: %f, input: %f", pitch, error, input);
         if (input < -max_ankle_change) {
             input = -max_ankle_change;
@@ -41,7 +43,8 @@ void LocomotionSki::start() {
           { hardware::Joint::left_ankle, initial_ankle_angle + input },
           { hardware::Joint::right_ankle, initial_ankle_angle + input }
         });
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        prev_error = error;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
       }
     });
   }
