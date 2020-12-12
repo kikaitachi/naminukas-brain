@@ -3,9 +3,9 @@
 
 class IMU {
   public:
-    virtual double yaw() = 0;
-    virtual double pitch() = 0;
-    virtual double roll() = 0;
+    virtual float get_yaw() = 0;
+    virtual float get_pitch() = 0;
+    virtual float get_roll() = 0;
 };
 
 #endif  // NAMINUKAS_BRAIN_IMU_H_

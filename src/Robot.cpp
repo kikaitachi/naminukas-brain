@@ -1,33 +1,9 @@
 #include "LocomotionIdle.hpp"
 #include "LocomotionPole.hpp"
 #include "LocomotionPoleGestures.hpp"
+#include "LocomotionSki.hpp"
 #include "Logger.hpp"
 #include "Robot.hpp"
-
-/**
- * Skiing is an automotive driving stunt where the car is driven while balanced
- * only on two wheels, either the pair on the driver side or on the passenger side.
- * See: https://en.wikipedia.org/wiki/Ski_(driving_stunt)
- */
-class LocomotionSki: public Locomotion {
-  public:
-    LocomotionSki(hardware::Kinematics& kinematics) : kinematics(kinematics) {
-    }
-
-    std::string name() {
-      return "Ski";
-    }
-
-    void start() {
-      kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
-      kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
-      kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
-      kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
-    }
-
-  protected:
-    hardware::Kinematics& kinematics;
-};
 
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
   telemetryItems.add_item(new telemetry::ItemCommand(
@@ -50,6 +26,7 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
   LocomotionPole* locomotion_pole = new LocomotionPole(kinematics, *model);
   LocomotionPoleGestures* locomotion_pole_gestures = new LocomotionPoleGestures(kinematics, *model, camera);
+  LocomotionSki* locomotion_ski = new LocomotionSki(kinematics, imu);
   current_locomotion_mode = locomotion_idle;
 
   mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", current_locomotion_mode->name());
@@ -58,6 +35,7 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   add_locomotion(locomotion_idle, "Escape");
   add_locomotion(locomotion_pole, "Digit1");
   add_locomotion(locomotion_pole_gestures, "Digit2");
+  add_locomotion(locomotion_ski, "Digit3");
 
   /*telemetry::ItemCommand* walk = new telemetry::ItemCommand(
     mode->getId(), "Walk", "Digit1", [&]() {

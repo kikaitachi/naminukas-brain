@@ -9,12 +9,9 @@ class BeagleBoneBlueIMU: public IMU {
   public:
     BeagleBoneBlueIMU();
     virtual ~BeagleBoneBlueIMU();
-    double yaw();
-    double pitch();
-    double roll();
-
-  private:
-    rc_mpu_data_t mpu_data;
+    float get_yaw();
+    float get_pitch();
+    float get_roll();
 };
 
 #endif  // NAMINUKAS_BRAIN_BEAGLEBONE_BLUE_IMU_H_
