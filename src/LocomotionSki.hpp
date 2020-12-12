@@ -23,10 +23,10 @@ class LocomotionSki: public Locomotion {
     IMU& imu;
     std::thread* odometry_thread;
     bool stopped = true;
-    const float max_rpm = 5;
+    const float max_rpm = 20;
     const float initial_ankle_angle = 360.0 / 16;
-    const float max_ankle_change = 10;
-    const float expected_pitch = 45;
+    const float max_ankle_change = 20;
+    const float expected_pitch = 26;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_IMU_H_

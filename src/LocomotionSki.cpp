@@ -1,4 +1,5 @@
 #include "LocomotionSki.hpp"
+#include "Logger.hpp"
 
 LocomotionSki::LocomotionSki(hardware::Kinematics& kinematics, IMU& imu)
     : kinematics(kinematics), imu(imu) {
@@ -25,9 +26,11 @@ void LocomotionSki::start() {
     odometry_thread = new std::thread([&]() {
       stopped = false;
       while (!stopped) {
-        float error = expected_pitch - imu.get_pitch();
-        float p = 0.1;
+        float pitch = imu.get_pitch();
+        float error = pitch - expected_pitch;
+        float p = 2.5;
         float input = error * p;
+        //logger::debug("pitch: %f, error: %f, input: %f", pitch, error, input);
         if (input < -max_ankle_change) {
             input = -max_ankle_change;
         }
@@ -35,9 +38,10 @@ void LocomotionSki::start() {
             input = max_ankle_change;
         }
         kinematics.set_joint_position({
-          { hardware::Joint::left_ankle, initial_ankle_angle + input }
+          { hardware::Joint::left_ankle, initial_ankle_angle + input },
+          { hardware::Joint::right_ankle, initial_ankle_angle + input }
         });
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
       }
     });
   }
