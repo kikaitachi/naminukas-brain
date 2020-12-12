@@ -62,6 +62,22 @@ void LocomotionSki::stop() {
   }
 }
 
+void LocomotionSki::up(bool key_down) {
+  if (key_down) {
+    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+  } else {
+    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
+  }
+}
+
+void LocomotionSki::down(bool key_down) {
+  if (key_down) {
+    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+  } else {
+    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
+  }
+}
+
 void LocomotionSki::left(bool key_down) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm + turn_rpm }, { hardware::Joint::right_wheel, max_rpm - turn_rpm } });
