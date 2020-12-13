@@ -28,7 +28,7 @@ class LocomotionSki: public Locomotion {
     std::thread* odometry_thread;
     bool stopped = true;
     const float max_rpm = 20;
-    const float turn_rpm = 5;
+    const float turn_rpm = 10;
     const float initial_ankle_angle = 360.0 / 16;
     const float max_ankle_change = 20;
     const float expected_pitch = 25.7;
