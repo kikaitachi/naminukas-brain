@@ -21,22 +21,22 @@ void LocomotionPole::start() {
     });
     odometry_thread = new std::thread([&]() {
       stopped = false;
-      std::vector<double> previous_angles = kinematics.get_joint_position({
+      std::vector<hardware::JointPosition> previous_angles = kinematics.get_joint_position({
         hardware::Joint::left_wheel,
         hardware::Joint::right_wheel,
         hardware::Joint::left_ankle,
         hardware::Joint::right_ankle
       });
       while (!stopped) {
-        std::vector<double> current_angles = kinematics.get_joint_position({
+        std::vector<hardware::JointPosition> current_angles = kinematics.get_joint_position({
           hardware::Joint::left_wheel,
           hardware::Joint::right_wheel,
           hardware::Joint::left_ankle,
           hardware::Joint::right_ankle
         });
-        if (previous_angles != current_angles) {
+        /*if (previous_angles != current_angles) {
           logger::debug("Moving");
-          double angular_dist = current_angles[0] - previous_angles[0];
+          double angular_dist = current_angles[0].degrees - previous_angles[0].degrees;
           double delta_x = 0; // TODO: sin(heading) * (angular_dist * degrees_to_dist)
           double delta_y = 0;
           //model.move(delta_x, 0, delta_y);
@@ -44,8 +44,8 @@ void LocomotionPole::start() {
           current_angles = previous_angles;
         } else {
           logger::debug("Stationary");
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        }*/
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
     });
   }

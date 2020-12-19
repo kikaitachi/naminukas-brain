@@ -1,6 +1,7 @@
 #ifndef NAMINUKAS_BRAIN_HARDWARE_H_
 #define NAMINUKAS_BRAIN_HARDWARE_H_
 
+#include <functional>
 #include <vector>
 
 namespace hardware {
@@ -27,7 +28,11 @@ namespace hardware {
         Joint joint, JointControlMode mode, double max_acceleration = 0, double max_rpm = 0, double millis = 0) = 0;
       virtual void set_joint_position(std::vector<JointPosition> positions) = 0;
       virtual void set_joint_speed(std::vector<JointSpeed> speeds) = 0;
-      virtual std::vector<double> get_joint_position(std::vector<Joint> joints) = 0;
+      virtual std::vector<JointPosition> get_joint_position(std::vector<Joint> joints) = 0;
+      void add_position_listener(std::function<void(std::vector<JointPosition>&)> listener);
+    
+    protected:
+      std::vector<std::function<void(std::vector<JointPosition>&)>> position_listeners;
   };
 
   class Pneumatics {

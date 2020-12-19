@@ -45,6 +45,7 @@ set(COMMON_SOURCES
   src/Message.cpp
   src/Telemetry.cpp
   src/DynamixelUtil.cpp
+  src/Hardware.cpp
   src/DynamixelKinematics.cpp
   src/Robot.cpp
   src/SystemTelemetry.cpp

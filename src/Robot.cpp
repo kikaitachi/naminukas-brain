@@ -21,7 +21,7 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
 
 Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, PointCloud& camera) :
     telemetryItems(telemetryItems), imu(imu), kinematics(kinematics) {
-  model = new Model(telemetryItems);
+  model = new Model(telemetryItems, kinematics);
 
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
   LocomotionPole* locomotion_pole = new LocomotionPole(kinematics, *model);

@@ -1,6 +1,6 @@
 #include "Model.hpp"
 
-Model::Model(telemetry::Items& telemetryItems) {
+Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics) {
   telemetry::ItemString* parts = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Parts", "2");
   telemetryItems.add_item(parts);
 
@@ -15,6 +15,10 @@ Model::Model(telemetry::Items& telemetryItems) {
   telemetryItems.add_item(right_foot);
 
   reset();
+
+  kinematics.add_position_listener([&] (auto joints) {
+    update_joints(joints);
+  });
 }
 
 Model::~Model() {
@@ -22,7 +26,23 @@ Model::~Model() {
   delete right_foot;
 }
 
+void Model::update_joints(std::vector<hardware::JointPosition> joints) {
+  for (auto& joint: joints) {
+    switch (joint.joint) {
+      case hardware::Joint::left_wheel:
+        left_wheel_pos = joint.degrees;
+        break;
+      case hardware::Joint::right_wheel:
+        right_wheel_pos = joint.degrees;
+        break;
+    }
+  }
+  left_foot->update(left_foot_transforms());
+  right_foot->update(right_foot_transforms());
+}
+
 void Model::reset() {
+  left_wheel_pos, right_wheel_pos = 0;
   pos_x = pos_y = pos_z = 0;
   rot_x = rot_y = rot_z = 0;
   left_foot->update(left_foot_transforms());
@@ -48,6 +68,7 @@ void Model::rotate(double delta_x, double delta_y, double delta_z) {
 std::vector<Transform> Model::left_foot_transforms() {
   return {
     { TRANSFORM_TYPE_ROTATE, 0, -90 },
+    { TRANSFORM_TYPE_ROTATE, 1, left_wheel_pos },
     { TRANSFORM_TYPE_MOVE, 0, -75 + pos_x },
     { TRANSFORM_TYPE_MOVE, 1, pos_y },
     { TRANSFORM_TYPE_MOVE, 2, 20 + pos_z },
@@ -60,6 +81,7 @@ std::vector<Transform> Model::left_foot_transforms() {
 std::vector<Transform> Model::right_foot_transforms() {
   return {
     { TRANSFORM_TYPE_ROTATE, 0, -90 },
+    { TRANSFORM_TYPE_ROTATE, 1, right_wheel_pos },
     { TRANSFORM_TYPE_MOVE, 0, 75 + pos_x },
     { TRANSFORM_TYPE_MOVE, 1, pos_y },
     { TRANSFORM_TYPE_MOVE, 2, 20 + pos_z },
