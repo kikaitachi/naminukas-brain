@@ -68,7 +68,7 @@ void Model::rotate(double delta_x, double delta_y, double delta_z) {
 std::vector<Transform> Model::left_foot_transforms() {
   return {
     { TRANSFORM_TYPE_ROTATE, 0, -90 },
-    { TRANSFORM_TYPE_ROTATE, 1, left_wheel_pos },
+    { TRANSFORM_TYPE_ROTATE, 2, left_wheel_pos },
     { TRANSFORM_TYPE_MOVE, 0, -75 + pos_x },
     { TRANSFORM_TYPE_MOVE, 1, pos_y },
     { TRANSFORM_TYPE_MOVE, 2, 20 + pos_z },
@@ -81,7 +81,7 @@ std::vector<Transform> Model::left_foot_transforms() {
 std::vector<Transform> Model::right_foot_transforms() {
   return {
     { TRANSFORM_TYPE_ROTATE, 0, -90 },
-    { TRANSFORM_TYPE_ROTATE, 1, right_wheel_pos },
+    { TRANSFORM_TYPE_ROTATE, 2, right_wheel_pos },
     { TRANSFORM_TYPE_MOVE, 0, 75 + pos_x },
     { TRANSFORM_TYPE_MOVE, 1, pos_y },
     { TRANSFORM_TYPE_MOVE, 2, 20 + pos_z },
