@@ -1,6 +1,8 @@
 #ifndef NAMINUKAS_BRAIN_ROBOT_H_
 #define NAMINUKAS_BRAIN_ROBOT_H_
 
+#include <list>
+
 #include "Camera.hpp"
 #include "Hardware.hpp"
 #include "IMU.hpp"
@@ -18,6 +20,7 @@ class Robot {
     hardware::Kinematics& kinematics;
     telemetry::Items& telemetryItems;
     telemetry::ItemString* mode;
+    std::list<Locomotion*> locomotion_modes;
     Locomotion* current_locomotion_mode;
     Model* model;
 
