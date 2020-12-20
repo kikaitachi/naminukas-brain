@@ -32,7 +32,7 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
   telemetryItems.add_item(freeMemory);
 
   telemetry::ItemFloat* battery = new telemetry::ItemFloat(
-    machine->getId(), "Battery, V", 0);
+    machine->getId(), "Battery (min 7.4), V", 0);
   telemetryItems.add_item(battery);
   telemetry::ItemFloat* charger = new telemetry::ItemFloat(
     machine->getId(), "Charger, V", 0);
