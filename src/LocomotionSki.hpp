@@ -1,8 +1,6 @@
 #ifndef NAMINUKAS_BRAIN_LOCOMOTION_SKI_H_
 #define NAMINUKAS_BRAIN_LOCOMOTION_SKI_H_
 
-#include <thread>
-
 #include "IMU.hpp"
 #include "Locomotion.hpp"
 
@@ -15,8 +13,9 @@ class LocomotionSki: public Locomotion {
   public:
     LocomotionSki(hardware::Kinematics& kinematics, IMU& imu);
     std::string name();
-    void start();
-    void stop();
+    void control_loop();
+    void on_start();
+    void on_stop();
     void up(bool key_down);
     void down(bool key_down);
     void left(bool key_down);
@@ -25,13 +24,12 @@ class LocomotionSki: public Locomotion {
   protected:
     hardware::Kinematics& kinematics;
     IMU& imu;
-    std::thread* odometry_thread;
-    bool stopped = true;
     const float max_rpm = 20;
     const float turn_rpm = 10;
     const float initial_ankle_angle = 360.0 / 16;
     const float max_ankle_change = 20;
     const float expected_pitch = 25.7;
+    float prev_error;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_SKI_H_

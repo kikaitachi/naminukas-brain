@@ -2,14 +2,34 @@
 #include "Logger.hpp"
 
 LocomotionSki::LocomotionSki(hardware::Kinematics& kinematics, IMU& imu)
-    : kinematics(kinematics), imu(imu) {
+    : Locomotion(200), kinematics(kinematics), imu(imu) {
 }
 
 std::string LocomotionSki::name() {
   return "Ski";
 }
 
-void LocomotionSki::start() {
+void LocomotionSki::control_loop() {
+  float pitch = imu.get_pitch();
+  float error = pitch - expected_pitch;
+  float p = 2.5;
+  float d = 0.1;
+  float input = error * p + (error - prev_error) * d;
+  //logger::debug("pitch: %f, error: %f, input: %f", pitch, error, input);
+  if (input < -max_ankle_change) {
+      input = -max_ankle_change;
+  }
+  if (input > max_ankle_change) {
+      input = max_ankle_change;
+  }
+  kinematics.set_joint_position({
+    { hardware::Joint::left_ankle, initial_ankle_angle + input },
+    { hardware::Joint::right_ankle, initial_ankle_angle + input }
+  });
+  prev_error = error;
+}
+
+void LocomotionSki::on_start() {
   if (stopped) {
     kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
     kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
@@ -23,43 +43,15 @@ void LocomotionSki::start() {
       { hardware::Joint::left_wheel, max_rpm },
       { hardware::Joint::right_wheel, max_rpm }
     });
-    odometry_thread = new std::thread([&]() {
-      stopped = false;
-      float prev_error = 0;
-      while (!stopped) {
-        float pitch = imu.get_pitch();
-        float error = pitch - expected_pitch;
-        float p = 2.5;
-        float d = 0.1;
-        float input = error * p + (error - prev_error) * d;
-        //logger::debug("pitch: %f, error: %f, input: %f", pitch, error, input);
-        if (input < -max_ankle_change) {
-            input = -max_ankle_change;
-        }
-        if (input > max_ankle_change) {
-            input = max_ankle_change;
-        }
-        kinematics.set_joint_position({
-          { hardware::Joint::left_ankle, initial_ankle_angle + input },
-          { hardware::Joint::right_ankle, initial_ankle_angle + input }
-        });
-        prev_error = error;
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-      }
-    });
+    prev_error = 0;
   }
 }
 
-void LocomotionSki::stop() {
-  if (!stopped) {
-    kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
-    kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
-    kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
-    kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
-    stopped = true;
-    odometry_thread->join();
-    delete odometry_thread;
-  }
+void LocomotionSki::on_stop() {
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
 
 void LocomotionSki::up(bool key_down) {

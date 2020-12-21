@@ -7,7 +7,6 @@ class LocomotionIdle: public Locomotion {
   public:
     LocomotionIdle(hardware::Kinematics& kinematics);
     std::string name();
-    void start();
 
   protected:
     hardware::Kinematics& kinematics;
