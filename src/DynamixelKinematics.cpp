@@ -41,7 +41,7 @@ void DynamixelKinematics::set_joint_control_mode(
     case hardware::JointControlMode::position:
       dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 0 } });
       dynamixel_connection->write(dynamixel_XM430W350.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_VELOCITY_BASED } });
-      dynamixel_connection->write(dynamixel_XM430W350.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_POSITION } });
+      dynamixel_connection->write(dynamixel_XM430W350.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION } });
       dynamixel_connection->write(dynamixel_XM430W350.profile_acceleration(), { { id, dynamixel_XM430W350.rpm2_to_value(max_acceleration) } });
       dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 1 } });
       break;
@@ -55,7 +55,7 @@ void DynamixelKinematics::set_joint_control_mode(
     case hardware::JointControlMode::time:
       dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 0 } });
       dynamixel_connection->write(dynamixel_XM430W350.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_TIME_BASED } });
-      dynamixel_connection->write(dynamixel_XM430W350.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_POSITION } });
+      dynamixel_connection->write(dynamixel_XM430W350.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION } });
       dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 1 } });
       break;
     default:
