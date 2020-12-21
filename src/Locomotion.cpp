@@ -13,9 +13,12 @@ void Locomotion::control_loop() {
 void Locomotion::start() {
   if (stopped) {
     on_start();
+    stopped = false;
     control_loop_thread = new std::thread([&]() {
-      control_loop();
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000 / control_loop_frequency));
+      while (!stopped) {
+        control_loop();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / control_loop_frequency));
+      }
     });
   }
 }
