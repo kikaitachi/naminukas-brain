@@ -1,6 +1,7 @@
 #include "LocomotionIdle.hpp"
 #include "LocomotionPole.hpp"
 #include "LocomotionPoleGestures.hpp"
+#include "LocomotionSegway.hpp"
 #include "LocomotionSki.hpp"
 #include "LocomotionUnicycle.hpp"
 #include "Logger.hpp"
@@ -33,9 +34,10 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
 
   add_locomotion(locomotion_idle, "Escape");
   add_locomotion(new LocomotionPole(kinematics, *model), "Digit1");
-  add_locomotion(new LocomotionPoleGestures(kinematics, *model, camera), "Digit2");
+  add_locomotion(new LocomotionSegway(kinematics, imu), "Digit2");
   add_locomotion(new LocomotionSki(kinematics, imu), "Digit3");
   add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit4");
+  add_locomotion(new LocomotionPoleGestures(kinematics, *model, camera), "Digit5");
 
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
     mode->getId(), "Up", "ArrowUp", [&](int value) {

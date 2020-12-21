@@ -18,7 +18,10 @@ void LocomotionUnicycle::on_start() {
 }
 
 void LocomotionUnicycle::on_stop() {
-  // TODO: implement
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
 
 void LocomotionUnicycle::up(bool key_down) {

@@ -38,6 +38,7 @@ void LocomotionPole::on_start() {
     { hardware::Joint::left_ankle, initial_ankle_angle + 10 },
     { hardware::Joint::right_ankle, initial_ankle_angle - 10 },
   });
+  // TODO: init odometry
   std::vector<hardware::JointPosition> previous_angles = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel,

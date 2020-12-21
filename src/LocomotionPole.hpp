@@ -20,7 +20,6 @@ class LocomotionPole: public Locomotion {
     hardware::Kinematics& kinematics;
     Model& model;
     const double max_rpm = 20;
-    const double initial_ankle_angle = 360.0 / 16;
 
     void halt();
 };
