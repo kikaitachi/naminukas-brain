@@ -1,4 +1,5 @@
 #include "LocomotionSegway.hpp"
+#include "Logger.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(200), kinematics(kinematics), imu(imu) {
@@ -17,10 +18,11 @@ void LocomotionSegway::control_loop() {
   float pitch = imu.get_pitch();
   float error = pitch - expected_pitch;
   float p = 2.5;
-  float d = 0.1;
+  float d = 0;
   float input = error * p + (error - prev_error) * d;
+  //logger::debug("curr_pos: [%f %f], input: %f", curr_pos[0].degrees, curr_pos[1].degrees, input);
   kinematics.set_joint_position({
-    { hardware::Joint::left_wheel, curr_pos[0].degrees + input },
+    { hardware::Joint::left_wheel, curr_pos[0].degrees - input },
     { hardware::Joint::right_wheel, curr_pos[1].degrees + input }
   });
   prev_error = error;
