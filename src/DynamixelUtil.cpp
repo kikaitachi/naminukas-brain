@@ -139,7 +139,7 @@ bool DynamixelConnection::write(DynamixelControlItem item, std::vector<Dynamixel
 }
 
 std::vector<int> DynamixelConnection::read(DynamixelControlItem item, std::vector<int> ids) {
-  std::vector<int> result(ids.size());
+  std::vector<int> result;
   if (packet_handler == NULL) {
     return result;
   }
