@@ -10,7 +10,20 @@ std::string LocomotionSegway::name() {
 }
 
 void LocomotionSegway::control_loop() {
-  // TODO: implement
+  std::vector<hardware::JointPosition> curr_pos = kinematics.get_joint_position({
+    hardware::Joint::left_wheel,
+    hardware::Joint::right_wheel
+  });
+  float pitch = imu.get_pitch();
+  float error = pitch - expected_pitch;
+  float p = 2.5;
+  float d = 0.1;
+  float input = error * p + (error - prev_error) * d;
+  kinematics.set_joint_position({
+    { hardware::Joint::left_wheel, curr_pos[0].degrees + input },
+    { hardware::Joint::right_wheel, curr_pos[1].degrees + input }
+  });
+  prev_error = error;
 }
 
 void LocomotionSegway::on_start() {
@@ -22,6 +35,7 @@ void LocomotionSegway::on_start() {
     { hardware::Joint::left_ankle, initial_ankle_angle - 90 },
     { hardware::Joint::right_ankle, initial_ankle_angle + 90 },
   });
+  prev_error = 0;
 }
 
 void LocomotionSegway::on_stop() {

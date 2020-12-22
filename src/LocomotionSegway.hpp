@@ -20,6 +20,8 @@ class LocomotionSegway: public Locomotion {
   protected:
     hardware::Kinematics& kinematics;
     IMU& imu;
+    const float expected_pitch = 0;
+    float prev_error;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_SEGWAY_H_
