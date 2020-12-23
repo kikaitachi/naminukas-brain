@@ -24,6 +24,7 @@ class Locomotion {
   protected:
     bool stopped = true;
     const double initial_ankle_angle = 360.0 / 16;
+    uint64_t control_loop_nanos;
 
   private:
     int control_loop_frequency;

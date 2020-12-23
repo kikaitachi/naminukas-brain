@@ -2,6 +2,7 @@
 
 Locomotion::Locomotion(int control_loop_frequency)
     : control_loop_frequency(control_loop_frequency) {
+  control_loop_nanos = 1000000000 / control_loop_frequency;
 }
 
 Locomotion::~Locomotion() {
@@ -15,7 +16,6 @@ void Locomotion::start() {
     on_start();
     stopped = false;
     control_loop_thread = new std::thread([&]() {
-      uint64_t control_loop_nanos = 1000000000 / control_loop_frequency;
       struct timespec last_control_loop_time;
       clock_gettime(CLOCK_MONOTONIC, &last_control_loop_time);
       while (!stopped) {
