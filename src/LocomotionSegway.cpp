@@ -2,7 +2,7 @@
 #include "Logger.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(200), kinematics(kinematics), imu(imu) {
+    : Locomotion(100), kinematics(kinematics), imu(imu) {
   //
 }
 
@@ -25,6 +25,8 @@ void LocomotionSegway::control_loop() {
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
+  // TODO: estimate RPM
+  // TODO: control expected_pitch to limit max speed (20 RPM?)
   float pitch = imu.get_pitch();
   float error = pitch - expected_pitch;
   float p = 2.5;
@@ -38,6 +40,7 @@ void LocomotionSegway::control_loop() {
     { hardware::Joint::right_wheel, curr_pos[1].degrees + input + right_wheel_bias }
   });
   prev_error = error;
+  prev_pos = curr_pos;
 }
 
 void LocomotionSegway::on_start() {
@@ -54,6 +57,7 @@ void LocomotionSegway::on_start() {
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
+  prev_pos = expected_pos;
 }
 
 void LocomotionSegway::on_stop() {

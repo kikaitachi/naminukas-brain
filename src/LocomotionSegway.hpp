@@ -24,6 +24,7 @@ class LocomotionSegway: public Locomotion {
     const float expected_pitch = 0;
     float prev_error;
     std::vector<hardware::JointPosition> expected_pos;
+    std::vector<hardware::JointPosition> prev_pos;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_SEGWAY_H_

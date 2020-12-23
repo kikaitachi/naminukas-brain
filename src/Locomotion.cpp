@@ -15,9 +15,16 @@ void Locomotion::start() {
     on_start();
     stopped = false;
     control_loop_thread = new std::thread([&]() {
+      uint64_t control_loop_nanos = 1000000000 / control_loop_frequency;
+      struct timespec last_control_loop_time;
+      clock_gettime(CLOCK_MONOTONIC, &last_control_loop_time);
       while (!stopped) {
         control_loop();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / control_loop_frequency));
+        struct timespec now;
+        clock_gettime(CLOCK_MONOTONIC, &now);
+        uint64_t elapsed_nanos = (now.tv_sec - last_control_loop_time.tv_sec) * 1000000000 + (now.tv_nsec - last_control_loop_time.tv_nsec);
+        last_control_loop_time = now;
+        std::this_thread::sleep_for(std::chrono::nanoseconds(control_loop_nanos - elapsed_nanos));
       }
     });
   }

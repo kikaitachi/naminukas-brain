@@ -2,7 +2,7 @@
 #include "Logger.hpp"
 
 LocomotionSki::LocomotionSki(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(200), kinematics(kinematics), imu(imu) {
+    : Locomotion(100), kinematics(kinematics), imu(imu) {
 }
 
 std::string LocomotionSki::name() {
