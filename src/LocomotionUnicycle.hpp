@@ -20,6 +20,10 @@ class LocomotionUnicycle: public Locomotion {
   protected:
     hardware::Kinematics& kinematics;
     IMU& imu;
+    float prev_rpm;
+    float goal_rpm;
+    std::vector<hardware::JointPosition> expected_pos;
+    std::vector<hardware::JointPosition> prev_pos;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_UNICYCLE_H_

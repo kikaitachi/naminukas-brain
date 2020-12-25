@@ -20,10 +20,8 @@ class LocomotionSegway: public Locomotion {
   protected:
     hardware::Kinematics& kinematics;
     IMU& imu;
-    const float max_bias = 1;
-    const float expected_pitch = 0;
-    float prev_error;
     float prev_rpm;
+    float goal_rpm;
     std::vector<hardware::JointPosition> expected_pos;
     std::vector<hardware::JointPosition> prev_pos;
 };

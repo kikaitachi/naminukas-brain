@@ -1,16 +1,14 @@
 #include "LocomotionSegway.hpp"
-#include "Logger.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu) {
-  //
 }
 
 std::string LocomotionSegway::name() {
   return "Segway";
 }
 
-float clamp(float value, float min, float max) {
+static float clamp(float value, float min, float max) {
   if (value < min) {
     return min;
   }
@@ -32,22 +30,15 @@ void LocomotionSegway::control_loop() {
   float rpm_avg = (rpm_left + rpm_right) / 2;
   float new_rpm = RPM_ALPHA * rpm_avg + (1 - RPM_ALPHA) * prev_rpm;
   prev_rpm = new_rpm;
-  // TODO: control expected_pitch to limit max speed (20 RPM?)
-  float goal_rpm = 0;
   float goal_pitch = (new_rpm - goal_rpm) * 0.2;
   float pitch = imu.get_pitch();
-  float error = pitch - goal_pitch;//expected_pitch;
+  float error = pitch - goal_pitch;
   float p = 2.5;
-  float d = 0;
-  float input = error * p + (error - prev_error) * d;
-  //logger::debug("rpm left: %f, right: %f, avg: %f, filtered: %f", rpm_left, rpm_right, rpm_avg, new_rpm);
-  float left_wheel_bias = clamp(expected_pos[0].degrees - curr_pos[0].degrees, -max_bias, max_bias);
-  float right_wheel_bias = clamp(expected_pos[1].degrees - curr_pos[1].degrees, -max_bias, max_bias);
+  float input = error * p;
   kinematics.set_joint_position({
-    { hardware::Joint::left_wheel, curr_pos[0].degrees - input + left_wheel_bias },
-    { hardware::Joint::right_wheel, curr_pos[1].degrees + input + right_wheel_bias }
+    { hardware::Joint::left_wheel, curr_pos[0].degrees - input },
+    { hardware::Joint::right_wheel, curr_pos[1].degrees + input }
   });
-  prev_error = error;
   prev_pos = curr_pos;
 }
 
@@ -60,8 +51,8 @@ void LocomotionSegway::on_start() {
     { hardware::Joint::left_ankle, initial_ankle_angle - 90 },
     { hardware::Joint::right_ankle, initial_ankle_angle + 90 },
   });
-  prev_error = 0;
   prev_rpm = 0;
+  goal_rpm = 0;
   expected_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
@@ -77,9 +68,17 @@ void LocomotionSegway::on_stop() {
 }
 
 void LocomotionSegway::up(bool key_down) {
-  // TODO: implement
+  if (key_down) {
+    goal_rpm = 5;
+  } else {
+    goal_rpm = 0;
+  }
 }
 
 void LocomotionSegway::down(bool key_down) {
-  // TODO: implement
+  if (key_down) {
+    goal_rpm = -5;
+  } else {
+    goal_rpm = 0;
+  }
 }
