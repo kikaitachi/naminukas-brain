@@ -35,12 +35,12 @@ void LocomotionUnicycle::control_loop() {
   float pitch_input = error * 2.5;
 
   float roll = imu.get_roll();
-  float goal_roll = 75;
-  float roll_input = (roll - goal_roll) * 0.1;
+  float goal_roll = 64;
+  float roll_input = (roll - goal_roll) * 2.1;
 
   kinematics.set_joint_position({
     { hardware::Joint::right_ankle, clamp(curr_pos[0].degrees + roll_input, initial_ankle_angle - 45, initial_ankle_angle + 45) },
-    { hardware::Joint::right_wheel, curr_pos[1].degrees + pitch_input }
+    { hardware::Joint::right_wheel, curr_pos[1].degrees /*+ pitch_input*/ }
   });
   prev_pos = curr_pos;
   logger::debug("roll: %f, pitch: %f", roll, pitch);

@@ -69,7 +69,7 @@ void LocomotionSegway::on_stop() {
 
 void LocomotionSegway::up(bool key_down) {
   if (key_down) {
-    goal_rpm = 5;
+    goal_rpm = 10;
   } else {
     goal_rpm = 0;
   }
@@ -77,7 +77,7 @@ void LocomotionSegway::up(bool key_down) {
 
 void LocomotionSegway::down(bool key_down) {
   if (key_down) {
-    goal_rpm = -5;
+    goal_rpm = -10;
   } else {
     goal_rpm = 0;
   }
