@@ -118,7 +118,7 @@ namespace telemetry {
   // ItemCommand ***************************************************************
 
   ItemCommand::ItemCommand(
-      int parent_id, std::string name, std::string value, std::function<void(int, std::set<std::string>)> action, std::vector<std::string> modifiers)
+      int parent_id, std::string name, std::string value, std::function<void(int, std::set<std::string>&)> action, std::vector<std::string> modifiers)
       : Item(parent_id, TYPE_ACTION, name), value(value), action(action), modifiers(modifiers) {
   }
 

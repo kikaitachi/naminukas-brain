@@ -17,10 +17,10 @@ class Locomotion {
     void stop();
     virtual void on_start();
     virtual void on_stop();
-    virtual void up(bool key_down, std::set<std::string> modifiers);
-    virtual void down(bool key_down, std::set<std::string> modifiers);
-    virtual void left(bool key_down, std::set<std::string> modifiers);
-    virtual void right(bool key_down, std::set<std::string> modifiers);
+    virtual void up(bool key_down, std::set<std::string>& modifiers);
+    virtual void down(bool key_down, std::set<std::string>& modifiers);
+    virtual void left(bool key_down, std::set<std::string>& modifiers);
+    virtual void right(bool key_down, std::set<std::string>& modifiers);
 
   protected:
     bool stopped = true;

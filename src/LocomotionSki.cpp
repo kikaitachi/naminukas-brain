@@ -54,7 +54,7 @@ void LocomotionSki::on_stop() {
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
 
-void LocomotionSki::up(bool key_down, std::set<std::string> modifiers) {
+void LocomotionSki::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
   } else {
@@ -62,7 +62,7 @@ void LocomotionSki::up(bool key_down, std::set<std::string> modifiers) {
   }
 }
 
-void LocomotionSki::down(bool key_down, std::set<std::string> modifiers) {
+void LocomotionSki::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
   } else {
@@ -70,7 +70,7 @@ void LocomotionSki::down(bool key_down, std::set<std::string> modifiers) {
   }
 }
 
-void LocomotionSki::left(bool key_down, std::set<std::string> modifiers) {
+void LocomotionSki::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm + turn_rpm }, { hardware::Joint::right_wheel, max_rpm - turn_rpm } });
   } else {
@@ -78,7 +78,7 @@ void LocomotionSki::left(bool key_down, std::set<std::string> modifiers) {
   }
 }
 
-void LocomotionSki::right(bool key_down, std::set<std::string> modifiers) {
+void LocomotionSki::right(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm - turn_rpm }, { hardware::Joint::right_wheel, max_rpm + turn_rpm } });
   } else {

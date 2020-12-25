@@ -45,14 +45,14 @@ void Locomotion::on_start() {
 void Locomotion::on_stop() {
 }
 
-void Locomotion::up(bool key_down, std::set<std::string> modifiers) {
+void Locomotion::up(bool key_down, std::set<std::string>& modifiers) {
 }
 
-void Locomotion::down(bool key_down, std::set<std::string> modifiers) {
+void Locomotion::down(bool key_down, std::set<std::string>& modifiers) {
 }
 
-void Locomotion::left(bool key_down, std::set<std::string> modifiers) {
+void Locomotion::left(bool key_down, std::set<std::string>& modifiers) {
 }
 
-void Locomotion::right(bool key_down, std::set<std::string> modifiers) {
+void Locomotion::right(bool key_down, std::set<std::string>& modifiers) {
 }
