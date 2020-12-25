@@ -16,10 +16,10 @@ class LocomotionSki: public Locomotion {
     void control_loop();
     void on_start();
     void on_stop();
-    void up(bool key_down);
-    void down(bool key_down);
-    void left(bool key_down);
-    void right(bool key_down);
+    void up(bool key_down, std::set<std::string> modifiers);
+    void down(bool key_down, std::set<std::string> modifiers);
+    void left(bool key_down, std::set<std::string> modifiers);
+    void right(bool key_down, std::set<std::string> modifiers);
 
   protected:
     hardware::Kinematics& kinematics;

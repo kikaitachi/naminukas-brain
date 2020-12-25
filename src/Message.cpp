@@ -92,6 +92,17 @@ namespace message {
     return 0;
   }
 
+  std::string read_string(void **buf, int *buf_len) {
+    int length;
+    if (read_int(buf, buf_len, &length) == -1) {
+      return "";
+    }
+    char data[length + 1];
+    read_data(buf, buf_len, data, length);
+    data[length] = 0;
+    return std::string(data);
+  }
+
   int write_string(void **buf, int *buf_len, std::string value) {
     if (write_unsigned_integer(buf, buf_len, value.length()) == -1) {
       return -1;

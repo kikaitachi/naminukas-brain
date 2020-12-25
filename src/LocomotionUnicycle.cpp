@@ -71,7 +71,7 @@ void LocomotionUnicycle::on_stop() {
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
 
-void LocomotionUnicycle::up(bool key_down) {
+void LocomotionUnicycle::up(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     goal_rpm = 5;
   } else {
@@ -79,7 +79,7 @@ void LocomotionUnicycle::up(bool key_down) {
   }
 }
 
-void LocomotionUnicycle::down(bool key_down) {
+void LocomotionUnicycle::down(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     goal_rpm = -5;
   } else {

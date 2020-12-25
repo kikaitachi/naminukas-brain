@@ -58,7 +58,7 @@ void LocomotionPole::halt() {
   kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
 }
 
-void LocomotionPole::up(bool key_down) {
+void LocomotionPole::up(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
   } else {
@@ -66,7 +66,7 @@ void LocomotionPole::up(bool key_down) {
   }
 }
 
-void LocomotionPole::down(bool key_down) {
+void LocomotionPole::down(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
   } else {
@@ -74,7 +74,7 @@ void LocomotionPole::down(bool key_down) {
   }
 }
 
-void LocomotionPole::left(bool key_down) {
+void LocomotionPole::left(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
   } else {
@@ -82,7 +82,7 @@ void LocomotionPole::left(bool key_down) {
   }
 }
 
-void LocomotionPole::right(bool key_down) {
+void LocomotionPole::right(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
   } else {

@@ -117,8 +117,9 @@ namespace telemetry {
 
   // ItemCommand ***************************************************************
 
-  ItemCommand::ItemCommand(int parent_id, std::string name, std::string value, std::function<void(int value)> action, std::vector<std::string> modifiers) :
-      Item(parent_id, TYPE_ACTION, name), value(value), action(action), modifiers(modifiers) {
+  ItemCommand::ItemCommand(
+      int parent_id, std::string name, std::string value, std::function<void(int, std::set<std::string>)> action, std::vector<std::string> modifiers)
+      : Item(parent_id, TYPE_ACTION, name), value(value), action(action), modifiers(modifiers) {
   }
 
   void ItemCommand::serialize_definition(void **buf, int *buf_len) {
@@ -132,7 +133,15 @@ namespace telemetry {
   void ItemCommand::deserialize_value(void **buf, int *buf_len) {
     int value;
     message::read_int(buf, buf_len, &value);
-    this->action(value);
+    std::set<std::string> modifiers;
+    for ( ; ; ) {
+      std::string modifier = message::read_string(buf, buf_len);
+      if (modifier.empty()) {
+        break;
+      }
+      modifiers.insert(modifier);
+    };
+    action(value, modifiers);
   }
 
   // ItemSTL *******************************************************************

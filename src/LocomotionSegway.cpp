@@ -83,7 +83,7 @@ void LocomotionSegway::on_stop() {
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
 
-void LocomotionSegway::up(bool key_down) {
+void LocomotionSegway::up(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     pos_speed = 2;
   } else {
@@ -91,7 +91,7 @@ void LocomotionSegway::up(bool key_down) {
   }
 }
 
-void LocomotionSegway::down(bool key_down) {
+void LocomotionSegway::down(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     pos_speed = -2;
   } else {
@@ -99,8 +99,11 @@ void LocomotionSegway::down(bool key_down) {
   }
 }
 
-void LocomotionSegway::left(bool key_down) {
+void LocomotionSegway::left(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
+    if (modifiers.find("RAlt") != modifiers.end()) {
+      // TODO: implement
+    }
     left_turn_speed = 3;
     right_turn_speed = -3;
   } else {
@@ -108,7 +111,7 @@ void LocomotionSegway::left(bool key_down) {
   }
 }
 
-void LocomotionSegway::right(bool key_down) {
+void LocomotionSegway::right(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
     left_turn_speed = -3;
     right_turn_speed = 3;

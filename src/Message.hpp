@@ -19,6 +19,8 @@ namespace message {
   int write_byte(void **buf, int *buf_len, uint8_t byte);
   int write_unsigned_integer(void **buf, int *buf_len, uint64_t value);
   int write_signed_integer(void **buf, int *buf_len, int64_t value);
+
+  std::string read_string(void **buf, int *buf_len);
   int write_string(void **buf, int *buf_len, std::string value);
 
   int write_float(void **buf, int *buf_len, float value);

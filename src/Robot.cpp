@@ -10,7 +10,7 @@
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
   locomotion_modes.push_back(locomotion);
   telemetryItems.add_item(new telemetry::ItemCommand(
-    mode->getId(), locomotion->name(), key, [=](int value) {
+    mode->getId(), locomotion->name(), key, [=](int value, std::set<std::string> modifiers) {
       if (value == 1) {
         logger::debug("Stopping locomotion: %s", current_locomotion_mode->name().c_str());
         current_locomotion_mode->stop();
@@ -40,26 +40,26 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   add_locomotion(new LocomotionPoleGestures(kinematics, *model, camera), "Digit5");
 
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
-    mode->getId(), "Up", "ArrowUp", [&](int value) {
-      current_locomotion_mode->up(value == 1);
+    mode->getId(), "Up", "ArrowUp", [&](int value, std::set<std::string> modifiers) {
+      current_locomotion_mode->up(value == 1, modifiers);
     }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
   telemetryItems.add_item(up);
 
   telemetry::ItemCommand* down = new telemetry::ItemCommand(
-    mode->getId(), "Down", "ArrowDown", [&](int value) {
-      current_locomotion_mode->down(value == 1);
+    mode->getId(), "Down", "ArrowDown", [&](int value, std::set<std::string> modifiers) {
+      current_locomotion_mode->down(value == 1, modifiers);
     }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
   telemetryItems.add_item(down);
 
   telemetry::ItemCommand* left = new telemetry::ItemCommand(
-    mode->getId(), "Left", "ArrowLeft", [&](int value) {
-      current_locomotion_mode->left(value == 1);
+    mode->getId(), "Left", "ArrowLeft", [&](int value, std::set<std::string> modifiers) {
+      current_locomotion_mode->left(value == 1, modifiers);
     }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
   telemetryItems.add_item(left);
 
   telemetry::ItemCommand* right = new telemetry::ItemCommand(
-    mode->getId(), "Right", "ArrowRight", [&](int value) {
-      current_locomotion_mode->right(value == 1);
+    mode->getId(), "Right", "ArrowRight", [&](int value, std::set<std::string> modifiers) {
+      current_locomotion_mode->right(value == 1, modifiers);
     }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
   telemetryItems.add_item(right);
 }
