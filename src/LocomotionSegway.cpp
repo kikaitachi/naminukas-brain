@@ -48,8 +48,8 @@ void LocomotionSegway::control_loop() {
   float p = 2.5;
   float input = error * p;
   kinematics.set_joint_position({
-    { hardware::Joint::left_wheel, curr_pos[0].degrees - input + turn_speed },
-    { hardware::Joint::right_wheel, curr_pos[1].degrees + input - turn_speed }
+    { hardware::Joint::left_wheel, curr_pos[0].degrees - input + left_turn_speed },
+    { hardware::Joint::right_wheel, curr_pos[1].degrees + input - right_turn_speed }
   });
   prev_pos = curr_pos;
   expected_pos[0].degrees += pos_speed;
@@ -73,7 +73,7 @@ void LocomotionSegway::on_start() {
     hardware::Joint::right_wheel
   });
   prev_pos = expected_pos;
-  pos_speed = turn_speed = 0;
+  pos_speed = left_turn_speed = right_turn_speed = 0;
 }
 
 void LocomotionSegway::on_stop() {
@@ -101,16 +101,18 @@ void LocomotionSegway::down(bool key_down) {
 
 void LocomotionSegway::left(bool key_down) {
   if (key_down) {
-    turn_speed = 1;
+    left_turn_speed = 3;
+    right_turn_speed = -3;
   } else {
-    turn_speed = 0;
+    left_turn_speed = right_turn_speed = 0;
   }
 }
 
 void LocomotionSegway::right(bool key_down) {
   if (key_down) {
-    turn_speed = -1;
+    left_turn_speed = -3;
+    right_turn_speed = 3;
   } else {
-    turn_speed = 0;
+    left_turn_speed = right_turn_speed = 0;
   }
 }
