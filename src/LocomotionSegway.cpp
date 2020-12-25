@@ -101,11 +101,13 @@ void LocomotionSegway::down(bool key_down, std::set<std::string> modifiers) {
 
 void LocomotionSegway::left(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
-    if (modifiers.find("RAlt") != modifiers.end()) {
-      // TODO: implement
+    if (modifiers.find("Control") != modifiers.end()) {
+      left_turn_speed = 0;
+      right_turn_speed = -6;
+    } else {
+      left_turn_speed = 3;
+      right_turn_speed = -3;
     }
-    left_turn_speed = 3;
-    right_turn_speed = -3;
   } else {
     left_turn_speed = right_turn_speed = 0;
   }
@@ -113,8 +115,13 @@ void LocomotionSegway::left(bool key_down, std::set<std::string> modifiers) {
 
 void LocomotionSegway::right(bool key_down, std::set<std::string> modifiers) {
   if (key_down) {
-    left_turn_speed = -3;
-    right_turn_speed = 3;
+    if (modifiers.find("Control") != modifiers.end()) {
+      left_turn_speed = -6;
+      right_turn_speed = 0;
+    } else {
+      left_turn_speed = -3;
+      right_turn_speed = 3;
+    }
   } else {
     left_turn_speed = right_turn_speed = 0;
   }

@@ -42,25 +42,25 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
     mode->getId(), "Up", "ArrowUp", [&](int value, std::set<std::string> modifiers) {
       current_locomotion_mode->up(value == 1, modifiers);
-    }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
+    }, { "Control", "Shift" });
   telemetryItems.add_item(up);
 
   telemetry::ItemCommand* down = new telemetry::ItemCommand(
     mode->getId(), "Down", "ArrowDown", [&](int value, std::set<std::string> modifiers) {
       current_locomotion_mode->down(value == 1, modifiers);
-    }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
+    }, { "Control", "Shift" });
   telemetryItems.add_item(down);
 
   telemetry::ItemCommand* left = new telemetry::ItemCommand(
     mode->getId(), "Left", "ArrowLeft", [&](int value, std::set<std::string> modifiers) {
       current_locomotion_mode->left(value == 1, modifiers);
-    }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
+    }, { "Control", "Shift" });
   telemetryItems.add_item(left);
 
   telemetry::ItemCommand* right = new telemetry::ItemCommand(
     mode->getId(), "Right", "ArrowRight", [&](int value, std::set<std::string> modifiers) {
       current_locomotion_mode->right(value == 1, modifiers);
-    }, { /*"ControlLeft", "ControlRight",*/ "AltLeft", "AltRight"/*, "ShiftLeft", "ShiftRight"*/ });
+    }, { "Control", "Shift" });
   telemetryItems.add_item(right);
 }
 
