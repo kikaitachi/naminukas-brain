@@ -25,6 +25,9 @@ void LocomotionSegway::control_loop() {
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
+
+  float goal_rpm = clamp(curr_pos[0].degrees - prev_pos[0].degrees, -20, 20);
+
   float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   float rpm_right = (-curr_pos[1].degrees + prev_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   float rpm_avg = (rpm_left + rpm_right) / 2;
@@ -40,6 +43,8 @@ void LocomotionSegway::control_loop() {
     { hardware::Joint::right_wheel, curr_pos[1].degrees + input }
   });
   prev_pos = curr_pos;
+  expected_pos[0].degrees += left_pos_speed;
+  expected_pos[1].degrees += right_pos_speed;
 }
 
 void LocomotionSegway::on_start() {
@@ -52,12 +57,12 @@ void LocomotionSegway::on_start() {
     { hardware::Joint::right_ankle, initial_ankle_angle + 90 },
   });
   prev_rpm = 0;
-  goal_rpm = 0;
   expected_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
   prev_pos = expected_pos;
+  left_pos_speed = right_pos_speed = 0;
 }
 
 void LocomotionSegway::on_stop() {
@@ -69,16 +74,34 @@ void LocomotionSegway::on_stop() {
 
 void LocomotionSegway::up(bool key_down) {
   if (key_down) {
-    goal_rpm = 18;
+    left_pos_speed = right_pos_speed = 1;
   } else {
-    goal_rpm = 0;
+    left_pos_speed = right_pos_speed = 0;
   }
 }
 
 void LocomotionSegway::down(bool key_down) {
   if (key_down) {
-    goal_rpm = -18;
+    left_pos_speed = right_pos_speed = -1;
   } else {
-    goal_rpm = 0;
+    left_pos_speed = right_pos_speed = 0;
+  }
+}
+
+void LocomotionSegway::left(bool key_down) {
+  if (key_down) {
+    left_pos_speed = 1;
+    right_pos_speed = -1;
+  } else {
+    left_pos_speed = right_pos_speed = 0;
+  }
+}
+
+void LocomotionSegway::right(bool key_down) {
+  if (key_down) {
+    left_pos_speed = -1;
+    right_pos_speed = 1;
+  } else {
+    left_pos_speed = right_pos_speed = 0;
   }
 }

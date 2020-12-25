@@ -16,12 +16,15 @@ class LocomotionSegway: public Locomotion {
     void on_stop();
     void up(bool key_down);
     void down(bool key_down);
+    void left(bool key_down);
+    void right(bool key_down);
 
   protected:
     hardware::Kinematics& kinematics;
     IMU& imu;
     float prev_rpm;
-    float goal_rpm;
+    float left_pos_speed;
+    float right_pos_speed;
     std::vector<hardware::JointPosition> expected_pos;
     std::vector<hardware::JointPosition> prev_pos;
 };
