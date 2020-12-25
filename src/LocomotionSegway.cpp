@@ -1,4 +1,5 @@
 #include "LocomotionSegway.hpp"
+#include "Logger.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu) {
@@ -26,7 +27,8 @@ void LocomotionSegway::control_loop() {
     hardware::Joint::right_wheel
   });
 
-  float goal_rpm = clamp(curr_pos[0].degrees - prev_pos[0].degrees, -20, 20);
+  float left_diff = expected_pos[0].degrees - curr_pos[0].degrees;
+  float goal_rpm = clamp(left_diff * 0.1, -20, 20);
 
   float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   float rpm_right = (-curr_pos[1].degrees + prev_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
@@ -45,6 +47,8 @@ void LocomotionSegway::control_loop() {
   prev_pos = curr_pos;
   expected_pos[0].degrees += left_pos_speed;
   expected_pos[1].degrees += right_pos_speed;
+
+  logger::debug("current RPM: %f, left diff: %f", new_rpm, left_diff);
 }
 
 void LocomotionSegway::on_start() {
