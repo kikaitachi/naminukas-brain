@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "LocomotionSegway.hpp"
 #include "Logger.hpp"
 
@@ -28,7 +30,12 @@ void LocomotionSegway::control_loop() {
   });
 
   float left_diff = expected_pos[0].degrees - curr_pos[0].degrees;
-  float goal_rpm = clamp(left_diff * 0.1, -20, 20);
+  float right_diff = curr_pos[1].degrees - expected_pos[1].degrees;
+  float avg_diff = (left_diff + right_diff) / 2;
+  if (fabs(avg_diff) < 10) {
+    avg_diff = 0;
+  }
+  float goal_rpm = clamp(avg_diff * 0.1, -20, 20);
 
   float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   float rpm_right = (-curr_pos[1].degrees + prev_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
@@ -41,14 +48,14 @@ void LocomotionSegway::control_loop() {
   float p = 2.5;
   float input = error * p;
   kinematics.set_joint_position({
-    { hardware::Joint::left_wheel, curr_pos[0].degrees - input },
-    { hardware::Joint::right_wheel, curr_pos[1].degrees + input }
+    { hardware::Joint::left_wheel, curr_pos[0].degrees - input + turn_speed },
+    { hardware::Joint::right_wheel, curr_pos[1].degrees + input - turn_speed }
   });
   prev_pos = curr_pos;
-  expected_pos[0].degrees += left_pos_speed;
-  expected_pos[1].degrees += right_pos_speed;
+  expected_pos[0].degrees += pos_speed;
+  expected_pos[1].degrees -= pos_speed;
 
-  logger::debug("current RPM: %f, left diff: %f", new_rpm, left_diff);
+  logger::debug("current RPM: %f, diff: %f", new_rpm, avg_diff);
 }
 
 void LocomotionSegway::on_start() {
@@ -66,7 +73,7 @@ void LocomotionSegway::on_start() {
     hardware::Joint::right_wheel
   });
   prev_pos = expected_pos;
-  left_pos_speed = right_pos_speed = 0;
+  pos_speed = turn_speed = 0;
 }
 
 void LocomotionSegway::on_stop() {
@@ -78,34 +85,32 @@ void LocomotionSegway::on_stop() {
 
 void LocomotionSegway::up(bool key_down) {
   if (key_down) {
-    left_pos_speed = right_pos_speed = 1;
+    pos_speed = 2;
   } else {
-    left_pos_speed = right_pos_speed = 0;
+    pos_speed = 0;
   }
 }
 
 void LocomotionSegway::down(bool key_down) {
   if (key_down) {
-    left_pos_speed = right_pos_speed = -1;
+    pos_speed = -2;
   } else {
-    left_pos_speed = right_pos_speed = 0;
+    pos_speed = 0;
   }
 }
 
 void LocomotionSegway::left(bool key_down) {
   if (key_down) {
-    left_pos_speed = 1;
-    right_pos_speed = -1;
+    turn_speed = 1;
   } else {
-    left_pos_speed = right_pos_speed = 0;
+    turn_speed = 0;
   }
 }
 
 void LocomotionSegway::right(bool key_down) {
   if (key_down) {
-    left_pos_speed = -1;
-    right_pos_speed = 1;
+    turn_speed = -1;
   } else {
-    left_pos_speed = right_pos_speed = 0;
+    turn_speed = 0;
   }
 }

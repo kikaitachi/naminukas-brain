@@ -23,8 +23,8 @@ class LocomotionSegway: public Locomotion {
     hardware::Kinematics& kinematics;
     IMU& imu;
     float prev_rpm;
-    float left_pos_speed;
-    float right_pos_speed;
+    float pos_speed;
+    float turn_speed;
     std::vector<hardware::JointPosition> expected_pos;
     std::vector<hardware::JointPosition> prev_pos;
 };
