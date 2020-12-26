@@ -50,18 +50,19 @@ set(COMMON_SOURCES
   src/Robot.cpp
   src/SystemTelemetry.cpp
   src/Client.cpp
-  src/Locomotion.cpp
-  src/LocomotionIdle.cpp
-  src/LocomotionPole.cpp
-  src/LocomotionPoleGestures.cpp
-  src/LocomotionSegway.cpp
-  src/LocomotionSki.cpp
-  src/LocomotionUnicycle.cpp
   src/BeagleBoneBlueIMU.cpp
   src/Model.cpp
   src/Transform.cpp
   src/Camera.cpp
   src/PIDController.cpp
+  src/locomotion/Locomotion.cpp
+  src/locomotion/LocomotionIdle.cpp
+  src/locomotion/LocomotionCaterpillar.cpp
+  src/locomotion/LocomotionPole.cpp
+  src/locomotion/LocomotionPoleGestures.cpp
+  src/locomotion/LocomotionSegway.cpp
+  src/locomotion/LocomotionSki.cpp
+  src/locomotion/LocomotionUnicycle.cpp
   ${DynamixelSDK_SRC})
 
 add_executable(${PROJECT_NAME}

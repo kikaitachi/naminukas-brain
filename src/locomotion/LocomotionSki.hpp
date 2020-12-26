@@ -1,7 +1,7 @@
 #ifndef NAMINUKAS_BRAIN_LOCOMOTION_SKI_H_
 #define NAMINUKAS_BRAIN_LOCOMOTION_SKI_H_
 
-#include "IMU.hpp"
+#include "../IMU.hpp"
 #include "Locomotion.hpp"
 
 /**

@@ -1,9 +1,9 @@
 #ifndef NAMINUKAS_BRAIN_LOCOMOTION_SEGWAY_H_
 #define NAMINUKAS_BRAIN_LOCOMOTION_SEGWAY_H_
 
-#include "IMU.hpp"
+#include "../IMU.hpp"
 #include "Locomotion.hpp"
-#include "PIDController.hpp"
+#include "../PIDController.hpp"
 
 /**
  * Segway like balancing on two wheels.

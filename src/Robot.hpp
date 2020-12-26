@@ -6,7 +6,7 @@
 #include "Camera.hpp"
 #include "Hardware.hpp"
 #include "IMU.hpp"
-#include "Locomotion.hpp"
+#include "locomotion/Locomotion.hpp"
 #include "Model.hpp"
 #include "Telemetry.hpp"
 

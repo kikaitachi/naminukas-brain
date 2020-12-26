@@ -1,7 +1,7 @@
 #ifndef NAMINUKAS_BRAIN_LOCOMOTION_POLE_GESTURES_H_
 #define NAMINUKAS_BRAIN_LOCOMOTION_POLE_GESTURES_H_
 
-#include "Camera.hpp"
+#include "../Camera.hpp"
 #include "LocomotionPole.hpp"
 
 class LocomotionPoleGestures: public LocomotionPole {

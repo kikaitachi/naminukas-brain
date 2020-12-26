@@ -1,5 +1,4 @@
 #include "LocomotionSki.hpp"
-#include "Logger.hpp"
 
 LocomotionSki::LocomotionSki(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu) {

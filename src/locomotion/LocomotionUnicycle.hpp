@@ -1,11 +1,12 @@
 #ifndef NAMINUKAS_BRAIN_LOCOMOTION_UNICYCLE_H_
 #define NAMINUKAS_BRAIN_LOCOMOTION_UNICYCLE_H_
 
-#include "IMU.hpp"
+#include "../IMU.hpp"
 #include "Locomotion.hpp"
 
 /**
- * Attempt to drive on a single wheel.
+ * An attempt to drive on a single wheel.
+ * Far from successful yet.
  */
 class LocomotionUnicycle: public Locomotion {
   public:

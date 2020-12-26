@@ -5,7 +5,8 @@
 #include <string>
 #include <thread>
 
-#include "Hardware.hpp"
+#include "../Hardware.hpp"
+#include "../Logger.hpp"
 
 class Locomotion {
   public:

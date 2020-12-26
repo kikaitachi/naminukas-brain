@@ -1,5 +1,4 @@
 #include "LocomotionPole.hpp"
-#include "Logger.hpp"
 
 LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model)
     : Locomotion(10), kinematics(kinematics), model(model) {

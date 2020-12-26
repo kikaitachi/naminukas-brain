@@ -1,5 +1,4 @@
 #include "LocomotionUnicycle.hpp"
-#include "Logger.hpp"
 
 LocomotionUnicycle::LocomotionUnicycle(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu) {

@@ -2,7 +2,6 @@
 #include <limits>
 
 #include "LocomotionSegway.hpp"
-#include "Logger.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu),

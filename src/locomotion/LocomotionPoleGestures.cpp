@@ -1,7 +1,6 @@
 #include <cmath>
 #include <limits>
 
-#include "Logger.hpp"
 #include "LocomotionPoleGestures.hpp"
 
 #define MAX_RPM 40
