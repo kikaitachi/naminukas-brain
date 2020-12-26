@@ -55,7 +55,8 @@ void LocomotionSegway::control_loop() {
   expected_pos[0].degrees += pos_speed;
   expected_pos[1].degrees -= pos_speed;
 
-  logger::debug("current RPM: %f, diff: %f", new_rpm, avg_diff);
+  logger::debug("current RPM: %f, diff: %f, speed fitness: %f, pitch fitness: %f",
+    new_rpm, avg_diff, speed_controller.get_fitness(), pitch_controller.get_fitness());
 }
 
 void LocomotionSegway::on_start() {
