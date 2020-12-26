@@ -61,6 +61,7 @@ set(COMMON_SOURCES
   src/Model.cpp
   src/Transform.cpp
   src/Camera.cpp
+  src/PIDController.cpp
   ${DynamixelSDK_SRC})
 
 add_executable(${PROJECT_NAME}

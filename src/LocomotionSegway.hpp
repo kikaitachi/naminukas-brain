@@ -3,6 +3,7 @@
 
 #include "IMU.hpp"
 #include "Locomotion.hpp"
+#include "PIDController.hpp"
 
 /**
  * Segway like balancing on two wheels.
@@ -22,6 +23,8 @@ class LocomotionSegway: public Locomotion {
   protected:
     hardware::Kinematics& kinematics;
     IMU& imu;
+    PIDController speed_controller;
+    PIDController pitch_controller;
     float prev_rpm;
     float pos_speed;
     float left_turn_speed, right_turn_speed;

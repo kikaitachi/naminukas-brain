@@ -1,10 +1,13 @@
 #include <cmath>
+#include <limits>
 
 #include "LocomotionSegway.hpp"
 #include "Logger.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(100), kinematics(kinematics), imu(imu) {
+    : Locomotion(100), kinematics(kinematics), imu(imu),
+    speed_controller(0.2, 0, 0, 0, -45, 45),
+    pitch_controller(2.5, 0, 0, 0, std::numeric_limits<float>::min(), std::numeric_limits<float>::max()) {
 }
 
 std::string LocomotionSegway::name() {
@@ -42,11 +45,8 @@ void LocomotionSegway::control_loop() {
   float rpm_avg = (rpm_left + rpm_right) / 2;
   float new_rpm = RPM_ALPHA * rpm_avg + (1 - RPM_ALPHA) * prev_rpm;
   prev_rpm = new_rpm;
-  float goal_pitch = (new_rpm - goal_rpm) * 0.2;
-  float pitch = imu.get_pitch();
-  float error = pitch - goal_pitch;
-  float p = 2.5;
-  float input = error * p;
+  float goal_pitch = speed_controller.input(new_rpm, goal_rpm);
+  float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
   kinematics.set_joint_position({
     { hardware::Joint::left_wheel, curr_pos[0].degrees - input + left_turn_speed },
     { hardware::Joint::right_wheel, curr_pos[1].degrees + input - right_turn_speed }
@@ -68,6 +68,8 @@ void LocomotionSegway::on_start() {
     { hardware::Joint::right_ankle, initial_ankle_angle + 90 },
   });
   prev_rpm = 0;
+  speed_controller.reset();
+  pitch_controller.reset();
   expected_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
