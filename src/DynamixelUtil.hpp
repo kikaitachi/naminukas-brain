@@ -17,6 +17,8 @@
 #define DYNAMIXEL_OPERATING_MODE_CURRENT_BASED_POSITION 5
 #define DYNAMIXEL_OPERATING_MODE_PWM 16
 
+#define DYNAMIXEL_PROFILE_IN_PROGRESS 2
+
 class DynamixelControlItem {
   public:
     int address, size;

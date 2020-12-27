@@ -95,3 +95,16 @@ std::vector<hardware::JointPosition> DynamixelKinematics::get_joint_position(std
   }
   return result;
 }
+
+bool DynamixelKinematics::reached_destination(std::vector<hardware::Joint> joints) {
+  std::vector<int> ids;
+  for (auto& joint : joints) {
+    ids.push_back(joint2id(joint));
+  }
+  for (int moving_status : dynamixel_connection->read(dynamixel_XM430W350.moving_status(), ids)) {
+    if ((moving_status & DYNAMIXEL_PROFILE_IN_PROGRESS) != 0) {
+      return false;
+    }
+  }
+  return true;
+}

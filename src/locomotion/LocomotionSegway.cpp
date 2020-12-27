@@ -5,7 +5,7 @@
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu),
-    speed_controller(0.2, 0, 0, 0, -45, 45),
+    speed_controller(0.2, 0, 0, 0, std::numeric_limits<float>::min(), std::numeric_limits<float>::max()),
     pitch_controller(2.5, 0, 0, 0, std::numeric_limits<float>::min(), std::numeric_limits<float>::max()) {
 }
 
@@ -37,7 +37,7 @@ void LocomotionSegway::control_loop() {
   if (fabs(avg_diff) < 10) {
     avg_diff = 0;
   }
-  float goal_rpm = clamp(avg_diff * 0.1, -20, 20);
+  float goal_rpm = clamp(avg_diff * 0.1, -30, 30);
 
   float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   float rpm_right = (-curr_pos[1].degrees + prev_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
@@ -79,6 +79,16 @@ void LocomotionSegway::on_start() {
 }
 
 void LocomotionSegway::on_stop() {
+  // Move ankles to walking position
+  kinematics.set_joint_position({
+    { hardware::Joint::left_ankle, initial_ankle_angle },
+    { hardware::Joint::right_ankle, initial_ankle_angle },
+  });
+  // Wait until ankles reached desired position (balancing is still in progress until this method finishes)
+  while (!kinematics.reached_destination({ hardware::Joint::left_ankle, hardware::Joint::right_ankle })) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  // Power down motors
   kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
