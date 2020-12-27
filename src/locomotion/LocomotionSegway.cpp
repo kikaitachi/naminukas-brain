@@ -5,8 +5,8 @@
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu),
-    speed_controller(0.2, 0, 0, 0, std::numeric_limits<float>::min(), std::numeric_limits<float>::max()),
-    pitch_controller(2.5, 0, 0, 0, std::numeric_limits<float>::min(), std::numeric_limits<float>::max()) {
+    speed_controller(0.2, 0, 0, 0, -45, 45),
+    pitch_controller(2.5, 0, 0, 0, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
 }
 
 std::string LocomotionSegway::name() {
