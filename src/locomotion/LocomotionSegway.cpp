@@ -85,9 +85,9 @@ void LocomotionSegway::on_stop() {
     { hardware::Joint::right_ankle, initial_ankle_angle },
   });
   // Wait until ankles reached desired position (balancing is still in progress until this method finishes)
-  while (!kinematics.reached_destination({ hardware::Joint::left_ankle, hardware::Joint::right_ankle })) {
+  do {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  }
+  } while (!kinematics.reached_destination({ hardware::Joint::left_ankle, hardware::Joint::right_ankle }));
   // Power down motors
   kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);

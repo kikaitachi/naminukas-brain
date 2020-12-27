@@ -102,6 +102,7 @@ bool DynamixelKinematics::reached_destination(std::vector<hardware::Joint> joint
     ids.push_back(joint2id(joint));
   }
   for (int moving_status : dynamixel_connection->read(dynamixel_XM430W350.moving_status(), ids)) {
+    logger::debug("Moving status: %d", moving_status);
     if ((moving_status & DYNAMIXEL_PROFILE_IN_PROGRESS) != 0) {
       return false;
     }
