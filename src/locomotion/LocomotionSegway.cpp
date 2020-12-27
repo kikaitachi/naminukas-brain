@@ -79,7 +79,9 @@ void LocomotionSegway::on_start() {
 }
 
 void LocomotionSegway::on_stop() {
-  // Move ankles to walking position
+  // Move ankles to walking position slowly in order not to loose balance
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position, 100, 10);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position, 100, 10);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle },
     { hardware::Joint::right_ankle, initial_ankle_angle },
