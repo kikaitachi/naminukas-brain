@@ -28,7 +28,7 @@ class LocomotionSki: public Locomotion {
     const float turn_rpm = 10;
     const float initial_ankle_angle = 360.0 / 16;
     const float max_ankle_change = 20;
-    const float expected_pitch = 25.7;
+    const float expected_pitch = 24;
     float prev_error;
 };
 
