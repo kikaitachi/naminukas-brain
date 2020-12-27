@@ -17,6 +17,7 @@ class DynamixelKinematics: public hardware::Kinematics {
   private:
     DynamixelConnection* dynamixel_connection;
     DynamixelXM430W350 dynamixel_XM430W350;
+    DynamixelModel& joint2model(hardware::Joint joint);
 };
 
 #endif  // NAMINUKAS_BRAIN_DYNAMIXEL_KINEMATICS_H_

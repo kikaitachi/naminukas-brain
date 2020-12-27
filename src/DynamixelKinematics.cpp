@@ -34,31 +34,32 @@ DynamixelKinematics::~DynamixelKinematics() {
 void DynamixelKinematics::set_joint_control_mode(
     hardware::Joint joint, hardware::JointControlMode mode, double max_acceleration, double max_rpm, double millis) {
   int id = joint2id(joint);
+  DynamixelModel& model = joint2model(joint);
   switch (mode) {
     case hardware::JointControlMode::off:
-      dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 0 } });
+      dynamixel_connection->write(model.torque_enable(), { { id, 0 } });
       break;
     case hardware::JointControlMode::position:
-      dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 0 } });
-      dynamixel_connection->write(dynamixel_XM430W350.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_VELOCITY_BASED } });
-      dynamixel_connection->write(dynamixel_XM430W350.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION } });
-      dynamixel_connection->write(dynamixel_XM430W350.profile_acceleration(), { { id, dynamixel_XM430W350.rpm2_to_value(max_acceleration) } });
-      dynamixel_connection->write(dynamixel_XM430W350.profile_velocity(), { { id, dynamixel_XM430W350.rpm_to_value(max_rpm) } });
-      dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 1 } });
+      dynamixel_connection->write(model.torque_enable(), { { id, 0 } });
+      dynamixel_connection->write(model.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_VELOCITY_BASED } });
+      dynamixel_connection->write(model.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION } });
+      dynamixel_connection->write(model.profile_acceleration(), { { id, dynamixel_XM430W350.rpm2_to_value(max_acceleration) } });
+      dynamixel_connection->write(model.profile_velocity(), { { id, dynamixel_XM430W350.rpm_to_value(max_rpm) } });
+      dynamixel_connection->write(model.torque_enable(), { { id, 1 } });
       break;
     case hardware::JointControlMode::velocity:
-      dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 0 } });
-      dynamixel_connection->write(dynamixel_XM430W350.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_VELOCITY_BASED } });
-      dynamixel_connection->write(dynamixel_XM430W350.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_VELOCITY } });
-      dynamixel_connection->write(dynamixel_XM430W350.profile_acceleration(), { { id, dynamixel_XM430W350.rpm2_to_value(max_acceleration) } });
-      dynamixel_connection->write(dynamixel_XM430W350.profile_velocity(), { { id, dynamixel_XM430W350.rpm_to_value(max_rpm) } });
-      dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 1 } });
+      dynamixel_connection->write(model.torque_enable(), { { id, 0 } });
+      dynamixel_connection->write(model.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_VELOCITY_BASED } });
+      dynamixel_connection->write(model.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_VELOCITY } });
+      dynamixel_connection->write(model.profile_acceleration(), { { id, dynamixel_XM430W350.rpm2_to_value(max_acceleration) } });
+      dynamixel_connection->write(model.profile_velocity(), { { id, dynamixel_XM430W350.rpm_to_value(max_rpm) } });
+      dynamixel_connection->write(model.torque_enable(), { { id, 1 } });
       break;
     case hardware::JointControlMode::time:
-      dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 0 } });
-      dynamixel_connection->write(dynamixel_XM430W350.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_TIME_BASED } });
-      dynamixel_connection->write(dynamixel_XM430W350.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION } });
-      dynamixel_connection->write(dynamixel_XM430W350.torque_enable(), { { id, 1 } });
+      dynamixel_connection->write(model.torque_enable(), { { id, 0 } });
+      dynamixel_connection->write(model.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_TIME_BASED } });
+      dynamixel_connection->write(model.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION } });
+      dynamixel_connection->write(model.torque_enable(), { { id, 1 } });
       break;
     default:
       logger::error("Can't set joint %d control to unsupported mode %d", (int)joint, (int)mode);
@@ -69,7 +70,7 @@ void DynamixelKinematics::set_joint_control_mode(
 void DynamixelKinematics::set_joint_position(std::vector<hardware::JointPosition> positions) {
   std::vector<DynamixelControlValue> values;
   for (auto& position : positions) {
-    values.push_back({ joint2id(position.joint), (int)round(position.degrees * dynamixel_XM430W350.positions_per_rotation() / 360.0) });
+    values.push_back({ joint2id(position.joint), (int)round(position.degrees * joint2model(position.joint).positions_per_rotation() / 360.0) });
   }
   dynamixel_connection->write(dynamixel_XM430W350.goal_position(), values);
 }
@@ -77,7 +78,7 @@ void DynamixelKinematics::set_joint_position(std::vector<hardware::JointPosition
 void DynamixelKinematics::set_joint_speed(std::vector<hardware::JointSpeed> speeds) {
   std::vector<DynamixelControlValue> values;
   for (auto& speed : speeds) {
-    values.push_back({ joint2id(speed.joint), dynamixel_XM430W350.rpm_to_value(speed.rpm) });
+    values.push_back({ joint2id(speed.joint), joint2model(speed.joint).rpm_to_value(speed.rpm) });
   }
   dynamixel_connection->write(dynamixel_XM430W350.goal_velocity(), values);
 }
@@ -90,7 +91,7 @@ std::vector<hardware::JointPosition> DynamixelKinematics::get_joint_position(std
   std::vector<hardware::JointPosition> result;
   std::vector<int> positions = dynamixel_connection->read(dynamixel_XM430W350.present_position(), ids);
   for (int i = 0; i < positions.size(); i++) {
-    result.push_back({ joints[i], positions[i] * 360.0 / dynamixel_XM430W350.positions_per_rotation() });
+    result.push_back({ joints[i], positions[i] * 360.0 / joint2model(joints[i]).positions_per_rotation() });
   }
   for (auto& listener : position_listeners) {
     listener(result);
@@ -109,4 +110,8 @@ bool DynamixelKinematics::reached_destination(std::vector<hardware::Joint> joint
     }
   }
   return true;
+}
+
+DynamixelModel& DynamixelKinematics::joint2model(hardware::Joint joint) {
+  return dynamixel_XM430W350;
 }
