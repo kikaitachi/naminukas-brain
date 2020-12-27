@@ -25,7 +25,7 @@ namespace hardware {
   class Kinematics {
     public:
       virtual void set_joint_control_mode(
-        Joint joint, JointControlMode mode, double max_acceleration = 0, double max_rpm = 0, double millis = 0) = 0;
+        Joint joint, JointControlMode mode, double max_acceleration = 0, double max_rpm = 0, int acceleration_ms = 0, int total_ms = 0) = 0;
       virtual void set_joint_position(std::vector<JointPosition> positions) = 0;
       virtual void set_joint_speed(std::vector<JointSpeed> speeds) = 0;
       virtual std::vector<JointPosition> get_joint_position(std::vector<Joint> joints) = 0;

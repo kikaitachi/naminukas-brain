@@ -32,7 +32,7 @@ DynamixelKinematics::~DynamixelKinematics() {
 }
 
 void DynamixelKinematics::set_joint_control_mode(
-    hardware::Joint joint, hardware::JointControlMode mode, double max_acceleration, double max_rpm, double millis) {
+    hardware::Joint joint, hardware::JointControlMode mode, double max_acceleration, double max_rpm, int acceleration_ms, int total_ms) {
   int id = joint2id(joint);
   DynamixelModel& model = joint2model(joint);
   switch (mode) {
@@ -59,6 +59,8 @@ void DynamixelKinematics::set_joint_control_mode(
       dynamixel_connection->write(model.torque_enable(), { { id, 0 } });
       dynamixel_connection->write(model.drive_mode(), { { id, DYNAMIXEL_DRIVE_MODE_TIME_BASED } });
       dynamixel_connection->write(model.operating_mode(), { { id, DYNAMIXEL_OPERATING_MODE_EXTENDED_POSITION } });
+      dynamixel_connection->write(model.profile_acceleration(), { { id, acceleration_ms } });
+      dynamixel_connection->write(model.profile_velocity(), { { id, total_ms } });
       dynamixel_connection->write(model.torque_enable(), { { id, 1 } });
       break;
     default:
