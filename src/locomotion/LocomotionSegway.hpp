@@ -19,6 +19,7 @@ class LocomotionSegway: public Locomotion {
     void down(bool key_down, std::set<std::string>& modifiers);
     void left(bool key_down, std::set<std::string>& modifiers);
     void right(bool key_down, std::set<std::string>& modifiers);
+    void stop();
 
   protected:
     hardware::Kinematics& kinematics;

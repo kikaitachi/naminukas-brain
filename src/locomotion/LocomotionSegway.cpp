@@ -80,12 +80,9 @@ void LocomotionSegway::on_start() {
 
 void LocomotionSegway::on_stop() {
   // Move ankles to walking position slowly in order not to loose balance
-  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position, 100, 10);
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position, 100, 10);
-  kinematics.set_joint_position({
-    { hardware::Joint::left_ankle, initial_ankle_angle },
-    { hardware::Joint::right_ankle, initial_ankle_angle },
-  });
+  /*kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position, 0, 10);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position, 0, 10);
+  
   // Wait until ankles reached desired position (balancing is still in progress until this method finishes)
   for ( ; ; ) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -96,8 +93,42 @@ void LocomotionSegway::on_stop() {
     if (abs(position[0].degrees - initial_ankle_angle) < 5 && abs(position[1].degrees - initial_ankle_angle) < 5) {
       break;
     }
-  };
+  };*/
   // Power down motors
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
+}
+
+void LocomotionSegway::stop() {
+  Locomotion::stop();
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, 0, 100);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, 0, 100);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, 0, 100);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, 0, 100);
+  std::vector<hardware::JointPosition> curr_pos = kinematics.get_joint_position({
+    hardware::Joint::left_wheel,
+    hardware::Joint::left_ankle,
+    hardware::Joint::right_ankle,
+    hardware::Joint::right_wheel
+  });
+  kinematics.set_joint_position({
+    { hardware::Joint::left_wheel, curr_pos[0].degrees - (curr_pos[1].degrees - initial_ankle_angle) },
+    { hardware::Joint::left_ankle, initial_ankle_angle },
+    { hardware::Joint::right_ankle, initial_ankle_angle },
+    { hardware::Joint::right_wheel, curr_pos[3].degrees - (curr_pos[2].degrees - initial_ankle_angle) }
+  });
+  for ( ; ; ) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::vector<hardware::JointPosition> position = kinematics.get_joint_position({
+      hardware::Joint::left_ankle,
+      hardware::Joint::right_ankle
+    });
+    if (abs(position[0].degrees - initial_ankle_angle) < 2 && abs(position[1].degrees - initial_ankle_angle) < 2) {
+      break;
+    }
+  };
   kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);

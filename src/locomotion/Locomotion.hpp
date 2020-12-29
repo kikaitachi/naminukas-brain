@@ -14,8 +14,8 @@ class Locomotion {
     virtual ~Locomotion();
     virtual std::string name() = 0;
     virtual void control_loop();
-    void start();
-    void stop();
+    virtual void start();
+    virtual void stop();
     virtual void on_start();
     virtual void on_stop();
     virtual void up(bool key_down, std::set<std::string>& modifiers);
