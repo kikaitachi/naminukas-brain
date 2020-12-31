@@ -3,6 +3,7 @@
 
 #include "../IMU.hpp"
 #include "Locomotion.hpp"
+#include "../PIDController.hpp"
 
 /**
  * An attempt to drive on a single wheel.
@@ -20,11 +21,9 @@ class LocomotionUnicycle: public Locomotion {
 
   protected:
     hardware::Kinematics& kinematics;
+    PIDController roll_controller;
     IMU& imu;
-    float prev_rpm;
-    float goal_rpm;
-    std::vector<hardware::JointPosition> expected_pos;
-    std::vector<hardware::JointPosition> prev_pos;
+    std::vector<hardware::JointPosition> initial_pos;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_UNICYCLE_H_
