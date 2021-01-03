@@ -34,13 +34,15 @@ void LocomotionSegway::control_loop() {
   float left_diff = expected_pos[0].degrees - curr_pos[0].degrees;
   float right_diff = curr_pos[1].degrees - expected_pos[1].degrees;
   float avg_diff = (left_diff + right_diff) / 2;
-  if (fabs(avg_diff) < 10) {
+  /*if (fabs(avg_diff) < 10) {
     avg_diff = 0;
-  }
-  float goal_rpm = clamp(avg_diff * 0.1, -30, 30);
+  }*/
+  float goal_rpm = clamp(avg_diff/* * 0.1*/, -30, 30);
 
-  float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
-  float rpm_right = (-curr_pos[1].degrees + prev_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
+  //float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
+  //float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
+  float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 50000000 / 3 / control_loop_nanos;
+  float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 50000000 / 3 / control_loop_nanos;
   float rpm_avg = (rpm_left + rpm_right) / 2;
   float new_rpm = RPM_ALPHA * rpm_avg + (1 - RPM_ALPHA) * prev_rpm;
   prev_rpm = new_rpm;
