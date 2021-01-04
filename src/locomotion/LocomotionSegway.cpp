@@ -6,7 +6,7 @@
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu),
     speed_controller(2, 0, 0, 25, -45, 45),
-    pitch_controller(2.5, 0, 0.5, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
+    pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
 }
 
 std::string LocomotionSegway::name() {
@@ -39,7 +39,7 @@ void LocomotionSegway::control_loop() {
   /*if (fabs(avg_diff) < 10) {
     avg_diff = 0;
   }*/
-  float goal_rpm = clamp(avg_diff * 0.05, -30, 30);
+  float goal_rpm = clamp(avg_diff * 0.01, -25, 25);
 
   //float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   //float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
@@ -50,16 +50,15 @@ void LocomotionSegway::control_loop() {
   prev_rpm = new_rpm;
   float goal_pitch = speed_controller.input(new_rpm, goal_rpm);
   float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
-  // TODO: turn according to difference in expected possition rather than speed
 
-  float turn_magnitude = clamp(fabs(fabs(left_diff) - fabs(right_diff)), 0, MAX_DIFF) / MAX_DIFF;
+  /*float turn_magnitude = clamp(fabs(fabs(left_diff) - fabs(right_diff)), 0, MAX_DIFF) / MAX_DIFF;
   if (left_diff > right_diff) {
     left_turn_speed = MAX_TURN_SPEED * turn_magnitude;
     right_turn_speed = -MAX_TURN_SPEED * turn_magnitude;
   } else {
     left_turn_speed = -MAX_TURN_SPEED * turn_magnitude;
     right_turn_speed = MAX_TURN_SPEED * turn_magnitude;
-  }
+  }*/
 
   kinematics.set_joint_position({
     { hardware::Joint::left_wheel, curr_pos[0].degrees - input + left_turn_speed },
@@ -69,8 +68,8 @@ void LocomotionSegway::control_loop() {
   expected_pos[0].degrees += pos_speed;
   expected_pos[1].degrees -= pos_speed;
 
-  logger::debug("current RPM: %f, diff: %f, speed fitness: %f, pitch fitness: %f",
-    new_rpm, avg_diff, speed_controller.get_fitness(), pitch_controller.get_fitness());
+  logger::debug("pos diff: %f / %f, speed/pitch fitness: %f / %f",
+    left_diff, right_diff, speed_controller.get_fitness(), pitch_controller.get_fitness());
 }
 
 void LocomotionSegway::on_start() {
