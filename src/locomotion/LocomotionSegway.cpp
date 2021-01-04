@@ -103,7 +103,7 @@ void LocomotionSegway::on_stop() {
 
 void LocomotionSegway::stop() {
   Locomotion::stop();
-  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, 0, 100);
+  /*kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, 0, 100);
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, 0, 100);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, 0, 100);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, 0, 100);
@@ -132,7 +132,7 @@ void LocomotionSegway::stop() {
   kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);*/
 }
 
 void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
