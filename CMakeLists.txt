@@ -62,6 +62,7 @@ set(COMMON_SOURCES
   src/locomotion/LocomotionPoleGestures.cpp
   src/locomotion/LocomotionSegway.cpp
   src/locomotion/LocomotionSki.cpp
+  src/locomotion/LocomotionTail.cpp
   src/locomotion/LocomotionUnicycle.cpp
   ${DynamixelSDK_SRC})
 

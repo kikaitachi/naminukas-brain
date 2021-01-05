@@ -3,6 +3,7 @@
 #include "locomotion/LocomotionPoleGestures.hpp"
 #include "locomotion/LocomotionSegway.hpp"
 #include "locomotion/LocomotionSki.hpp"
+#include "locomotion/LocomotionTail.hpp"
 #include "locomotion/LocomotionCaterpillar.hpp"
 #include "locomotion/LocomotionUnicycle.hpp"
 #include "Logger.hpp"
@@ -37,8 +38,9 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   add_locomotion(new LocomotionPole(kinematics, *model), "Digit1");
   add_locomotion(new LocomotionSegway(kinematics, imu), "Digit2");
   add_locomotion(new LocomotionSki(kinematics, imu), "Digit3");
-  add_locomotion(new LocomotionCaterpillar(kinematics), "Digit4");
-  add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit5");
+  add_locomotion(new LocomotionTail(kinematics, imu), "Digit4");
+  add_locomotion(new LocomotionCaterpillar(kinematics), "Digit5");
+  add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit6");
   add_locomotion(new LocomotionPoleGestures(kinematics, *model, camera), "Digit6");
 
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
