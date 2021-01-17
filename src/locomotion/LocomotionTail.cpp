@@ -12,10 +12,10 @@ void LocomotionTail::control_loop() {
 }
 
 void LocomotionTail::on_start() {
-  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity, 2000);
-  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position, 2000);
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position, 2000);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity, 2000);
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity, 1000);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position, 1000, 5);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position, 1000, 5);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity, 1000);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle - 90 },
     { hardware::Joint::right_ankle, initial_ankle_angle + 90 },
@@ -52,9 +52,9 @@ void LocomotionTail::down(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionTail::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    if (modifiers.find("Alt") != modifiers.end()) {
+    if (modifiers.find("Control") != modifiers.end()) {
       kinematics.set_joint_position({
-        { hardware::Joint::right_ankle, initial_ankle_angle - 45 }
+        { hardware::Joint::right_ankle, initial_ankle_angle - 50 }
       });
     } else {
       kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
@@ -66,7 +66,7 @@ void LocomotionTail::left(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionTail::right(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    if (modifiers.find("Alt") != modifiers.end()) {
+    if (modifiers.find("Control") != modifiers.end()) {
       kinematics.set_joint_position({
         { hardware::Joint::right_ankle, initial_ankle_angle + 90 }
       });
