@@ -52,7 +52,13 @@ void LocomotionTail::down(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionTail::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+    if (modifiers.find("Alt") != modifiers.end()) {
+      kinematics.set_joint_position({
+        { hardware::Joint::right_ankle, initial_ankle_angle - 45 }
+      });
+    } else {
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+    }
   } else {
     halt();
   }
@@ -60,7 +66,13 @@ void LocomotionTail::left(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionTail::right(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    if (modifiers.find("Alt") != modifiers.end()) {
+      kinematics.set_joint_position({
+        { hardware::Joint::right_ankle, initial_ankle_angle + 90 }
+      });
+    } else {
+      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    }
   } else {
     halt();
   }
