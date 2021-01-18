@@ -32,6 +32,9 @@ void LocomotionSegway::control_loop() {
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
+  if (curr_pos.size() != 2) {
+    return;
+  }
 
   float left_diff = expected_pos[0].degrees - curr_pos[0].degrees;
   float right_diff = curr_pos[1].degrees - expected_pos[1].degrees;

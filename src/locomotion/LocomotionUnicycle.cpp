@@ -13,6 +13,9 @@ void LocomotionUnicycle::control_loop() {
     hardware::Joint::right_ankle,
     hardware::Joint::right_wheel
   });
+  if (curr_pos.size() != 2) {
+    return;
+  }
 
   float roll = imu.get_roll();
   float goal_roll = 64;
