@@ -27,3 +27,10 @@ jobs:
           cmake --build .
       - name: Test
         run: build/tests
+      - name: Deploy
+        run: |
+          curl -n -X POST https://api.heroku.com/apps/naminukas-demo/builds \
+          -d '{"source_blob":{"url":"https://github.com/kikaitachi/naminukas-brain/archive/main.zip"}}' \
+          -H 'Accept: application/vnd.heroku+json; version=3' \
+          -H "Content-Type: application/json"
+          -H "Authorization: Bearer $HEROKU_API_KEY"
