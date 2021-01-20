@@ -27,6 +27,12 @@ jobs:
           cmake --build .
       - name: Test
         run: build/tests
+      - name: Create install bundle
+        run: cp build/naminukas bin/naminukas
+      - uses: actions/upload-artifact@v2
+        with:
+          name: install-bundle
+          path: bin
       - name: Deploy
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
