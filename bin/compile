@@ -1,3 +1,5 @@
 #!/bin/sh
 
+cp bin/naminukas $1
+
 exit 0
