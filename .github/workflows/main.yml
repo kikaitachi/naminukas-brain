@@ -15,7 +15,7 @@ jobs:
           uname -a
           sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE
           sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u
-          sudo apt install libwebp-dev librealsense2-dev libgtest-dev jq
+          sudo apt install libwebp-dev librealsense2-dev libgtest-dev
           cd /usr/src/googletest
           sudo cmake .
           sudo cmake --build . --target install
@@ -35,6 +35,6 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          curl -n -X POST https://api.heroku.com/apps/naminukas-demo/sources -H 'Accept: application/vnd.heroku+json; version=3' > /tmp/urls.json
+          curl -n -X POST https://api.heroku.com/apps/naminukas-demo/sources -H 'Accept: application/vnd.heroku+json; version=3' -H "Authorization: Bearer $HEROKU_API_KEY" > /tmp/urls.json
           curl "$(cat /tmp/urls.json | jq -r '.source_blob.put_url')" -X PUT -H 'Content-Type:' --data-binary @deploy.tgz
-          curl -n -X POST https://api.heroku.com/apps/naminukas-demo/builds -d "{\"source_blob\":{\"url":\""$(cat /tmp/urls.json | jq -r '.source_blob.get_url')"\"}}"" -H 'Accept: application/vnd.heroku+json; version=3' -H 'Content-Type: application/json'
+          curl -n -X POST https://api.heroku.com/apps/naminukas-demo/builds -d "{\"source_blob\":{\"url":\""$(cat /tmp/urls.json | jq -r '.source_blob.get_url')"\"}}"" -H 'Accept: application/vnd.heroku+json; version=3' -H 'Content-Type: application/json' -H "Authorization: Bearer $HEROKU_API_KEY"
