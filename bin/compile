@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ls -alhR
-cp bin/naminukas $1
+echo Compiling
+cp bin/naminukas ${1}/naminukas
 
 exit 0

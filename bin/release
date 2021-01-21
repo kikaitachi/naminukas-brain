@@ -3,6 +3,5 @@
 cat << EOF
 ---
 default_process_types:
-  release: ls -alhR
-  web: ./naminukas
+  web: ${1}/naminukas
 EOF

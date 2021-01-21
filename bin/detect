@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo Detecting
+echo Custom
 exit 0
