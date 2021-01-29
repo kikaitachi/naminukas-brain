@@ -1,9 +1,9 @@
 #include "LocomotionUnicycle.hpp"
 
-#define ANGLE 53
+#define ANGLE 50
 
 LocomotionUnicycle::LocomotionUnicycle(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(200), roll_controller(1, 0.2, 0, 20, -20, 20), kinematics(kinematics), imu(imu) {
+    : Locomotion(200), roll_controller(2, 0, 0, 20, -3, 3), kinematics(kinematics), imu(imu) {
 }
 
 std::string LocomotionUnicycle::name() {
@@ -12,14 +12,14 @@ std::string LocomotionUnicycle::name() {
 
 void LocomotionUnicycle::control_loop() {
   float roll = imu.get_roll();
-  float goal_roll = -46;
+  float goal_roll = -37;
   float roll_input = roll_controller.input(roll, goal_roll);
 
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle - ANGLE - roll_input },
     { hardware::Joint::left_wheel, - roll_input }
   });
-  logger::debug("roll: %f, fitness: %f", roll, roll_controller.get_fitness());
+  logger::debug("roll: %f, angle: %f, fitness: %f", roll, ANGLE + roll_input, roll_controller.get_fitness());
 }
 
 void LocomotionUnicycle::on_start() {
