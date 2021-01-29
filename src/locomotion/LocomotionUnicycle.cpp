@@ -1,7 +1,9 @@
 #include "LocomotionUnicycle.hpp"
 
+#define ANGLE 53
+
 LocomotionUnicycle::LocomotionUnicycle(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(100), roll_controller(0.1, 0.4, 0, 20, -15, 15), kinematics(kinematics), imu(imu) {
+    : Locomotion(200), roll_controller(1, 0.2, 0, 20, -20, 20), kinematics(kinematics), imu(imu) {
 }
 
 std::string LocomotionUnicycle::name() {
@@ -18,13 +20,13 @@ void LocomotionUnicycle::control_loop() {
   }
 
   float roll = imu.get_roll();
-  float goal_roll = 64;
+  float goal_roll = 46;
   float roll_input = roll_controller.input(roll, goal_roll);
 
-  /*kinematics.set_joint_position({
-    { hardware::Joint::right_ankle, initial_pos[0].degrees - roll_input },
-    { hardware::Joint::right_wheel, initial_pos[1].degrees - roll_input }
-  });*/
+  kinematics.set_joint_position({
+    { hardware::Joint::right_ankle, initial_ankle_angle + ANGLE - roll_input },
+    { hardware::Joint::right_wheel, - roll_input }
+  });
   logger::debug("roll: %f, fitness: %f", roll, roll_controller.get_fitness());
 }
 
@@ -35,10 +37,9 @@ void LocomotionUnicycle::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle },
-    { hardware::Joint::right_ankle, initial_ankle_angle + 70 },
+    { hardware::Joint::right_ankle, initial_ankle_angle + ANGLE },
   });
   initial_pos = kinematics.get_joint_position({
-    hardware::Joint::right_ankle,
     hardware::Joint::right_wheel
   });
   roll_controller.reset();
