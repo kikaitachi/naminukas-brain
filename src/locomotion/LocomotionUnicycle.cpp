@@ -11,21 +11,13 @@ std::string LocomotionUnicycle::name() {
 }
 
 void LocomotionUnicycle::control_loop() {
-  std::vector<hardware::JointPosition> curr_pos = kinematics.get_joint_position({
-    hardware::Joint::right_ankle,
-    hardware::Joint::right_wheel
-  });
-  if (curr_pos.size() != 2) {
-    return;
-  }
-
   float roll = imu.get_roll();
-  float goal_roll = 46;
+  float goal_roll = -46;
   float roll_input = roll_controller.input(roll, goal_roll);
 
   kinematics.set_joint_position({
-    { hardware::Joint::right_ankle, initial_ankle_angle + ANGLE - roll_input },
-    { hardware::Joint::right_wheel, - roll_input }
+    { hardware::Joint::left_ankle, initial_ankle_angle - ANGLE - roll_input },
+    { hardware::Joint::left_wheel, - roll_input }
   });
   logger::debug("roll: %f, fitness: %f", roll, roll_controller.get_fitness());
 }
@@ -36,11 +28,8 @@ void LocomotionUnicycle::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
   kinematics.set_joint_position({
-    { hardware::Joint::left_ankle, initial_ankle_angle },
-    { hardware::Joint::right_ankle, initial_ankle_angle + ANGLE },
-  });
-  initial_pos = kinematics.get_joint_position({
-    hardware::Joint::right_wheel
+    { hardware::Joint::left_ankle, initial_ankle_angle - ANGLE },
+    { hardware::Joint::right_ankle, initial_ankle_angle },
   });
   roll_controller.reset();
 }

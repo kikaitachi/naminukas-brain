@@ -23,7 +23,6 @@ class LocomotionUnicycle: public Locomotion {
     hardware::Kinematics& kinematics;
     PIDController roll_controller;
     IMU& imu;
-    std::vector<hardware::JointPosition> initial_pos;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_UNICYCLE_H_
