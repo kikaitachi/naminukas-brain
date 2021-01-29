@@ -21,10 +21,10 @@ void LocomotionUnicycle::control_loop() {
   float goal_roll = 64;
   float roll_input = roll_controller.input(roll, goal_roll);
 
-  kinematics.set_joint_position({
+  /*kinematics.set_joint_position({
     { hardware::Joint::right_ankle, initial_pos[0].degrees - roll_input },
     { hardware::Joint::right_wheel, initial_pos[1].degrees - roll_input }
-  });
+  });*/
   logger::debug("roll: %f, fitness: %f", roll, roll_controller.get_fitness());
 }
 
@@ -35,7 +35,7 @@ void LocomotionUnicycle::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle },
-    { hardware::Joint::right_ankle, initial_ankle_angle },
+    { hardware::Joint::right_ankle, initial_ankle_angle + 70 },
   });
   initial_pos = kinematics.get_joint_position({
     hardware::Joint::right_ankle,
