@@ -1,16 +1,16 @@
-#ifndef NAMINUKAS_BRAIN_LOCOMOTION_CATERPILLAR_H_
-#define NAMINUKAS_BRAIN_LOCOMOTION_CATERPILLAR_H_
+#ifndef NAMINUKAS_BRAIN_LOCOMOTION_WADDLE_H_
+#define NAMINUKAS_BRAIN_LOCOMOTION_WADDLE_H_
 
 #include "Locomotion.hpp"
 
 /**
- * Caterpillar like motion. In this mode of locomotion joints move
+ * Waddle like motion. In this mode of locomotion joints move
  * periodicallly without ever making full rotation which allows
  * robot to move even if placed in a bag.
  */
-class LocomotionCaterpillar: public Locomotion {
+class LocomotionWaddle: public Locomotion {
   public:
-    LocomotionCaterpillar(hardware::Kinematics& kinematics);
+    LocomotionWaddle(hardware::Kinematics& kinematics);
     std::string name();
     void control_loop();
     void on_start();
@@ -24,4 +24,4 @@ class LocomotionCaterpillar: public Locomotion {
     hardware::Kinematics& kinematics;
 };
 
-#endif // NAMINUKAS_BRAIN_CATERPILLAR_SKI_H_
+#endif // NAMINUKAS_BRAIN_WADDLE_H_

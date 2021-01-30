@@ -166,7 +166,6 @@ std::vector<int> DynamixelConnection::read(DynamixelControlItem item, std::vecto
     if (dxl_getdata_result != true) {
       logger::error("Sync read from address %d failed for Dynamixel with id %d",
         item.address, id);
-      result.push_back(INT_MIN);
     } else {
       result.push_back(group_sync_read.getData(id, item.address, item.size));
     }

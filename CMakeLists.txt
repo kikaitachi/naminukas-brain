@@ -39,6 +39,8 @@ find_package(GTest REQUIRED)
 include(GoogleTest)
 
 set(COMMON_SOURCES
+  src/action/Action.cpp
+  src/action/ActionSequential.cpp
   src/Logger.cpp
   src/IOServer.cpp
   src/WebSocket.cpp
@@ -57,13 +59,13 @@ set(COMMON_SOURCES
   src/PIDController.cpp
   src/locomotion/Locomotion.cpp
   src/locomotion/LocomotionIdle.cpp
-  src/locomotion/LocomotionCaterpillar.cpp
   src/locomotion/LocomotionPole.cpp
   src/locomotion/LocomotionPoleGestures.cpp
   src/locomotion/LocomotionSegway.cpp
   src/locomotion/LocomotionSki.cpp
   src/locomotion/LocomotionTail.cpp
   src/locomotion/LocomotionUnicycle.cpp
+  src/locomotion/LocomotionWaddle.cpp
   ${DynamixelSDK_SRC})
 
 add_executable(${PROJECT_NAME}
