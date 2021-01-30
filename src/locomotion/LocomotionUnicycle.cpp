@@ -1,8 +1,8 @@
 #include "LocomotionUnicycle.hpp"
 
 #define STATIONARY_ANGLE 60
-#define WALKING_ANGLE 3
-#define GLIDE_RATIO 1.5
+#define WALKING_ANGLE 6
+#define GLIDE_RATIO 2.5
 
 LocomotionUnicycle::LocomotionUnicycle(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), roll_controller(2, 0, 0, 20, -3, 3), kinematics(kinematics), imu(imu) {
@@ -25,10 +25,10 @@ void LocomotionUnicycle::control_loop() {
 }
 
 void LocomotionUnicycle::on_start() {
-  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::position);
-  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, 0, 100);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, 0, 100);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, 0, 100);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, 0, 100);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle - STATIONARY_ANGLE },
     { hardware::Joint::right_ankle, initial_ankle_angle },
