@@ -16,7 +16,7 @@ class ActionRotate : public Action {
 
   private:
     hardware::Kinematics& kinematics;
-    std::vector<hardware::JointPosition> positions;
+    std::vector<hardware::JointPosition> positions, goal;
     int how;
 
     std::vector<hardware::Joint> joints(std::vector<hardware::JointPosition> positions);
