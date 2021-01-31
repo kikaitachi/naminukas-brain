@@ -4,25 +4,24 @@
 
 #define POS_THRESHOLD 2
 
-ActionRotate::ActionRotate(hardware::Kinematics& kinematics, std::vector<hardware::JointPosition> positions, int how)
-    : kinematics(kinematics), positions(positions), how(how) {
+ActionRotate::ActionRotate(hardware::Kinematics& kinematics, std::vector<JointRotation> rotations)
+    : kinematics(kinematics), rotations(rotations) {
 }
 
 void ActionRotate::start() {
-  if (how == ABSOLUTE) {
-    goal = positions;
-  } else {
-    goal = kinematics.get_joint_position(joints(positions));
-    if (goal.size() == positions.size()) {
-      for (int i = 0; i < positions.size(); i++) {
-        goal[i].degrees += positions[i].degrees;
-      }
+  goal = kinematics.get_joint_position(joints(rotations));
+  if (goal.size() != rotations.size()) {
+    logger::error("Failed to retrieve current joint angles for rotation action");
+    return;
+  }
+  for (int i = 0; i < rotations.size(); i++) {
+    if (rotations[i].type == RotationType::absolute) {
+      goal[i].degrees = rotations[i].degrees;
     } else {
-      logger::error("Failed to retrieve current joint angles for relative rotation action");
+      goal[i].degrees += rotations[i].degrees;
     }
   }
   kinematics.set_joint_position(goal);
-  logger::debug("Start rotation");
 }
 
 void ActionRotate::abort() {
@@ -30,20 +29,19 @@ void ActionRotate::abort() {
 }
 
 bool ActionRotate::execute() {
-  std::vector<hardware::JointPosition> current = kinematics.get_joint_position(joints(positions));
+  std::vector<hardware::JointPosition> current = kinematics.get_joint_position(joints(rotations));
   for (int i = 0; i < current.size(); i++) {
     if (fabs(current[i].degrees - goal[i].degrees) > POS_THRESHOLD) {
       return false;
     }
   }
-  logger::debug("End rotation");
   return true;
 }
 
-std::vector<hardware::Joint> ActionRotate::joints(std::vector<hardware::JointPosition> positions) {
+std::vector<hardware::Joint> ActionRotate::joints(std::vector<JointRotation> rotations) {
   std::vector<hardware::Joint> joints;
-  for (auto& position : positions) {
-    joints.push_back(position.joint);
+  for (auto& rotation : rotations) {
+    joints.push_back(rotation.joint);
   }
   return joints;
 }

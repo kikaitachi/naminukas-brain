@@ -4,22 +4,34 @@
 #include "../Hardware.hpp"
 #include "Action.hpp"
 
+enum class RotationType {
+  /** Go to given absolute angle */
+  absolute,
+
+  /** Go to current angle + given value */
+  relative
+};
+
+class JointRotation {
+  public:
+    hardware::Joint joint;
+    RotationType type;
+    double degrees;
+};
+
 class ActionRotate : public Action {
   public:
-    ActionRotate(hardware::Kinematics& kinematics, std::vector<hardware::JointPosition> positions, int how);
+    ActionRotate(hardware::Kinematics& kinematics, std::vector<JointRotation> rotations);
     void start();
     void abort();
     bool execute();
 
-    static const int ABSOLUTE = 0;
-    static const int RELATIVE = 1;
-
   private:
     hardware::Kinematics& kinematics;
-    std::vector<hardware::JointPosition> positions, goal;
-    int how;
+    std::vector<JointRotation> rotations;
+    std::vector<hardware::JointPosition> goal;
 
-    std::vector<hardware::Joint> joints(std::vector<hardware::JointPosition> positions);
+    std::vector<hardware::Joint> joints(std::vector<JointRotation> rotations);
 };
 
 #endif  // NAMINUKAS_BRAIN_ACTION_ROTATE_H_
