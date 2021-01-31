@@ -177,12 +177,12 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
       message::read_int(&buf, &buf_len, &item_id);
       std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(item_id);
       if (it == telemetryItems.id_to_item.end()) {
-        logger::warn("Receiver telemetry update message for item with non existing id %d", item_id);
+        logger::warn("Received telemetry update message for item with non existing id %d", item_id);
       } else {
         if (it->second->getType() == telemetry::TYPE_ACTION) {
           it->second->deserialize_value(&buf, &buf_len);
         } else {
-          logger::warn("Receiver telemetry update message for item %d with non action type %d", item_id, it->second->getType());
+          logger::warn("Received telemetry update message for item %d with non action type %d", item_id, it->second->getType());
         }
       }
       break;
