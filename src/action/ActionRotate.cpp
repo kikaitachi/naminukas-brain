@@ -22,6 +22,7 @@ void ActionRotate::start() {
     }
   }
   kinematics.set_joint_position(goal);
+  logger::debug("Start rotation");
 }
 
 void ActionRotate::abort() {
@@ -29,12 +30,14 @@ void ActionRotate::abort() {
 }
 
 bool ActionRotate::execute() {
+  logger::debug("Executing rotation");
   std::vector<hardware::JointPosition> current = kinematics.get_joint_position(joints(positions));
   for (int i = 0; i < current.size(); i++) {
     if (fabs(current[i].degrees - goal[i].degrees) > POS_THRESHOLD) {
       return false;
     }
   }
+  logger::debug("End rotation");
   return true;
 }
 

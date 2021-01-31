@@ -1,3 +1,4 @@
+#include "../Logger.hpp"
 #include "ActionSequential.hpp"
 
 ActionSequential::ActionSequential(std::vector<Action> actions, int times)
@@ -6,8 +7,10 @@ ActionSequential::ActionSequential(std::vector<Action> actions, int times)
 }
 
 void ActionSequential::start() {
+  logger::debug("Starting %d sequential actions", actions.size());
   current_action_index = 0;
   if (current_action_index < actions.size()) {
+    logger::debug("Starting sequential action %d", current_action_index);
     actions[current_action_index].start();
   }
 }
@@ -20,6 +23,7 @@ void ActionSequential::abort() {
 }
 
 bool ActionSequential::execute() {
+  logger::debug("Executing sequential action");
   if (current_action_index >= actions.size()) {
     if (times == LOOP_FOREVER) {
       current_action_index = 0;
