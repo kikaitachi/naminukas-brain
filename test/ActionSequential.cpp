@@ -1,3 +1,5 @@
+//#include <memory>
+
 #include "gtest/gtest.h"
 #include "../src/action/ActionSequential.hpp"
 
@@ -9,9 +11,7 @@ TEST(ActionSequential, NoSubActions_ExecutionFinishes) {
 }
 
 TEST(ActionSequential, 2SubActions_Executes2Times) {
-  Action action1;
-  Action action2;
-  ActionSequential action({action1, action2});
+  ActionSequential action({std::make_shared<Action>(), std::make_shared<Action>()});
   action.start();
 
   EXPECT_EQ(false, action.execute());
@@ -20,9 +20,7 @@ TEST(ActionSequential, 2SubActions_Executes2Times) {
 }
 
 TEST(ActionSequential, 2SubActions_Loop3Times_Executes6Times) {
-  Action action1;
-  Action action2;
-  ActionSequential action({action1, action2}, 3);
+  ActionSequential action({std::make_shared<Action>(), std::make_shared<Action>()}, 3);
   action.start();
 
   EXPECT_EQ(false, action.execute());
@@ -35,9 +33,7 @@ TEST(ActionSequential, 2SubActions_Loop3Times_Executes6Times) {
 }
 
 TEST(ActionSequential, 2SubActions_LoopForever_ExecutesAtLeast100Times) {
-  Action action1;
-  Action action2;
-  ActionSequential action({action1, action2}, ActionSequential::LOOP_FOREVER);
+  ActionSequential action({std::make_shared<Action>(), std::make_shared<Action>()}, ActionSequential::LOOP_FOREVER);
   action.start();
 
   for (int i = 0; i < 100; i++) {

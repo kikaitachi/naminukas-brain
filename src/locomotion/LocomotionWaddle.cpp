@@ -7,14 +7,14 @@
 LocomotionWaddle::LocomotionWaddle(hardware::Kinematics& kinematics)
     : Locomotion(10), kinematics(kinematics),
     forward({
-      ActionRotate(kinematics, {
+      std::make_shared<ActionRotate>(ActionRotate(kinematics, {
         { hardware::Joint::left_ankle, initial_ankle_angle + TILT_ANGLE },
         { hardware::Joint::right_ankle, initial_ankle_angle + TILT_ANGLE }
-      }, ActionRotate::ABSOLUTE),
-      ActionRotate(kinematics, {
+      }, ActionRotate::ABSOLUTE)),
+      std::make_shared<ActionRotate>(ActionRotate(kinematics, {
         { hardware::Joint::left_ankle, initial_ankle_angle - TILT_ANGLE },
         { hardware::Joint::right_ankle, initial_ankle_angle - TILT_ANGLE }
-      }, ActionRotate::ABSOLUTE)
+      }, ActionRotate::ABSOLUTE))
     }, ActionSequential::LOOP_FOREVER) {
 }
 

@@ -2,6 +2,7 @@
 #define NAMINUKAS_BRAIN_LOCOMOTION_WADDLE_H_
 
 #include "Locomotion.hpp"
+#include "../action/ActionRotate.hpp"
 #include "../action/ActionSequential.hpp"
 
 /**
