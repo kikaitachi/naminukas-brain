@@ -2,6 +2,7 @@
 #define NAMINUKAS_BRAIN_LOCOMOTION_WADDLE_H_
 
 #include "Locomotion.hpp"
+#include "../action/ActionSequential.hpp"
 
 /**
  * Waddle like motion. In this mode of locomotion joints move
@@ -20,8 +21,9 @@ class LocomotionWaddle: public Locomotion {
     void left(bool key_down, std::set<std::string>& modifiers);
     void right(bool key_down, std::set<std::string>& modifiers);
 
-  protected:
+  private:
     hardware::Kinematics& kinematics;
+    ActionSequential forward;
 };
 
 #endif // NAMINUKAS_BRAIN_WADDLE_H_

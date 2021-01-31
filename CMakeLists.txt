@@ -40,6 +40,7 @@ include(GoogleTest)
 
 set(COMMON_SOURCES
   src/action/Action.cpp
+  src/action/ActionRotate.cpp
   src/action/ActionSequential.cpp
   src/Logger.cpp
   src/IOServer.cpp
