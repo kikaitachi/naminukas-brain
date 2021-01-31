@@ -23,7 +23,7 @@ std::string LocomotionWaddle::name() {
 }
 
 void LocomotionWaddle::control_loop() {
-  //
+  forward.execute();
 }
 
 void LocomotionWaddle::on_start() {
@@ -35,10 +35,14 @@ void LocomotionWaddle::on_start() {
     { hardware::Joint::left_ankle, initial_ankle_angle },
     { hardware::Joint::right_ankle, initial_ankle_angle }
   });
+  forward.start();
 }
 
 void LocomotionWaddle::on_stop() {
-  //
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
 
 void LocomotionWaddle::up(bool key_down, std::set<std::string>& modifiers) {
