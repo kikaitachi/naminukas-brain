@@ -3,22 +3,34 @@
 
 #define ACTION_DURATION_MS 1000
 #define TILT_ANGLE 15
-#define DRIVE_ANGLE 30
+#define DRIVE_ANGLE 45
 
 LocomotionWaddle::LocomotionWaddle(hardware::Kinematics& kinematics)
     : Locomotion(10), kinematics(kinematics),
     forward({
       std::make_shared<ActionRotate>(ActionRotate(kinematics, {
         { hardware::Joint::left_ankle, RotationType::absolute, initial_ankle_angle + TILT_ANGLE },
-        { hardware::Joint::left_wheel, RotationType::relative, DRIVE_ANGLE },
+        { hardware::Joint::left_wheel, RotationType::relative, -DRIVE_ANGLE + TILT_ANGLE },
         { hardware::Joint::right_ankle, RotationType::absolute, initial_ankle_angle + TILT_ANGLE },
-        { hardware::Joint::right_wheel, RotationType::relative, DRIVE_ANGLE },
+        { hardware::Joint::right_wheel, RotationType::relative, -DRIVE_ANGLE - TILT_ANGLE },
+      })),
+      std::make_shared<ActionRotate>(ActionRotate(kinematics, {
+        { hardware::Joint::left_ankle, RotationType::absolute, initial_ankle_angle },
+        { hardware::Joint::left_wheel, RotationType::relative, -DRIVE_ANGLE - TILT_ANGLE },
+        { hardware::Joint::right_ankle, RotationType::absolute, initial_ankle_angle },
+        { hardware::Joint::right_wheel, RotationType::relative, -DRIVE_ANGLE - TILT_ANGLE },
       })),
       std::make_shared<ActionRotate>(ActionRotate(kinematics, {
         { hardware::Joint::left_ankle, RotationType::absolute, initial_ankle_angle - TILT_ANGLE },
-        { hardware::Joint::left_wheel, RotationType::relative, -DRIVE_ANGLE },
+        { hardware::Joint::left_wheel, RotationType::relative, DRIVE_ANGLE - TILT_ANGLE },
         { hardware::Joint::right_ankle, RotationType::absolute, initial_ankle_angle - TILT_ANGLE },
-        { hardware::Joint::right_wheel, RotationType::relative, -DRIVE_ANGLE },
+        { hardware::Joint::right_wheel, RotationType::relative, DRIVE_ANGLE + TILT_ANGLE },
+      })),
+      std::make_shared<ActionRotate>(ActionRotate(kinematics, {
+        { hardware::Joint::left_ankle, RotationType::absolute, initial_ankle_angle },
+        { hardware::Joint::left_wheel, RotationType::relative, DRIVE_ANGLE + TILT_ANGLE },
+        { hardware::Joint::right_ankle, RotationType::absolute, initial_ankle_angle },
+        { hardware::Joint::right_wheel, RotationType::relative, DRIVE_ANGLE + TILT_ANGLE },
       }))
     }, ActionSequential::LOOP_FOREVER) {
 }
