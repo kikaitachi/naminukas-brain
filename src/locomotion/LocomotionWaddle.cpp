@@ -2,7 +2,7 @@
 #include "LocomotionWaddle.hpp"
 
 #define ACTION_DURATION_MS 1000
-#define TILT_ANGLE 10
+#define TILT_ANGLE 15
 
 LocomotionWaddle::LocomotionWaddle(hardware::Kinematics& kinematics)
     : Locomotion(10), kinematics(kinematics),

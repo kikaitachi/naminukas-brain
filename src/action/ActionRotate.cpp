@@ -2,7 +2,7 @@
 #include "../Logger.hpp"
 #include "ActionRotate.hpp"
 
-#define POS_THRESHOLD 0.2
+#define POS_THRESHOLD 2
 
 ActionRotate::ActionRotate(hardware::Kinematics& kinematics, std::vector<hardware::JointPosition> positions, int how)
     : kinematics(kinematics), positions(positions), how(how) {
@@ -30,7 +30,6 @@ void ActionRotate::abort() {
 }
 
 bool ActionRotate::execute() {
-  logger::debug("Executing rotation");
   std::vector<hardware::JointPosition> current = kinematics.get_joint_position(joints(positions));
   for (int i = 0; i < current.size(); i++) {
     if (fabs(current[i].degrees - goal[i].degrees) > POS_THRESHOLD) {

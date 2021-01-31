@@ -23,7 +23,6 @@ void ActionSequential::abort() {
 }
 
 bool ActionSequential::execute() {
-  logger::debug("Executing sequential action");
   if (current_action_index >= actions.size()) {
     if (times == LOOP_FOREVER) {
       current_action_index = 0;
