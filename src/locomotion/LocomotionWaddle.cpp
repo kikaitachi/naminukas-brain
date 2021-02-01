@@ -3,7 +3,7 @@
 
 #define ACTION_DURATION_MS 1000
 #define CONTROL_LOOP_FREQENCY 100
-#define TILT_ANGLE 15
+#define TILT_ANGLE 20
 #define DRIVE_ANGLE 45
 
 LocomotionWaddle::LocomotionWaddle(hardware::Kinematics& kinematics)
@@ -87,7 +87,9 @@ void LocomotionWaddle::up(bool key_down, std::set<std::string>& modifiers) {
 }
 
 void LocomotionWaddle::down(bool key_down, std::set<std::string>& modifiers) {
-  //
+  if (key_down) {
+    drive_direction = -drive_direction;
+  }
 }
 
 void LocomotionWaddle::left(bool key_down, std::set<std::string>& modifiers) {
