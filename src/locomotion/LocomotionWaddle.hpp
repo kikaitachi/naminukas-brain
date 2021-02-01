@@ -28,6 +28,7 @@ class LocomotionWaddle: public Locomotion {
     int control_loop_iteration;
     int tilt_direction;
     int drive_direction;
+    std::vector<hardware::JointPosition> initial_pos;
 };
 
 #endif // NAMINUKAS_BRAIN_LOCOMOTION_WADDLE_H_
