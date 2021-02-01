@@ -42,7 +42,7 @@ std::string LocomotionWaddle::name() {
 
 void LocomotionWaddle::control_loop() {
   //forward.execute();
-  int cycle = ACTION_DURATION_MS / CONTROL_LOOP_FREQENCY;
+  int cycle = 100;
   if (control_loop_iteration % cycle == 0) {
     kinematics.set_joint_position({
       { hardware::Joint::left_ankle, initial_ankle_angle + tilt_direction * TILT_ANGLE },
@@ -53,8 +53,8 @@ void LocomotionWaddle::control_loop() {
     std::vector<hardware::JointPosition> positions = kinematics.get_joint_position({
       hardware::Joint::left_wheel, hardware::Joint::right_wheel
     });
-    positions[0].degrees += drive_direction * DRIVE_ANGLE;
-    positions[1].degrees += drive_direction * DRIVE_ANGLE;
+    positions[0].degrees -= drive_direction * DRIVE_ANGLE;
+    positions[1].degrees -= drive_direction * DRIVE_ANGLE;
     kinematics.set_joint_position(positions);
     drive_direction = -drive_direction;
   }
@@ -62,10 +62,14 @@ void LocomotionWaddle::control_loop() {
 }
 
 void LocomotionWaddle::on_start() {
-  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
+  /*kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);*/
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 4, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 4, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 4, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 4, ACTION_DURATION_MS);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle },
     { hardware::Joint::right_ankle, initial_ankle_angle }
