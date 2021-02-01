@@ -25,6 +25,9 @@ class LocomotionWaddle: public Locomotion {
   private:
     hardware::Kinematics& kinematics;
     ActionSequential forward;
+    int control_loop_iteration;
+    int tilt_direction;
+    int drive_direction;
 };
 
-#endif // NAMINUKAS_BRAIN_WADDLE_H_
+#endif // NAMINUKAS_BRAIN_LOCOMOTION_WADDLE_H_
