@@ -3,7 +3,7 @@
 #define ACTION_DURATION_MS 1000
 #define CONTROL_LOOP_FREQENCY 100
 #define TILT_ANGLE 20
-#define DRIVE_ANGLE 60
+#define DRIVE_ANGLE 50
 #define INCREMENT_ANGLE 10
 
 LocomotionWaddle::LocomotionWaddle(hardware::Kinematics& kinematics)
@@ -23,8 +23,8 @@ void LocomotionWaddle::control_loop() {
     });
     tilt_direction = -tilt_direction;
   } else if ((control_loop_iteration + cycle / 2)  % cycle == 0) {
-    initial_pos[0].degrees -= left_drive_distance * DRIVE_ANGLE;
-    initial_pos[1].degrees -= right_drive_distance * DRIVE_ANGLE;
+    initial_pos[0].degrees -= left_drive_distance * drive_direction;
+    initial_pos[1].degrees -= right_drive_distance * drive_direction;
     kinematics.set_joint_position(initial_pos);
     drive_direction = -drive_direction;
   }
@@ -71,14 +71,14 @@ void LocomotionWaddle::down(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionWaddle::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    left_drive_distance += INCREMENT_ANGLE;
-    right_drive_distance -= INCREMENT_ANGLE;
+    left_drive_distance -= INCREMENT_ANGLE;
+    right_drive_distance += INCREMENT_ANGLE;
   }
 }
 
 void LocomotionWaddle::right(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    left_drive_distance -= INCREMENT_ANGLE;
-    right_drive_distance += INCREMENT_ANGLE;
+    left_drive_distance += INCREMENT_ANGLE;
+    right_drive_distance -= INCREMENT_ANGLE;
   }
 }
