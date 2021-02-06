@@ -288,7 +288,7 @@ void WebSocketServer::handle_client(int fd) {
         } catch (const std::exception& e) {
           logger::error("Failed to handle message with payload %s: %s", payload.c_str(), e.what());
         }
-        memmove(buffer, buffer + frame_length, frame_length);
+        memmove(buffer, buffer + frame_length, size - frame_length);
         size -= frame_length;
       } else {
         break;
