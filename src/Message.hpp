@@ -37,6 +37,8 @@ class MessageHandler {
 
   private:
     telemetry::Items& telemetryItems;
+
+    void send_updated_telemetry(WebSocketServer *server, Client *client);
 };
 
 #endif  // NAMINUKAS_BRAIN_MESSAGE_H_

@@ -147,6 +147,22 @@ MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
 
 #define MAX_OUT_MSG_SIZE 1024 * 4
 
+void MessageHandler::send_updated_telemetry(WebSocketServer *server, Client *client) {
+  char buffer[MAX_OUT_MSG_SIZE];
+  for (auto &telemetry_item_id : client->changed_telemetry_item_ids) {
+    std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(telemetry_item_id);
+    if (it != telemetryItems.id_to_item.end()) {
+      void *buf = buffer;
+      int buf_len = sizeof(buffer);
+      message::write_unsigned_integer(&buf, &buf_len, message::TELEMETRY_UPDATE);
+      message::write_signed_integer(&buf, &buf_len, it->second->getId());
+      it->second->serialize_value(&buf, &buf_len);
+      server->sendBinary(client->fd, buffer, sizeof(buffer) - buf_len);
+    }
+  }
+  client->changed_telemetry_item_ids.clear();
+}
+
 void MessageHandler::handle(WebSocketServer *server, Client *client, void *payload, size_t size) {
   void *buf = payload;
   int buf_len = size;
@@ -156,20 +172,7 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
   //  client->fd, msg_type, (int)(((int8_t *)payload)[0]), (int)size);
   switch (msg_type) {
     case message::TELEMETRY_QUERY: {
-	    char buffer[MAX_OUT_MSG_SIZE];
-      //logger::debug("Client %d has %d changed telemetry item ids", client->fd, client->changed_telemetry_item_ids.size());
-      for (auto &telemetry_item_id : client->changed_telemetry_item_ids) {
-        std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(telemetry_item_id);
-        if (it != telemetryItems.id_to_item.end()) {
-		      void *buf = buffer;
-          int buf_len = sizeof(buffer);
-          message::write_unsigned_integer(&buf, &buf_len, message::TELEMETRY_UPDATE);
-          message::write_signed_integer(&buf, &buf_len, it->second->getId());
-          it->second->serialize_value(&buf, &buf_len);
-		      server->sendBinary(client->fd, buffer, sizeof(buffer) - buf_len);
-        }
-      }
-      client->changed_telemetry_item_ids.clear();
+	    send_updated_telemetry(server, client);
       break;
     }
     case message::TELEMETRY_UPDATE: {
