@@ -268,11 +268,11 @@ void WebSocketServer::handle_client(int fd) {
           buffer[i + header_length] ^= mask[i % 4];
         }
         std::string payload = "";
-        for (int i = 0; i < data_length; i++) {
+        for (int i = 0; i < frame_length; i++) {
           if (payload.size() != 0) {
             payload += ", ";
           }
-          payload += std::to_string(buffer[header_length + i]);
+          payload += std::to_string(buffer[i]);
         }
         logger::debug("Handling message with payload: %s", payload.c_str());
         try {
