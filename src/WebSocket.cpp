@@ -230,7 +230,7 @@ void WebSocketServer::handle_client(int fd) {
       break;
     }
     size += result;
-    //logger::debug("Read %d bytes from %d", (int)result, fd);
+    logger::debug("Read %d bytes from %d", (int)result, fd);
 
     while (size >= 6) {
       int opcode = buffer[0] & 0x0f;
