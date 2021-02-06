@@ -282,7 +282,7 @@ void WebSocketServer::handle_client(int fd) {
           }
           payload += std::to_string(buffer[i]);
         }
-        logger::debug("Masked: %s. Unmasked: %s", masked.c_str(), payload.c_str());
+        logger::debug("Buffer: %s. Unmasked: %s. frame_length: %d", masked.c_str(), payload.c_str(), frame_length);
         try {
           on_binary_message(this, &client, buffer + header_length, data_length);
         } catch (const std::exception& e) {
