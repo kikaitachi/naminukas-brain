@@ -267,16 +267,17 @@ void WebSocketServer::handle_client(int fd) {
         for (int i = 0; i < data_length; i++) {
           buffer[i + header_length] ^= mask[i % 4];
         }
+        std::string payload = "";
+        for (int i = 0; i < data_length; i++) {
+          if (payload.size() != 0) {
+            payload += ", ";
+          }
+          payload += std::to_string(buffer[header_length + i]);
+        }
+        logger::debug("Handling message with payload: %s", payload.c_str());
         try {
           on_binary_message(this, &client, buffer + header_length, data_length);
         } catch (const std::exception& e) {
-          std::string payload = "";
-          for (int i = 0; i < data_length; i++) {
-            if (payload.size() != 0) {
-              payload += ", ";
-            }
-            payload += std::to_string(buffer[header_length + i]);
-          }
           logger::error("Failed to handle message with payload %s: %s", payload.c_str(), e.what());
         }
         memmove(buffer, buffer + frame_length, frame_length);
