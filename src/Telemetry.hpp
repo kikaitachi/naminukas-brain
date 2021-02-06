@@ -123,6 +123,18 @@ namespace telemetry {
       void serialize_points(void **buf, int *buf_len);
   };
 
+  class ItemChoice: public Item {
+    public:
+      ItemChoice(int parent_id, std::string name, std::vector<std::string> choices, int selected, std::function<void(int)> on_change);
+      void serialize_definition(void **buf, int *buf_len);
+      void deserialize_value(void **buf, int *buf_len);
+
+    private:
+      std::vector<std::string> choices;
+      int selected;
+      std::function<void(int)> on_change;
+  };
+
   class Items {
     public:
       std::map<int, Item*> id_to_item;

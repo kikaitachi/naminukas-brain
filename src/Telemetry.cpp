@@ -220,6 +220,26 @@ namespace telemetry {
     }
   }
 
+  // ItemChoice ****************************************************************
+
+  ItemChoice::ItemChoice(int parent_id, std::string name, std::vector<std::string> choices, int selected, std::function<void(int)> on_change)
+      : Item(parent_id, TYPE_CHOICE, name), choices(choices), selected(selected), on_change(on_change) {
+  }
+
+  void ItemChoice::serialize_definition(void **buf, int *buf_len) {
+    Item::serialize_definition(buf, buf_len);
+    message::write_unsigned_integer(buf, buf_len, selected);
+    for (auto choice : choices) {
+      message::write_string(buf, buf_len, choice);
+    }
+  }
+
+  void ItemChoice::deserialize_value(void **buf, int *buf_len) {
+    int value;
+    message::read_int(buf, buf_len, &value);
+    on_change(value);
+  }
+
   // Items *********************************************************************
 
   Item* Items::add_item(Item* item) {
