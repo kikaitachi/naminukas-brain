@@ -23,10 +23,12 @@ void LocomotionWaddle::control_loop() {
     });
     tilt_direction = -tilt_direction;
   } else if ((control_loop_iteration + cycle / 2)  % cycle == 0) {
-    initial_pos[0].degrees -= left_drive_distance * drive_direction;
-    initial_pos[1].degrees -= right_drive_distance * drive_direction;
-    kinematics.set_joint_position(initial_pos);
-    drive_direction = -drive_direction;
+    if (initial_pos.size() == 2) { // Initial position is not available when not running on the robot
+      initial_pos[0].degrees -= left_drive_distance * drive_direction;
+      initial_pos[1].degrees -= right_drive_distance * drive_direction;
+      kinematics.set_joint_position(initial_pos);
+      drive_direction = -drive_direction;
+    }
   }
   control_loop_iteration++;
 }
