@@ -56,29 +56,89 @@ void LocomotionWaddle::on_stop() {
 }
 
 void LocomotionWaddle::up(bool key_down, std::set<std::string>& modifiers) {
-  if (key_down) {
-    left_drive_distance += INCREMENT_ANGLE;
-    right_drive_distance += INCREMENT_ANGLE;
+  if (modifiers.find("Control") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance += INCREMENT_ANGLE;
+      right_drive_distance += INCREMENT_ANGLE;
+    }
+  } else if (modifiers.find("Shift") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance = INCREMENT_ANGLE;
+      right_drive_distance = INCREMENT_ANGLE;
+    }
+  } else {
+    if (key_down) {
+      left_drive_distance = INCREMENT_ANGLE;
+      right_drive_distance = INCREMENT_ANGLE;
+    } else {
+      left_drive_distance = 0;
+      right_drive_distance = 0;
+    }
   }
 }
 
 void LocomotionWaddle::down(bool key_down, std::set<std::string>& modifiers) {
-  if (key_down) {
-    left_drive_distance -= INCREMENT_ANGLE;
-    right_drive_distance -= INCREMENT_ANGLE;
+  if (modifiers.find("Control") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance -= INCREMENT_ANGLE;
+      right_drive_distance -= INCREMENT_ANGLE;
+    }
+  } else if (modifiers.find("Shift") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance = -INCREMENT_ANGLE;
+      right_drive_distance = -INCREMENT_ANGLE;
+    }
+  } else {
+    if (key_down) {
+      left_drive_distance = -INCREMENT_ANGLE;
+      right_drive_distance = -INCREMENT_ANGLE;
+    } else {
+      left_drive_distance = 0;
+      right_drive_distance = 0;
+    }
   }
 }
 
 void LocomotionWaddle::left(bool key_down, std::set<std::string>& modifiers) {
-  if (key_down) {
-    left_drive_distance -= INCREMENT_ANGLE;
-    right_drive_distance += INCREMENT_ANGLE;
+  if (modifiers.find("Control") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance -= INCREMENT_ANGLE;
+      right_drive_distance += INCREMENT_ANGLE;
+    }
+  } else if (modifiers.find("Shift") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance = -INCREMENT_ANGLE;
+      right_drive_distance = INCREMENT_ANGLE;
+    }
+  } else {
+    if (key_down) {
+      left_drive_distance = INCREMENT_ANGLE;
+      right_drive_distance = INCREMENT_ANGLE;
+    } else {
+      left_drive_distance = 0;
+      right_drive_distance = 0;
+    }
   }
 }
 
 void LocomotionWaddle::right(bool key_down, std::set<std::string>& modifiers) {
-  if (key_down) {
-    left_drive_distance += INCREMENT_ANGLE;
-    right_drive_distance -= INCREMENT_ANGLE;
+  if (modifiers.find("Control") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance += INCREMENT_ANGLE;
+      right_drive_distance -= INCREMENT_ANGLE;
+    }
+  } else if (modifiers.find("Shift") != modifiers.end()) {
+    if (key_down) {
+      left_drive_distance = INCREMENT_ANGLE;
+      right_drive_distance = -INCREMENT_ANGLE;
+    }
+  } else {
+    if (key_down) {
+      left_drive_distance = INCREMENT_ANGLE;
+      right_drive_distance = -INCREMENT_ANGLE;
+    } else {
+      left_drive_distance = 0;
+      right_drive_distance = 0;
+    }
   }
 }
