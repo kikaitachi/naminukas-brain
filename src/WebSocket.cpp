@@ -230,7 +230,7 @@ void WebSocketServer::handle_client(int fd) {
       break;
     }
     size += result;
-    logger::debug("Read %d bytes from %d", (int)result, fd);
+    //logger::debug("Read %d bytes from %d", (int)result, fd);
 
     while (size >= 6) {
       int opcode = buffer[0] & 0x0f;
@@ -264,29 +264,21 @@ void WebSocketServer::handle_client(int fd) {
         mask[2] = buffer[header_length - 2];
         mask[3] = buffer[header_length - 1];
 
-        std::string masked = "";
-        for (int i = 0; i < size; i++) {
-          if (masked.size() != 0) {
-            masked += ", ";
-          }
-          masked += std::to_string(buffer[i]);
-        }
-
         for (int i = 0; i < data_length; i++) {
           buffer[i + header_length] ^= mask[i % 4];
         }
-        std::string payload = "";
-        for (int i = 0; i < frame_length; i++) {
-          if (payload.size() != 0) {
-            payload += ", ";
-          }
-          payload += std::to_string(buffer[i]);
-        }
-        logger::debug("Buffer: %s. Unmasked: %s. frame_length: %d", masked.c_str(), payload.c_str(), frame_length);
+
         try {
           on_binary_message(this, &client, buffer + header_length, data_length);
         } catch (const std::exception& e) {
-          logger::error("Failed to handle message with payload %s: %s", payload.c_str(), e.what());
+          std::string payload = "";
+          for (int i = 0; i < frame_length; i++) {
+            if (payload.size() != 0) {
+              payload += ", ";
+            }
+            payload += std::to_string(buffer[i]);
+          }
+          logger::error("Failed to handle message for socket %d with payload %s: %s", fd, payload.c_str(), e.what());
         }
         memmove(buffer, buffer + frame_length, size - frame_length);
         size -= frame_length;

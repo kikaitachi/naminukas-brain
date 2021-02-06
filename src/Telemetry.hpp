@@ -17,6 +17,7 @@ namespace telemetry {
   const int TYPE_ACTION = 3;
   const int TYPE_STL = 4;
   const int TYPE_POINTS = 5;
+  const int TYPE_CHOICE = 6;
   // TODO: introduce "reference" type to avoid sending duplicate STL files
 
   const int ROOT_ITEM_ID = 0;
