@@ -265,7 +265,7 @@ void WebSocketServer::handle_client(int fd) {
         mask[3] = buffer[header_length - 1];
 
         std::string masked = "";
-        for (int i = 0; i < frame_length; i++) {
+        for (int i = 0; i < size; i++) {
           if (masked.size() != 0) {
             masked += ", ";
           }
