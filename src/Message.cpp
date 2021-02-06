@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstring>
+#include <stdexcept>
 #include <string>
 #include <endian.h>
 #include "Logger.hpp"
@@ -181,7 +182,7 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
       message::read_int(&buf, &buf_len, &item_id);
       std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(item_id);
       if (it == telemetryItems.id_to_item.end()) {
-        logger::warn("Received telemetry update message for item with non existing id %d", item_id);
+        throw std::invalid_argument("Telemetry update message for item with non existing id " + std::to_string(item_id));
       } else {
         if (it->second->getType() == telemetry::TYPE_ACTION) {
           it->second->deserialize_value(&buf, &buf_len);
@@ -192,7 +193,6 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
       break;
     }
     default:
-      logger::warn("Received unsupported message type %d from %d", msg_type, client->fd);
-      break;
+      throw std::invalid_argument("Unsupported message type " + std::to_string(msg_type));
   }
 }

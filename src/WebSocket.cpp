@@ -267,7 +267,6 @@ void WebSocketServer::handle_client(int fd) {
         for (int i = 0; i < data_length; i++) {
           buffer[i + header_length] ^= mask[i % 4];
         }
-        //logger::debug("Got frame with opcode %d, header length %d, payload length %d, first byte: %d", opcode, header_length, (int)data_length, buffer[header_length]);
         try {
           on_binary_message(this, &client, buffer + header_length, data_length);
         } catch (const std::exception& e) {
