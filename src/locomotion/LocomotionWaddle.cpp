@@ -42,7 +42,7 @@ void LocomotionWaddle::on_start() {
   });
   control_loop_iteration = 0;
   tilt_direction = drive_direction = 1;
-  left_drive_distance = right_drive_distance = DRIVE_ANGLE;
+  left_drive_distance = right_drive_distance = 0;
   initial_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel, hardware::Joint::right_wheel
   });
@@ -112,7 +112,7 @@ void LocomotionWaddle::left(bool key_down, std::set<std::string>& modifiers) {
     }
   } else {
     if (key_down) {
-      left_drive_distance = DRIVE_ANGLE;
+      left_drive_distance = -DRIVE_ANGLE;
       right_drive_distance = DRIVE_ANGLE;
     } else {
       left_drive_distance = 0;
