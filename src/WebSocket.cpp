@@ -130,12 +130,6 @@ void WebSocketServer::sendBinary(int fd, void *data, size_t size) {
   sendFrame(fd, OPCODE_BINARY, data, size);
 }
 
-/*void WebSocketServer::sendBinaryAll(void *data, size_t size) {
-  for (auto fd : clients) {
-    sendBinary(fd, data, size);
-  }
-}*/
-
 /*
  * Find the first occurrence of find in s, where the search is limited to the
  * first slen characters of s.
@@ -242,6 +236,9 @@ void WebSocketServer::handle_client(int fd) {
       if (opcode == OPCODE_CLOSE) {
         disconnect(fd, true, "Closed by control frame");
         break;
+      }
+      if ((buffer[0] & 128) == 0) {
+        logger::warn("Fragmented frame received");
       }
       uint64_t data_length = buffer[1] & 127;
       size_t header_length;

@@ -17,7 +17,6 @@ class WebSocketServer {
       std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message);
     void accept_client();
     void sendBinary(int fd, void *data, size_t size);
-    //void sendBinaryAll(void *data, size_t size);
 
   private:
     telemetry::Items& telemetryItems;
