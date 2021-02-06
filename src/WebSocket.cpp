@@ -264,6 +264,14 @@ void WebSocketServer::handle_client(int fd) {
         mask[2] = buffer[header_length - 2];
         mask[3] = buffer[header_length - 1];
 
+        std::string masked = "";
+        for (int i = 0; i < frame_length; i++) {
+          if (masked.size() != 0) {
+            masked += ", ";
+          }
+          masked += std::to_string(buffer[i]);
+        }
+
         for (int i = 0; i < data_length; i++) {
           buffer[i + header_length] ^= mask[i % 4];
         }
@@ -274,7 +282,7 @@ void WebSocketServer::handle_client(int fd) {
           }
           payload += std::to_string(buffer[i]);
         }
-        logger::debug("Handling message with payload: %s", payload.c_str());
+        logger::debug("Masked: %s. Unmasked: %s", masked.c_str(), payload.c_str());
         try {
           on_binary_message(this, &client, buffer + header_length, data_length);
         } catch (const std::exception& e) {
