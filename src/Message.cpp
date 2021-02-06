@@ -169,8 +169,6 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
   int buf_len = size;
   int msg_type;
   message::read_int(&buf, &buf_len, &msg_type);
-  //logger::debug("Got message from %d of type %d (non decoded: %d) of %d bytes",
-  //  client->fd, msg_type, (int)(((int8_t *)payload)[0]), (int)size);
   switch (msg_type) {
     case message::TELEMETRY_QUERY: {
 	    send_updated_telemetry(server, client);
@@ -178,17 +176,12 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
     }
     case message::TELEMETRY_UPDATE: {
       int item_id;
-      logger::debug("Telemetry update message of length %d: %d", buf_len, *((int8_t *)buf));
       message::read_int(&buf, &buf_len, &item_id);
       std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(item_id);
       if (it == telemetryItems.id_to_item.end()) {
         throw std::invalid_argument("Telemetry update message for item with non existing id " + std::to_string(item_id));
       } else {
-        if (it->second->getType() == telemetry::TYPE_ACTION) {
-          it->second->deserialize_value(&buf, &buf_len);
-        } else {
-          logger::warn("Received telemetry update message for item %d with non action type %d", item_id, it->second->getType());
-        }
+        it->second->deserialize_value(&buf, &buf_len);
       }
       break;
     }

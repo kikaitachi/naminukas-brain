@@ -38,6 +38,12 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
     machine->getId(), "Charger, V", 0);
   telemetryItems.add_item(charger);
 
+  telemetryItems.add_item(new telemetry::ItemChoice(
+    machine->getId(), "Log level", {"debug", "info", "warn", "error"}, (int)logger::get_level(),
+    [](int new_level) {
+      logger::set_level((logger::level)new_level);
+    }));
+
   std::thread update_thread([=]() {
     while (!is_terminated()) {
       struct sysinfo system_info;

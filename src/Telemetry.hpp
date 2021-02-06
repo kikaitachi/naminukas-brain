@@ -127,6 +127,7 @@ namespace telemetry {
     public:
       ItemChoice(int parent_id, std::string name, std::vector<std::string> choices, int selected, std::function<void(int)> on_change);
       void serialize_definition(void **buf, int *buf_len);
+      void serialize_value(void **buf, int *buf_len);
       void deserialize_value(void **buf, int *buf_len);
 
     private:

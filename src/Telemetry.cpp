@@ -234,10 +234,17 @@ namespace telemetry {
     }
   }
 
+  void ItemChoice::serialize_value(void **buf, int *buf_len) {
+    Item::serialize_value(buf, buf_len);
+    message::write_unsigned_integer(buf, buf_len, selected);
+  }
+
   void ItemChoice::deserialize_value(void **buf, int *buf_len) {
-    int value;
-    message::read_int(buf, buf_len, &value);
-    on_change(value);
+    message::read_int(buf, buf_len, &selected);
+    on_change(selected);
+    for (auto change_listener : change_listeners) {
+      change_listener(*this);
+    }
   }
 
   // Items *********************************************************************

@@ -7,7 +7,19 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "Logger.hpp"
+
 namespace logger {
+
+  static level current_level = level_info;
+
+  void set_level(level log_level) {
+    current_level = log_level;
+  }
+
+  level get_level() {
+    return current_level;
+  }
 
   void log_entry(char level, const char *format, va_list argptr) {
     struct timespec now_timespec;
@@ -23,31 +35,39 @@ namespace logger {
   }
 
   void debug(std::string format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    log_entry('D', format.c_str(), argptr);
-    va_end(argptr);
+    if (current_level <= level_debug) {
+      va_list argptr;
+      va_start(argptr, format);
+      log_entry('D', format.c_str(), argptr);
+      va_end(argptr);
+    }
   }
 
   void warn(std::string format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    log_entry('W', format.c_str(), argptr);
-    va_end(argptr);
+    if (current_level <= level_warn) {
+      va_list argptr;
+      va_start(argptr, format);
+      log_entry('W', format.c_str(), argptr);
+      va_end(argptr);
+    }
   }
 
   void error(std::string format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    log_entry('E', format.c_str(), argptr);
-    va_end(argptr);
+    if (current_level <= level_error) {
+      va_list argptr;
+      va_start(argptr, format);
+      log_entry('E', format.c_str(), argptr);
+      va_end(argptr);
+    }
   }
 
   void info(std::string format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    log_entry('I', format.c_str(), argptr);
-    va_end(argptr);
+    if (current_level <= level_info) {
+      va_list argptr;
+      va_start(argptr, format);
+      log_entry('I', format.c_str(), argptr);
+      va_end(argptr);
+    }
   }
 
   void last(std::string format, ...) {

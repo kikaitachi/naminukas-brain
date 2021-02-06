@@ -4,6 +4,13 @@
 #include <string>
 
 namespace logger {
+
+  enum level { level_debug, level_info, level_warn, level_error };
+
+  void set_level(level log_level);
+
+  level get_level();
+
   /**
    * Log debug message.
    */
