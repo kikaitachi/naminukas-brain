@@ -237,7 +237,7 @@ void WebSocketServer::handle_client(int fd) {
         disconnect(fd, true, "Closed by control frame");
         break;
       }
-      if ((buffer[0] & 128) == 0) {
+      if ((buffer[0] & FINAL_FRAME) == 0) {
         logger::warn("Fragmented frame received");
       }
       uint64_t data_length = buffer[1] & 127;
@@ -266,7 +266,7 @@ void WebSocketServer::handle_client(int fd) {
         for (int i = 0; i < data_length; i++) {
           buffer[i + header_length] ^= mask[i % 4];
         }
-        //logger::debug("Got frame with opcode %d, header length %d, payload length %d", opcode, header_length, (int)data_length);
+        //logger::debug("Got frame with opcode %d, header length %d, payload length %d, first byte: %d", opcode, header_length, (int)data_length, buffer[header_length]);
         on_binary_message(this, &client, buffer + header_length, data_length);
         memmove(buffer, buffer + frame_length, frame_length);
         size -= frame_length;
