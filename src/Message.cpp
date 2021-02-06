@@ -174,6 +174,7 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
     }
     case message::TELEMETRY_UPDATE: {
       int item_id;
+      logger::debug("Telemetry update message of length %d: %d", buf_len, *((int8_t *)buf));
       message::read_int(&buf, &buf_len, &item_id);
       std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(item_id);
       if (it == telemetryItems.id_to_item.end()) {
