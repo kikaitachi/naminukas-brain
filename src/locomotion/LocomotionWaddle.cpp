@@ -63,13 +63,13 @@ void LocomotionWaddle::up(bool key_down, std::set<std::string>& modifiers) {
     }
   } else if (modifiers.find("Shift") != modifiers.end()) {
     if (key_down) {
-      left_drive_distance = INCREMENT_ANGLE;
-      right_drive_distance = INCREMENT_ANGLE;
+      left_drive_distance = DRIVE_ANGLE;
+      right_drive_distance = DRIVE_ANGLE;
     }
   } else {
     if (key_down) {
-      left_drive_distance = INCREMENT_ANGLE;
-      right_drive_distance = INCREMENT_ANGLE;
+      left_drive_distance = DRIVE_ANGLE;
+      right_drive_distance = DRIVE_ANGLE;
     } else {
       left_drive_distance = 0;
       right_drive_distance = 0;
@@ -85,13 +85,13 @@ void LocomotionWaddle::down(bool key_down, std::set<std::string>& modifiers) {
     }
   } else if (modifiers.find("Shift") != modifiers.end()) {
     if (key_down) {
-      left_drive_distance = -INCREMENT_ANGLE;
-      right_drive_distance = -INCREMENT_ANGLE;
+      left_drive_distance = -DRIVE_ANGLE;
+      right_drive_distance = -DRIVE_ANGLE;
     }
   } else {
     if (key_down) {
-      left_drive_distance = -INCREMENT_ANGLE;
-      right_drive_distance = -INCREMENT_ANGLE;
+      left_drive_distance = -DRIVE_ANGLE;
+      right_drive_distance = -DRIVE_ANGLE;
     } else {
       left_drive_distance = 0;
       right_drive_distance = 0;
@@ -107,13 +107,13 @@ void LocomotionWaddle::left(bool key_down, std::set<std::string>& modifiers) {
     }
   } else if (modifiers.find("Shift") != modifiers.end()) {
     if (key_down) {
-      left_drive_distance = -INCREMENT_ANGLE;
-      right_drive_distance = INCREMENT_ANGLE;
+      left_drive_distance = -DRIVE_ANGLE;
+      right_drive_distance = DRIVE_ANGLE;
     }
   } else {
     if (key_down) {
-      left_drive_distance = INCREMENT_ANGLE;
-      right_drive_distance = INCREMENT_ANGLE;
+      left_drive_distance = DRIVE_ANGLE;
+      right_drive_distance = DRIVE_ANGLE;
     } else {
       left_drive_distance = 0;
       right_drive_distance = 0;
@@ -129,13 +129,13 @@ void LocomotionWaddle::right(bool key_down, std::set<std::string>& modifiers) {
     }
   } else if (modifiers.find("Shift") != modifiers.end()) {
     if (key_down) {
-      left_drive_distance = INCREMENT_ANGLE;
-      right_drive_distance = -INCREMENT_ANGLE;
+      left_drive_distance = DRIVE_ANGLE;
+      right_drive_distance = -DRIVE_ANGLE;
     }
   } else {
     if (key_down) {
-      left_drive_distance = INCREMENT_ANGLE;
-      right_drive_distance = -INCREMENT_ANGLE;
+      left_drive_distance = DRIVE_ANGLE;
+      right_drive_distance = -DRIVE_ANGLE;
     } else {
       left_drive_distance = 0;
       right_drive_distance = 0;
