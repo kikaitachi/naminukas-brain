@@ -39,4 +39,4 @@ jobs:
         run: |
           curl -X POST -H 'Content-Type: application/json' -H 'Accept: application/vnd.heroku+json; version=3' -d '{"process_types":{"web":"./naminukas"}}' -n https://api.heroku.com/apps/naminukas-demo/slugs -H "Authorization: Bearer $HEROKU_API_KEY" > /tmp/response.json
           curl -X PUT -H 'Content-Type:' --data-binary @slug.tgz "$(cat /tmp/response.json | jq -r '.blob.url')"
-          curl -X POST -H "Accept: application/vnd.heroku+json; version=3" -H "Content-Type: application/json" -d "{\"slug\":\"$(cat /tmp/response.json | jq -r '.id')\"}" -n https://api.heroku.com/apps/naminukas-demo/releases
+          curl -X POST -H "Accept: application/vnd.heroku+json; version=3" -H "Content-Type: application/json" -d "{\"slug\":\"$(cat /tmp/response.json | jq -r '.id')\"}" -n https://api.heroku.com/apps/naminukas-demo/releases -H "Authorization: Bearer $HEROKU_API_KEY"
