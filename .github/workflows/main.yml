@@ -34,11 +34,12 @@ jobs:
           cp build/naminukas app/naminukas
           cp /usr/lib/x86_64-linux-gnu/librealsense2.so* app
           cp /lib/x86_64-linux-gnu/libusb-1.0.so.0* app
-          tar czfv slug.tgz ./app ./model
+          cp -r model app
+          tar czfv slug.tgz ./app
       - name: Deploy
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          curl -X POST -H 'Content-Type: application/json' -H 'Accept: application/vnd.heroku+json; version=3' -d '{"process_types":{"web":"LD_LIBRARY_PATH=. ./naminukas"}}' -n https://api.heroku.com/apps/naminukas-demo/slugs -H "Authorization: Bearer $HEROKU_API_KEY" > /tmp/response.json
+          curl -X POST -H 'Content-Type: application/json' -H 'Accept: application/vnd.heroku+json; version=3' -d '{"process_types":{"web":"MODEL_DIR=model/ LD_LIBRARY_PATH=. ./naminukas"}}' -n https://api.heroku.com/apps/naminukas-demo/slugs -H "Authorization: Bearer $HEROKU_API_KEY" > /tmp/response.json
           curl -X PUT -H 'Content-Type:' --data-binary @slug.tgz "$(cat /tmp/response.json | jq -r '.blob.url')"
           curl -X POST -H "Accept: application/vnd.heroku+json; version=3" -H "Content-Type: application/json" -d "{\"slug\":\"$(cat /tmp/response.json | jq -r '.id')\"}" -n https://api.heroku.com/apps/naminukas-demo/releases -H "Authorization: Bearer $HEROKU_API_KEY"
