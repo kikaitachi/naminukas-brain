@@ -34,8 +34,7 @@ jobs:
           cp build/naminukas app/naminukas
           cp /usr/lib/x86_64-linux-gnu/librealsense2.so* app
           cp /lib/x86_64-linux-gnu/libusb-1.0.so.0* app
-          cp -r model app
-          tar czfv slug.tgz ./app
+          tar czfv slug.tgz ./app ./model
       - name: Deploy
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
