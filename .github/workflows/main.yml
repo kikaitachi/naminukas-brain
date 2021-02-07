@@ -33,6 +33,7 @@ jobs:
           mkdir -p ./app
           cp build/naminukas app/naminukas
           cp /usr/lib/x86_64-linux-gnu/librealsense2.so* app/
+          cp /usr/lib/x86_64-linux-gnu/libusb-1.0.so* app/
           tar czfv slug.tgz ./app
       - name: Deploy
         env:
