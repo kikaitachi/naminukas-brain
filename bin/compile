@@ -1,6 +1,0 @@
-#!/bin/sh
-
-echo Compiling
-cp bin/naminukas ${1}/naminukas
-
-exit 0
