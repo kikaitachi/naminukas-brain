@@ -21,6 +21,7 @@ Pose LocomotionPole::control_loop(Pose pose) {
     double angle = (dist_left - dist_right) / distance_between_wheels;
     pose.location.x += dist * sin(angle);
     pose.location.y += dist * cos(angle);
+    previous_angles = current_angles;
   }
   return pose;
 }
