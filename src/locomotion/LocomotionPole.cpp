@@ -1,3 +1,4 @@
+#include <cmath>
 #include "LocomotionPole.hpp"
 
 LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model)
@@ -8,24 +9,20 @@ std::string LocomotionPole::name() {
   return "Pole";
 }
 
-void LocomotionPole::control_loop() {
+Pose LocomotionPole::control_loop(Pose pose) {
   std::vector<hardware::JointPosition> current_angles = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
-    hardware::Joint::right_wheel,
-    hardware::Joint::left_ankle,
-    hardware::Joint::right_ankle
+    hardware::Joint::right_wheel
   });
-  /*if (previous_angles != current_angles) {
-    logger::debug("Moving");
-    double angular_dist = current_angles[0].degrees - previous_angles[0].degrees;
-    double delta_x = 0; // TODO: sin(heading) * (angular_dist * degrees_to_dist)
-    double delta_y = 0;
-    //model.move(delta_x, 0, delta_y);
-    // TODO: implement rotation and moving of ankles
-    current_angles = previous_angles;
-  } else {
-    logger::debug("Stationary");
-  }*/
+  if (current_angles.size() == 2) {
+    double dist_left = (current_angles[0].degrees - previous_angles[0].degrees) * 2 * M_PI * wheel_radius / 360;
+    double dist_right = (current_angles[1].degrees - previous_angles[1].degrees) * 2 * M_PI * wheel_radius / 360;
+    double dist = (dist_left + dist_right) / 2;
+    double angle = (dist_left - dist_right) / distance_between_wheels;
+    pose.location.x += dist * sin(angle);
+    pose.location.y += dist * cos(angle);
+  }
+  return pose;
 }
 
 void LocomotionPole::on_start() {
@@ -37,12 +34,9 @@ void LocomotionPole::on_start() {
     { hardware::Joint::left_ankle, initial_ankle_angle + 10 },
     { hardware::Joint::right_ankle, initial_ankle_angle - 10 },
   });
-  // TODO: init odometry
-  std::vector<hardware::JointPosition> previous_angles = kinematics.get_joint_position({
+  previous_angles = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
-    hardware::Joint::right_wheel,
-    hardware::Joint::left_ankle,
-    hardware::Joint::right_ankle
+    hardware::Joint::right_wheel
   });
 }
 

@@ -12,7 +12,7 @@ std::string LocomotionUnicycle::name() {
   return "Unicycle";
 }
 
-void LocomotionUnicycle::control_loop() {
+Pose LocomotionUnicycle::control_loop(Pose pose) {
   float roll = imu.get_roll();
   float goal_roll = -37;
   float roll_input = roll_controller.input(roll, goal_roll);
@@ -22,6 +22,9 @@ void LocomotionUnicycle::control_loop() {
     { hardware::Joint::left_wheel, - roll_input }
   });*/
   logger::debug("roll: %f, angle: %f, fitness: %f", roll, STATIONARY_ANGLE + roll_input, roll_controller.get_fitness());
+
+  // TODO: calculate new pose
+  return pose;
 }
 
 void LocomotionUnicycle::on_start() {

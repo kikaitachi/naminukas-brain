@@ -1,3 +1,4 @@
+#include "../Logger.hpp"
 #include "Locomotion.hpp"
 
 Locomotion::Locomotion(int control_loop_frequency)
@@ -8,18 +9,22 @@ Locomotion::Locomotion(int control_loop_frequency)
 Locomotion::~Locomotion() {
 }
 
-void Locomotion::control_loop() {
+Pose Locomotion::control_loop(Pose pose) {
+  return pose;
 }
 
 void Locomotion::start() {
   if (stopped) {
     on_start();
+    Pose pose;
     stopped = false;
     control_loop_thread = new std::thread([&]() {
       struct timespec last_control_loop_time;
       clock_gettime(CLOCK_MONOTONIC, &last_control_loop_time);
       while (!stopped) {
-        control_loop();
+        pose = control_loop(pose);
+        // TODO: construct [wheel] odometry / trajectory from poses
+        logger::debug("Pose: %f, %f", pose.location.x, pose.location.y);
         struct timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
         uint64_t elapsed_nanos = (now.tv_sec - last_control_loop_time.tv_sec) * 1000000000 + (now.tv_nsec - last_control_loop_time.tv_nsec);

@@ -42,6 +42,8 @@ set(COMMON_SOURCES
   src/action/Action.cpp
   src/action/ActionRotate.cpp
   src/action/ActionSequential.cpp
+  src/geom/Point3D.cpp
+  src/geom/Orientation.cpp
   src/Logger.cpp
   src/IOServer.cpp
   src/WebSocket.cpp

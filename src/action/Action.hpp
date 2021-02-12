@@ -1,5 +1,5 @@
-#ifndef NAMINUKAS_BRAIN_ACTION_H_
-#define NAMINUKAS_BRAIN_ACTION_H_
+#ifndef NAMINUKAS_BRAIN_ACTION_ACTION_H_
+#define NAMINUKAS_BRAIN_ACTION_ACTION_H_
 
 class Action {
   public:
@@ -12,4 +12,4 @@ class Action {
     virtual bool execute();
 };
 
-#endif  // NAMINUKAS_BRAIN_ACTION_H_
+#endif  // NAMINUKAS_BRAIN_ACTION_ACTION_H_

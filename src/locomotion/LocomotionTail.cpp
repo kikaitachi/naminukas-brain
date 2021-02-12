@@ -8,9 +8,6 @@ std::string LocomotionTail::name() {
   return "Tail";
 }
 
-void LocomotionTail::control_loop() {
-}
-
 void LocomotionTail::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity, 1000);
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position, 1000, 5);

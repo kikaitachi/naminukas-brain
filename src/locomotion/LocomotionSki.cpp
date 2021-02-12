@@ -8,7 +8,7 @@ std::string LocomotionSki::name() {
   return "Ski";
 }
 
-void LocomotionSki::control_loop() {
+Pose LocomotionSki::control_loop(Pose pose) {
   float pitch = imu.get_pitch();
   float error = pitch - expected_pitch;
   float p = 2.5;
@@ -26,6 +26,9 @@ void LocomotionSki::control_loop() {
     { hardware::Joint::right_ankle, initial_ankle_angle + input }
   });
   prev_error = error;
+
+  // TODO: calcucalte new pose
+  return pose;
 }
 
 void LocomotionSki::on_start() {

@@ -11,7 +11,6 @@ class LocomotionTail: public Locomotion {
   public:
     LocomotionTail(hardware::Kinematics& kinematics, IMU& imu);
     std::string name();
-    void control_loop();
     void on_start();
     void on_stop();
     void up(bool key_down, std::set<std::string>& modifiers);

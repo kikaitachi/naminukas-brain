@@ -27,13 +27,13 @@ static float clamp(float value, float min, float max) {
 #define MAX_TURN_SPEED 3.0
 #define MAX_DIFF 30
 
-void LocomotionSegway::control_loop() {
+Pose LocomotionSegway::control_loop(Pose pose) {
   std::vector<hardware::JointPosition> curr_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
   if (curr_pos.size() != 2) {
-    return;
+    return pose;
   }
 
   float left_diff = expected_pos[0].degrees - curr_pos[0].degrees;
@@ -73,6 +73,9 @@ void LocomotionSegway::control_loop() {
 
   logger::debug("pos diff: %f / %f, speed/pitch fitness: %f / %f",
     left_diff, right_diff, speed_controller.get_fitness(), pitch_controller.get_fitness());
+
+  // TODO: calculate new pose
+  return pose;
 }
 
 void LocomotionSegway::on_start() {

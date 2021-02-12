@@ -14,7 +14,7 @@ std::string LocomotionWaddle::name() {
   return "Waddle";
 }
 
-void LocomotionWaddle::control_loop() {
+Pose LocomotionWaddle::control_loop(Pose pose) {
   int cycle = 100;
   if (control_loop_iteration % cycle == 0) {
     kinematics.set_joint_position({
@@ -31,6 +31,9 @@ void LocomotionWaddle::control_loop() {
     }
   }
   control_loop_iteration++;
+
+  // TODO: calculate new pose
+  return pose;
 }
 
 void LocomotionWaddle::on_start() {

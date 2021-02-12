@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 
+#include "../geom/Pose.hpp"
 #include "../Hardware.hpp"
 #include "../Logger.hpp"
 
@@ -13,7 +14,7 @@ class Locomotion {
     Locomotion(int control_loop_frequency);
     virtual ~Locomotion();
     virtual std::string name() = 0;
-    virtual void control_loop();
+    virtual Pose control_loop(Pose pose);
     virtual void start();
     virtual void stop();
     virtual void on_start();

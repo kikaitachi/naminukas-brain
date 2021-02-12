@@ -13,7 +13,7 @@ class LocomotionUnicycle: public Locomotion {
   public:
     LocomotionUnicycle(hardware::Kinematics& kinematics, IMU& imu);
     std::string name();
-    void control_loop();
+    Pose control_loop(Pose pose);
     void on_start();
     void on_stop();
     void up(bool key_down, std::set<std::string>& modifiers);
