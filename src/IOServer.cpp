@@ -1,3 +1,4 @@
+#include <cstring>
 #include <sys/epoll.h>
 #include "Logger.hpp"
 #include "IOServer.hpp"
@@ -32,6 +33,7 @@ void IOServer::start(std::function<bool()> is_terminated) {
 
 bool IOServer::add_handler(int fd, uint32_t events, std::function<bool(int)> handler) {
   struct epoll_event event;
+  std::memset(&event, 0, sizeof(event));
 	event.data.fd = fd;
 	event.events = events;
 	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event) == -1) {
