@@ -223,7 +223,7 @@ void WebSocketServer::handle_client(int fd) {
   for (size = 0; ; ) {
     result = read(fd, &buffer[size], READ_BUFFER_SIZE - size);
     if (result == -1) {
-      disconnect(fd, true, "Failed to read frame");
+      disconnect(fd, true, "failed to read frame");
       break;
     } else if (result == 0) {
       disconnect(fd, false, "read returned 0 bytes, assuming socked closed");
@@ -235,8 +235,8 @@ void WebSocketServer::handle_client(int fd) {
     while (size >= 6) {
       int opcode = buffer[0] & 0x0f;
       if (opcode == OPCODE_CLOSE) {
-        disconnect(fd, true, "Closed by control frame");
-        break;
+        disconnect(fd, false, "closed by control frame");
+        goto finish;
       }
       if ((buffer[0] & FINAL_FRAME) == 0) {
         logger::warn("Fragmented frame received");
@@ -287,6 +287,7 @@ void WebSocketServer::handle_client(int fd) {
       }
     }
   }
+finish:
   fd_to_client.erase(fd);
   clientCount->update(fd_to_client.size());
 }
