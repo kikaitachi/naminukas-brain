@@ -20,7 +20,7 @@ class WebSocketServer {
 
   private:
     telemetry::Items& telemetryItems;
-    telemetry::ItemInt* clientCount;
+    std::shared_ptr<telemetry::ItemInt> clientCount;
     std::function<void(WebSocketServer*, int)> on_connect;
     std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message;
 

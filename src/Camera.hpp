@@ -14,7 +14,7 @@ class PointCloud {
     void remove_depth_listener(std::function<void(rs2::depth_frame&)> listener);
 
   private:
-    telemetry::ItemPoints* points_telemetry;
+    std::shared_ptr<telemetry::ItemPoints> points_telemetry;
     std::vector<std::function<void(rs2::depth_frame&)>> depth_listeners;
 };
 

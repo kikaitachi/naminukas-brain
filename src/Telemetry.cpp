@@ -249,12 +249,11 @@ namespace telemetry {
 
   // Items *********************************************************************
 
-  Item* Items::add_item(Item* item) {
+  void Items::add_item(std::shared_ptr<Item> item) {
     id_to_item[item->getId()] = item;
     for (auto change_listener : change_listeners) {
       item->add_change_listener(change_listener);
     }
-    return item;
   }
 
   void Items::add_change_listener(std::function<void(Item&)> change_listener) {

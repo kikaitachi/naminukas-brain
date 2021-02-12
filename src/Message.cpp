@@ -151,7 +151,7 @@ MessageHandler::MessageHandler(telemetry::Items& telemetryItems) :
 void MessageHandler::send_updated_telemetry(WebSocketServer *server, Client *client) {
   char buffer[MAX_OUT_MSG_SIZE];
   for (auto &telemetry_item_id : client->changed_telemetry_item_ids) {
-    std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(telemetry_item_id);
+    std::map<int, std::shared_ptr<telemetry::Item>>::iterator it = telemetryItems.id_to_item.find(telemetry_item_id);
     if (it != telemetryItems.id_to_item.end()) {
       void *buf = buffer;
       int buf_len = sizeof(buffer);
@@ -177,7 +177,7 @@ void MessageHandler::handle(WebSocketServer *server, Client *client, void *paylo
     case message::TELEMETRY_UPDATE: {
       int item_id;
       message::read_int(&buf, &buf_len, &item_id);
-      std::map<int, telemetry::Item*>::iterator it = telemetryItems.id_to_item.find(item_id);
+      std::map<int, std::shared_ptr<telemetry::Item>>::iterator it = telemetryItems.id_to_item.find(item_id);
       if (it == telemetryItems.id_to_item.end()) {
         throw std::invalid_argument("Telemetry update message for item with non existing id " + std::to_string(item_id));
       } else {

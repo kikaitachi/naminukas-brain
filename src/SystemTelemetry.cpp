@@ -15,31 +15,32 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
 
   battery_supported = rc_adc_init() == 0;
 
-  telemetry::Item* machine = telemetryItems.add_item(new telemetry::ItemString(
+  std::shared_ptr<telemetry::Item> machine = std::make_shared<telemetry::ItemString>(
     telemetry::ROOT_ITEM_ID, std::string(system_name.nodename),
-    std::string(system_name.sysname) + " " + std::string(system_name.release) + " " + std::string(system_name.version) + " " + std::string(system_name.machine)));
+    std::string(system_name.sysname) + " " + std::string(system_name.release) + " " + std::string(system_name.version) + " " + std::string(system_name.machine));
+  telemetryItems.add_item(machine);
 
-  telemetry::ItemString* uptime = new telemetry::ItemString(
+  std::shared_ptr<telemetry::ItemString> uptime = std::make_shared<telemetry::ItemString>(
     machine->getId(), "Uptime", "");
   telemetryItems.add_item(uptime);
 
-  telemetry::ItemString* load_average = new telemetry::ItemString(
+  std::shared_ptr<telemetry::ItemString> load_average = std::make_shared<telemetry::ItemString>(
     machine->getId(), "Load average", "");
   telemetryItems.add_item(load_average);
 
-  telemetry::ItemInt* freeMemory = new telemetry::ItemInt(
+  std::shared_ptr<telemetry::ItemInt> freeMemory = std::make_shared<telemetry::ItemInt>(
     machine->getId(), "Free memory, MiB", -1);
   telemetryItems.add_item(freeMemory);
 
-  telemetry::ItemFloat* battery = new telemetry::ItemFloat(
+  std::shared_ptr<telemetry::ItemFloat> battery = std::make_shared<telemetry::ItemFloat>(
     machine->getId(), "Battery (min 7.4), V", 0);
   telemetryItems.add_item(battery);
-  telemetry::ItemFloat* charger = new telemetry::ItemFloat(
+  std::shared_ptr<telemetry::ItemFloat> charger = std::make_shared<telemetry::ItemFloat>(
     machine->getId(), "Charger, V", 0);
   telemetryItems.add_item(charger);
 
-  telemetryItems.add_item(new telemetry::ItemChoice(
-    machine->getId(), "Log level", {"debug", "info", "warn", "error"}, (int)logger::get_level(),
+  telemetryItems.add_item(std::make_shared<telemetry::ItemChoice>(
+    machine->getId(), "Log level", std::initializer_list<std::string>{"debug", "info", "warn", "error"}, (int)logger::get_level(),
     [](int new_level) {
       logger::set_level((logger::level)new_level);
     }));

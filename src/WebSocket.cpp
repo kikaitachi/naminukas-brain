@@ -86,7 +86,7 @@ WebSocketServer::WebSocketServer(telemetry::Items& telemetryItems, int port,
     return;
   }
 
-  clientCount = new telemetry::ItemInt(telemetry::ROOT_ITEM_ID, "Connected clients", 0);
+  clientCount = std::make_shared<telemetry::ItemInt>(telemetry::ROOT_ITEM_ID, "Connected clients", 0);
   telemetryItems.add_item(clientCount);
 }
 

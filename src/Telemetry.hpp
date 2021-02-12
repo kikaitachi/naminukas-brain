@@ -4,6 +4,7 @@
 #include <functional>
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -138,9 +139,9 @@ namespace telemetry {
 
   class Items {
     public:
-      std::map<int, Item*> id_to_item;
+      std::map<int, std::shared_ptr<Item>> id_to_item;
 
-      Item* add_item(Item* item);
+      void add_item(std::shared_ptr<Item> item);
       void add_change_listener(std::function<void(Item&)> listener);
 
     protected:

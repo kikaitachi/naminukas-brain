@@ -1,18 +1,18 @@
 #include "Model.hpp"
 
 Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics) {
-  telemetry::ItemString* parts = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Parts", "2");
+  std::shared_ptr<telemetry::ItemString> parts = std::make_shared<telemetry::ItemString>(telemetry::ROOT_ITEM_ID, "Parts", "2");
   telemetryItems.add_item(parts);
 
   const char* model_dir_env = std::getenv("MODEL_DIR");
   std::string model_dir = model_dir_env == NULL ? "../model/" : model_dir_env;
 
-  left_foot = new telemetry::ItemSTL(parts->getId(),
+  left_foot = std::make_shared<telemetry::ItemSTL>(parts->getId(),
     "Left foot", model_dir + "suction-cup-connector.stl",
     0xDC143C, left_foot_transforms());
   telemetryItems.add_item(left_foot);
 
-  right_foot = new telemetry::ItemSTL(parts->getId(),
+  right_foot = std::make_shared<telemetry::ItemSTL>(parts->getId(),
     "Right foot", model_dir + "suction-cup-connector.stl",
     0x1E90FF, right_foot_transforms());
   telemetryItems.add_item(right_foot);
@@ -22,11 +22,6 @@ Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
   kinematics.add_position_listener([&] (auto joints) {
     update_joints(joints);
   });
-}
-
-Model::~Model() {
-  delete left_foot;
-  delete right_foot;
 }
 
 void Model::update_joints(std::vector<hardware::JointPosition> joints) {

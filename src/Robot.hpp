@@ -19,7 +19,7 @@ class Robot {
     IMU& imu;
     hardware::Kinematics& kinematics;
     telemetry::Items& telemetryItems;
-    telemetry::ItemString* mode;
+    std::shared_ptr<telemetry::ItemString> mode;
     std::list<Locomotion*> locomotion_modes;
     Locomotion* current_locomotion_mode;
     Model& model;

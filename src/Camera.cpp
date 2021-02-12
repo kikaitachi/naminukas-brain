@@ -46,8 +46,8 @@ static void image2file(std::string file_name, const uint8_t* rgb, int width, int
 }
 
 PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> is_terminated) {
-  points_telemetry = new telemetry::ItemPoints(telemetry::ROOT_ITEM_ID, "Point cloud", {});
-  telemetry::Item* machine = telemetryItems.add_item(points_telemetry);
+  points_telemetry = std::make_shared<telemetry::ItemPoints>(telemetry::ROOT_ITEM_ID, "Point cloud", std::initializer_list<telemetry::ColoredPoint>{});
+  telemetryItems.add_item(points_telemetry);
 
   std::thread video_thread([=]() {
     int frame_index = 0;

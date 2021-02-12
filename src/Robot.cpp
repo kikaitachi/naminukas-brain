@@ -11,7 +11,7 @@
 
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
   locomotion_modes.push_back(locomotion);
-  telemetryItems.add_item(new telemetry::ItemCommand(
+  telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), locomotion->name(), key, [=](int value, std::set<std::string>& modifiers) {
       if (value == 1) {
         logger::debug("Stopping locomotion: %s", current_locomotion_mode->name().c_str());
@@ -21,7 +21,7 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
         current_locomotion_mode->start();
         mode->update(current_locomotion_mode->name());
       }
-    }, { }));
+    }, std::initializer_list<std::string>{ }));
 }
 
 Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, Model& model, PointCloud& camera)
@@ -29,7 +29,7 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
 
   current_locomotion_mode = locomotion_idle;
-  mode = new telemetry::ItemString(telemetry::ROOT_ITEM_ID, "Mode of operation", current_locomotion_mode->name());
+  mode = std::make_shared<telemetry::ItemString>(telemetry::ROOT_ITEM_ID, "Mode of operation", current_locomotion_mode->name());
   telemetryItems.add_item(mode);
 
   add_locomotion(locomotion_idle, "Escape");
@@ -41,29 +41,25 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit6");
   add_locomotion(new LocomotionPoleGestures(kinematics, model, camera), "Digit6");
 
-  telemetry::ItemCommand* up = new telemetry::ItemCommand(
+  telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Up", "ArrowUp", [&](int value, std::set<std::string>& modifiers) {
       current_locomotion_mode->up(value == 1, modifiers);
-    }, { "Control", "Shift" });
-  telemetryItems.add_item(up);
+    }, std::initializer_list<std::string>{ "Control", "Shift" }));
 
-  telemetry::ItemCommand* down = new telemetry::ItemCommand(
+  telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Down", "ArrowDown", [&](int value, std::set<std::string>& modifiers) {
       current_locomotion_mode->down(value == 1, modifiers);
-    }, { "Control", "Shift" });
-  telemetryItems.add_item(down);
+    }, std::initializer_list<std::string>{ "Control", "Shift" }));
 
-  telemetry::ItemCommand* left = new telemetry::ItemCommand(
+  telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Left", "ArrowLeft", [&](int value, std::set<std::string>& modifiers) {
       current_locomotion_mode->left(value == 1, modifiers);
-    }, { "Control", "Shift" });
-  telemetryItems.add_item(left);
+    }, std::initializer_list<std::string>{ "Control", "Shift" }));
 
-  telemetry::ItemCommand* right = new telemetry::ItemCommand(
+  telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Right", "ArrowRight", [&](int value, std::set<std::string>& modifiers) {
       current_locomotion_mode->right(value == 1, modifiers);
-    }, { "Control", "Shift" });
-  telemetryItems.add_item(right);
+    }, std::initializer_list<std::string>{ "Control", "Shift" }));
 }
 
 Robot::~Robot() {
