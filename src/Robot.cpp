@@ -24,10 +24,8 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
     }, { }));
 }
 
-Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, PointCloud& camera) :
-    telemetryItems(telemetryItems), imu(imu), kinematics(kinematics) {
-  model = new Model(telemetryItems, kinematics);
-
+Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, Model& model, PointCloud& camera)
+    : telemetryItems(telemetryItems), imu(imu), kinematics(kinematics), model(model) {
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
 
   current_locomotion_mode = locomotion_idle;
@@ -35,13 +33,13 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   telemetryItems.add_item(mode);
 
   add_locomotion(locomotion_idle, "Escape");
-  add_locomotion(new LocomotionPole(kinematics, *model), "Digit1");
+  add_locomotion(new LocomotionPole(kinematics, model), "Digit1");
   add_locomotion(new LocomotionSegway(kinematics, imu), "Digit2");
   add_locomotion(new LocomotionSki(kinematics, imu), "Digit3");
   add_locomotion(new LocomotionTail(kinematics, imu), "Digit4");
   add_locomotion(new LocomotionWaddle(kinematics), "Digit5");
   add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit6");
-  add_locomotion(new LocomotionPoleGestures(kinematics, *model, camera), "Digit6");
+  add_locomotion(new LocomotionPoleGestures(kinematics, model, camera), "Digit6");
 
   telemetry::ItemCommand* up = new telemetry::ItemCommand(
     mode->getId(), "Up", "ArrowUp", [&](int value, std::set<std::string>& modifiers) {
@@ -69,7 +67,6 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
 }
 
 Robot::~Robot() {
-  delete model;
   for (Locomotion* locomotion : locomotion_modes) {
     delete locomotion;
   }

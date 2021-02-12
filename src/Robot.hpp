@@ -12,7 +12,7 @@
 
 class Robot {
   public:
-    Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, PointCloud& camera);
+    Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, Model& model, PointCloud& camera);
     ~Robot();
 
   private:
@@ -22,7 +22,7 @@ class Robot {
     telemetry::ItemString* mode;
     std::list<Locomotion*> locomotion_modes;
     Locomotion* current_locomotion_mode;
-    Model* model;
+    Model& model;
 
     void add_locomotion(Locomotion* locomotion, std::string key);
 };
