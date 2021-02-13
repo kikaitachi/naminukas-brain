@@ -12,8 +12,8 @@ Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
     0xDC143C, left_foot_transforms());
   telemetryItems.add_item(left_foot);
 
-  right_foot = std::make_shared<telemetry::Item3DModel>(parts->getId(),
-    "Right foot", "model/stl", model_dir + "suction-cup-connector.stl",
+  right_foot = std::make_shared<telemetry::Item3DModelRef>(parts->getId(),
+    "Right foot", left_foot->getId(),
     0x1E90FF, right_foot_transforms());
   telemetryItems.add_item(right_foot);
 

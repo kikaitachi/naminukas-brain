@@ -33,10 +33,10 @@ namespace telemetry {
       void add_change_listener(std::function<void(Item&)> listener);
       int getId();
       int getType();
+      std::string name;
 
     protected:
       int id, parent_id, type;
-      std::string name;
       std::list<std::function<void(Item&)>> change_listeners;
 
     private:
@@ -91,20 +91,33 @@ namespace telemetry {
       std::vector<std::string> modifiers;
   };
 
-  class Item3DModel: public Item {
-    public:
-      Item3DModel(int parent_id, std::string name, std::string mime_type, std::string file_name, uint32_t color, std::vector<Transform> transforms);
-      void serialize_definition(void **buf, int *buf_len);
-      void serialize_value(void **buf, int *buf_len);
-      void update(std::vector<Transform> transforms);
+  class Item3DModelBase : public Item {
+   public:
+    Item3DModelBase(int parent_id, int type, std::string name, uint32_t color, std::vector<Transform> transforms);
+    void serialize_definition(void **buf, int *buf_len);
+    void serialize_value(void **buf, int *buf_len);
+    void update(std::vector<Transform> transforms);
+   protected:
+    uint32_t color;
+    std::vector<Transform> transforms;
+    void serialize_transforms(void **buf, int *buf_len);
+  };
 
-    private:
-      uint32_t color;
-      std::string mime_type;
-      std::string file_name;
-      std::vector<Transform> transforms;
+  class Item3DModel: public Item3DModelBase {
+   public:
+    Item3DModel(int parent_id, std::string name, std::string mime_type, std::string file_name, uint32_t color, std::vector<Transform> transforms);
+    void serialize_definition(void **buf, int *buf_len);
+   private:
+    std::string mime_type;
+    std::string file_name;
+  };
 
-      void serialize_transforms(void **buf, int *buf_len);
+  class Item3DModelRef: public Item3DModelBase {
+   public:
+    Item3DModelRef(int parent_id, std::string name, int ref_id, uint32_t color, std::vector<Transform> transforms);
+    void serialize_definition(void **buf, int *buf_len);
+   private:
+    int ref_id;
   };
 
   class ColoredPoint {
@@ -142,6 +155,7 @@ namespace telemetry {
   class Items {
     public:
       std::map<int, std::shared_ptr<Item>> id_to_item;
+      std::vector<std::shared_ptr<Item>> items;
 
       void add_item(std::shared_ptr<Item> item);
       void add_change_listener(std::function<void(Item&)> listener);

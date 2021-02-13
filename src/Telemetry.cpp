@@ -144,15 +144,47 @@ namespace telemetry {
     action(value, modifiers);
   }
 
-  // Item3DModel ***************************************************************
+  // Models ********************************************************************
+
+  Item3DModelBase::Item3DModelBase(
+      int parent_id, int type, std::string name, uint32_t color, std::vector<Transform> transforms)
+      : Item(parent_id, type, name), color(color), transforms(transforms) {
+  }
+
+  void Item3DModelBase::serialize_definition(void **buf, int *buf_len) {
+    Item::serialize_definition(buf, buf_len);
+    message::write_unsigned_integer(buf, buf_len, color);
+    message::write_unsigned_integer(buf, buf_len, transforms.size());
+    serialize_transforms(buf, buf_len);
+  }
+
+  void Item3DModelBase::serialize_value(void **buf, int *buf_len) {
+    Item::serialize_value(buf, buf_len);
+    serialize_transforms(buf, buf_len);
+  }
+
+  void Item3DModelBase::update(std::vector<Transform> transforms) {
+    this->transforms = transforms;
+    for (auto change_listener : change_listeners) {
+      change_listener(*this);
+    }
+  }
+
+  void Item3DModelBase::serialize_transforms(void **buf, int *buf_len) {
+    for (auto& transform : transforms) {
+      message::write_signed_integer(buf, buf_len, transform.type);
+      message::write_signed_integer(buf, buf_len, transform.axis);
+      message::write_double(buf, buf_len, transform.value);
+    }
+  }
 
   Item3DModel::Item3DModel(
       int parent_id, std::string name, std::string mime_type, std::string file_name, uint32_t color, std::vector<Transform> transforms)
-      : Item(parent_id, TYPE_3DMODEL, name), color(color), mime_type(mime_type), file_name(file_name), transforms(transforms) {
+      : Item3DModelBase(parent_id, TYPE_3DMODEL, name, color, transforms), mime_type(mime_type), file_name(file_name) {
   }
 
   void Item3DModel::serialize_definition(void **buf, int *buf_len) {
-    Item::serialize_definition(buf, buf_len);
+    Item3DModelBase::serialize_definition(buf, buf_len);
     message::write_string(buf, buf_len, mime_type);
     std::ifstream file(file_name, std::ios::binary | std::ios::ate);
     std::streamsize size = file.tellg();
@@ -162,28 +194,16 @@ namespace telemetry {
     file.read((char *)*buf, size);
     *buf = ((char *)*buf) + size;
     *buf_len -= size;
-    message::write_unsigned_integer(buf, buf_len, color);
-    serialize_transforms(buf, buf_len);
   }
 
-  void Item3DModel::serialize_value(void **buf, int *buf_len) {
-    Item::serialize_value(buf, buf_len);
-    serialize_transforms(buf, buf_len);
+  Item3DModelRef::Item3DModelRef(
+      int parent_id, std::string name, int ref_id, uint32_t color, std::vector<Transform> transforms)
+      : Item3DModelBase(parent_id, TYPE_3DMODEL_REF, name, color, transforms), ref_id(ref_id) {
   }
 
-  void Item3DModel::update(std::vector<Transform> transforms) {
-    this->transforms = transforms;
-    for (auto change_listener : change_listeners) {
-      change_listener(*this);
-    }
-  }
-
-  void Item3DModel::serialize_transforms(void **buf, int *buf_len) {
-    for (auto& transform : transforms) {
-      message::write_signed_integer(buf, buf_len, transform.type);
-      message::write_signed_integer(buf, buf_len, transform.axis);
-      message::write_double(buf, buf_len, transform.value);
-    }
+  void Item3DModelRef::serialize_definition(void **buf, int *buf_len) {
+    Item3DModelBase::serialize_definition(buf, buf_len);
+    message::write_unsigned_integer(buf, buf_len, ref_id);
   }
 
   // ItemPointCloud ************************************************************
@@ -252,6 +272,7 @@ namespace telemetry {
 
   void Items::add_item(std::shared_ptr<Item> item) {
     id_to_item[item->getId()] = item;
+    items.push_back(item);
     for (auto change_listener : change_listeners) {
       item->add_change_listener(change_listener);
     }

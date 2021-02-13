@@ -22,7 +22,7 @@ class Model {
 
   private:
     std::shared_ptr<telemetry::Item3DModel> left_foot;
-    std::shared_ptr<telemetry::Item3DModel> right_foot;
+    std::shared_ptr<telemetry::Item3DModelRef> right_foot;
     double pos_x, pos_y, pos_z;
     double rot_x, rot_y, rot_z;
     double left_wheel_pos, right_wheel_pos;
