@@ -1,5 +1,5 @@
-#ifndef NAMINUKAS_BRAIN_LOGGER_H_
-#define NAMINUKAS_BRAIN_LOGGER_H_
+#ifndef SRC_LOGGER_HPP_
+#define SRC_LOGGER_HPP_
 
 #include <string>
 
@@ -35,6 +35,7 @@ namespace logger {
    * Log error provided by errno from last system call.
    */
   void last(std::string format, ...);
-}
 
-#endif  // NAMINUKAS_BRAIN_LOGGER_H_
+}  // namespace logger
+
+#endif  // SRC_LOGGER_HPP_
