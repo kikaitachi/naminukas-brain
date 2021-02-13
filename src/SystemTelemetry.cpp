@@ -1,6 +1,7 @@
 #include <fstream>
+#include <iomanip>
 #include <memory>
-#include <string>
+#include <sstream>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -35,13 +36,37 @@ const std::vector<std::pair<float, int>> voltage_to_percentage({
   {3.27, 0}
 });
 
+static std::string format_battery(float voltage, int cells) {
+  int percentage = 0;
+  for (auto pair : voltage_to_percentage) {
+    if (pair.first <= voltage / cells) {
+      percentage = pair.second;
+      break;
+    }
+  }
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(3) << voltage << "V, " << percentage << "%";
+  return stream.str();
+}
+
+static std::string format_load(struct sysinfo& system_info) {
+  float load_avg_1m = system_info.loads[0] * 1.f / (1 << SI_LOAD_SHIFT);
+  float load_avg_5m = system_info.loads[1] * 1.f / (1 << SI_LOAD_SHIFT);
+  float load_avg_15m = system_info.loads[2] * 1.f / (1 << SI_LOAD_SHIFT);
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(2)
+    << load_avg_1m << ", " << load_avg_5m << ", " << load_avg_15m;
+  return stream.str();
+}
+
 SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function<bool()> is_terminated) {
   struct utsname system_name;
   if (uname(&system_name) == -1) {
     logger::last("Can't determine system name");
   }
 
-  battery_supported = rc_adc_init() == 0;
+  // Assume that BeagleBone Blue is connected to 2S LiPo, otherwise use 3S for simulation
+  battery_cells = rc_adc_init() == 0 ? 2 : 3;
 
   std::shared_ptr<telemetry::Item> machine = std::make_shared<telemetry::ItemString>(
     telemetry::ROOT_ITEM_ID, std::string(system_name.nodename),
@@ -53,15 +78,15 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
   telemetryItems.add_item(uptime);
 
   std::shared_ptr<telemetry::ItemString> load_average = std::make_shared<telemetry::ItemString>(
-    machine->getId(), "Load average", "");
+    machine->getId(), "Load avg. 1, 5, 15m", "");
   telemetryItems.add_item(load_average);
 
   std::shared_ptr<telemetry::ItemInt> freeMemory = std::make_shared<telemetry::ItemInt>(
     machine->getId(), "Free memory, MiB", -1);
   telemetryItems.add_item(freeMemory);
 
-  std::shared_ptr<telemetry::ItemFloat> battery = std::make_shared<telemetry::ItemFloat>(
-    machine->getId(), "Battery (min 7.4), V", 0);
+  std::shared_ptr<telemetry::ItemString> battery = std::make_shared<telemetry::ItemString>(
+    machine->getId(), "Battery (min 7.4V)", "");
   telemetryItems.add_item(battery);
   std::shared_ptr<telemetry::ItemFloat> charger = std::make_shared<telemetry::ItemFloat>(
     machine->getId(), "Charger, V", 0);
@@ -87,23 +112,12 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
         int days = (system_info.uptime / 3600) / 24;
         uptime->update(std::to_string(days) + ":" + std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds));
 
-        float load_avg_1m = system_info.loads[0] * 1.f / (1 << SI_LOAD_SHIFT);
-        float load_avg_5m = system_info.loads[1] * 1.f / (1 << SI_LOAD_SHIFT);
-        float load_avg_15m = system_info.loads[2] * 1.f / (1 << SI_LOAD_SHIFT);
-        load_average->update(std::to_string(load_avg_1m) + ", " + std::to_string(load_avg_5m) + ", " + std::to_string(load_avg_15m));
-
+        load_average->update(format_load(system_info));
         freeMemory->update(system_info.freeram * system_info.mem_unit / (1024 * 1024));
 
-        if (battery_supported) {
-          battery->update(rc_adc_batt());
+        battery->update(format_battery(read_battery_voltage(), battery_cells));
+        if (battery_cells == 2) {
           charger->update(rc_adc_dc_jack());
-        } else {
-          std::ifstream battery_voltage_file("/sys/class/power_supply/BAT0/voltage_now");
-          if (!battery_voltage_file.fail()) {
-            float voltage;
-            battery_voltage_file >> voltage;
-            battery->update(voltage / 1000000);
-          }
         }
       }
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -113,8 +127,20 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
 }
 
 SystemTelemetry::~SystemTelemetry() {
-  if (battery_supported) {
+  if (battery_cells == 2) {
     rc_adc_cleanup();
-    logger::debug("Cleaning up ADC");
   }
+}
+
+float SystemTelemetry::read_battery_voltage() {
+  if (battery_cells == 2) {
+    return rc_adc_batt();
+  }
+  std::ifstream battery_voltage_file("/sys/class/power_supply/BAT0/voltage_now");
+  if (!battery_voltage_file.fail()) {
+    float voltage;
+    battery_voltage_file >> voltage;
+    return voltage / 1000000;
+  }
+  return 0;
 }

@@ -4,6 +4,8 @@
 #include <sys/sysinfo.h>
 #include <sys/utsname.h>
 
+#include <string>
+
 #include "Telemetry.hpp"
 
 class SystemTelemetry {
@@ -14,7 +16,8 @@ class SystemTelemetry {
   ~SystemTelemetry();
 
  private:
-  bool battery_supported;
+  int battery_cells;
+  float read_battery_voltage();
 };
 
 #endif  // SRC_SYSTEMTELEMETRY_HPP_
