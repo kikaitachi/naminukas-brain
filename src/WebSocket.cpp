@@ -58,8 +58,8 @@ static char* base64_encode(const unsigned char *data, size_t data_length, size_t
 
 WebSocketServer::WebSocketServer(telemetry::Items& telemetryItems, int port,
     std::function<void(WebSocketServer*, int)> on_connect,
-    std::function<void(WebSocketServer*, Client*, void*, size_t)> on_binary_message) :
-    telemetryItems(telemetryItems), on_connect(on_connect), on_binary_message(on_binary_message) {
+    std::function<void(WebSocketServer*, Client*, void*, size_t)> on_message) :
+    telemetryItems(telemetryItems), on_connect(on_connect), on_message(on_message) {
   server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd == -1) {
     logger::last("Failed to create WebSocket server socket");
@@ -269,7 +269,7 @@ void WebSocketServer::handle_client(int fd) {
         }
 
         try {
-          on_binary_message(this, &client, buffer + header_length, data_length);
+          on_message(this, &client, buffer + header_length, data_length);
         } catch (const std::exception& e) {
           std::string payload = "";
           for (int i = 0; i < frame_length; i++) {
