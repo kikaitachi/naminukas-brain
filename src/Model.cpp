@@ -7,13 +7,13 @@ Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
   const char* model_dir_env = std::getenv("MODEL_DIR");
   std::string model_dir = model_dir_env == NULL ? "../model/" : model_dir_env;
 
-  left_foot = std::make_shared<telemetry::ItemSTL>(parts->getId(),
-    "Left foot", model_dir + "suction-cup-connector.stl",
+  left_foot = std::make_shared<telemetry::Item3DModel>(parts->getId(),
+    "Left foot", "model/stl", model_dir + "suction-cup-connector.stl",
     0xDC143C, left_foot_transforms());
   telemetryItems.add_item(left_foot);
 
-  right_foot = std::make_shared<telemetry::ItemSTL>(parts->getId(),
-    "Right foot", model_dir + "suction-cup-connector.stl",
+  right_foot = std::make_shared<telemetry::Item3DModel>(parts->getId(),
+    "Right foot", "model/stl", model_dir + "suction-cup-connector.stl",
     0x1E90FF, right_foot_transforms());
   telemetryItems.add_item(right_foot);
 

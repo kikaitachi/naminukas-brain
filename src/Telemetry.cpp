@@ -144,15 +144,16 @@ namespace telemetry {
     action(value, modifiers);
   }
 
-  // ItemSTL *******************************************************************
+  // Item3DModel ***************************************************************
 
-  ItemSTL::ItemSTL(int parent_id, std::string name, std::string file_name, uint32_t color, std::vector<Transform> transforms) :
-      Item(parent_id, TYPE_STL, name), color(color), file_name(file_name),
-      transforms(transforms) {
+  Item3DModel::Item3DModel(
+      int parent_id, std::string name, std::string mime_type, std::string file_name, uint32_t color, std::vector<Transform> transforms)
+      : Item(parent_id, TYPE_3DMODEL, name), color(color), mime_type(mime_type), file_name(file_name), transforms(transforms) {
   }
 
-  void ItemSTL::serialize_definition(void **buf, int *buf_len) {
+  void Item3DModel::serialize_definition(void **buf, int *buf_len) {
     Item::serialize_definition(buf, buf_len);
+    message::write_string(buf, buf_len, mime_type);
     std::ifstream file(file_name, std::ios::binary | std::ios::ate);
     std::streamsize size = file.tellg();
     logger::debug("Loading STL model %s (%d bytes)", file_name.c_str(), size);
@@ -161,23 +162,23 @@ namespace telemetry {
     file.read((char *)*buf, size);
     *buf = ((char *)*buf) + size;
     *buf_len -= size;
-     message::write_unsigned_integer(buf, buf_len, color);
+    message::write_unsigned_integer(buf, buf_len, color);
     serialize_transforms(buf, buf_len);
   }
 
-  void ItemSTL::serialize_value(void **buf, int *buf_len) {
+  void Item3DModel::serialize_value(void **buf, int *buf_len) {
     Item::serialize_value(buf, buf_len);
     serialize_transforms(buf, buf_len);
   }
 
-  void ItemSTL::update(std::vector<Transform> transforms) {
+  void Item3DModel::update(std::vector<Transform> transforms) {
     this->transforms = transforms;
     for (auto change_listener : change_listeners) {
       change_listener(*this);
     }
   }
 
-  void ItemSTL::serialize_transforms(void **buf, int *buf_len) {
+  void Item3DModel::serialize_transforms(void **buf, int *buf_len) {
     for (auto& transform : transforms) {
       message::write_signed_integer(buf, buf_len, transform.type);
       message::write_signed_integer(buf, buf_len, transform.axis);

@@ -16,9 +16,10 @@ namespace telemetry {
   const int TYPE_STRING = 1;
   const int TYPE_FLOAT = 2;
   const int TYPE_ACTION = 3;
-  const int TYPE_STL = 4;
-  const int TYPE_POINTS = 5;
-  const int TYPE_CHOICE = 6;
+  const int TYPE_3DMODEL = 4;
+  const int TYPE_3DMODEL_REF = 5;
+  const int TYPE_POINTS = 6;
+  const int TYPE_CHOICE = 7;
   // TODO: introduce "reference" type to avoid sending duplicate STL files
 
   const int ROOT_ITEM_ID = 0;
@@ -90,15 +91,16 @@ namespace telemetry {
       std::vector<std::string> modifiers;
   };
 
-  class ItemSTL: public Item {
+  class Item3DModel: public Item {
     public:
-      ItemSTL(int parent_id, std::string name, std::string file_name, uint32_t color, std::vector<Transform> transforms);
+      Item3DModel(int parent_id, std::string name, std::string mime_type, std::string file_name, uint32_t color, std::vector<Transform> transforms);
       void serialize_definition(void **buf, int *buf_len);
       void serialize_value(void **buf, int *buf_len);
       void update(std::vector<Transform> transforms);
 
     private:
       uint32_t color;
+      std::string mime_type;
       std::string file_name;
       std::vector<Transform> transforms;
 

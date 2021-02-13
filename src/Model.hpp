@@ -21,8 +21,8 @@ class Model {
     void update_joints(std::vector<hardware::JointPosition> joints);
 
   private:
-    std::shared_ptr<telemetry::ItemSTL> left_foot;
-    std::shared_ptr<telemetry::ItemSTL> right_foot;
+    std::shared_ptr<telemetry::Item3DModel> left_foot;
+    std::shared_ptr<telemetry::Item3DModel> right_foot;
     double pos_x, pos_y, pos_z;
     double rot_x, rot_y, rot_z;
     double left_wheel_pos, right_wheel_pos;
