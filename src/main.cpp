@@ -1,6 +1,7 @@
-#include <string>
 #include <signal.h>
 #include <sys/epoll.h>
+
+#include <string>
 
 #include "BeagleBoneBlueIMU.hpp"
 #include "DynamixelKinematics.hpp"
@@ -12,8 +13,6 @@
 #include "Message.hpp"
 #include "Telemetry.hpp"
 #include "SystemTelemetry.hpp"
-
-using namespace std;
 
 #define DAFAULT_PORT 3001
 #define MAX_MESSAGE_SIZE 1024 * 1024 * 4
@@ -35,7 +34,8 @@ static void signal_handler(int signum) {
   }
 }
 
-void send_telemetry_definitions(telemetry::Items &telemetryItems, WebSocketServer* server, int fd) {
+void send_telemetry_definitions(
+    const telemetry::Items &telemetryItems, WebSocketServer* server, int fd) {
   for (const auto & [id, item] : telemetryItems.id_to_item) {
     char message[MAX_MESSAGE_SIZE];
     void *buf = &message;
@@ -68,14 +68,12 @@ int main(int argc, const char *argv[]) {
     },
     [&](WebSocketServer* server, Client* client, void *payload, size_t size) {
       messageHandler.handle(server, client, payload, size);
-    }
-  );
+    });
   ioServer.add_handler(webSocketServer.server_fd, EPOLLIN,
     [&](int fd) {
       webSocketServer.accept_client();
       return true;
-    }
-  );
+    });
 
   telemetryItems.add_change_listener([&](telemetry::Item& item) {
     for (const auto & [fd, client] : webSocketServer.fd_to_client) {
