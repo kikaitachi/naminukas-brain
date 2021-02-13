@@ -1,11 +1,39 @@
 #include <fstream>
+#include <memory>
 #include <string>
 #include <thread>
+#include <utility>
+#include <vector>
 
 #include "robotcontrol.h"
 
 #include "Logger.hpp"
 #include "SystemTelemetry.hpp"
+
+// From https://blog.ampow.com/lipo-voltage-chart/
+const std::vector<std::pair<float, int>> voltage_to_percentage({
+  {4.2, 100},
+  {4.15, 95},
+  {4.11, 90},
+  {4.08, 85},
+  {4.02, 80},
+  {3.98, 75},
+  {3.95, 70},
+  {3.91, 65},
+  {3.87, 60},
+  {3.85, 55},
+  {3.84, 50},
+  {3.82, 45},
+  {3.80, 40},
+  {3.79, 35},
+  {3.77, 30},
+  {3.75, 25},
+  {3.73, 20},
+  {3.71, 15},
+  {3.69, 10},
+  {3.61, 5},
+  {3.27, 0}
+});
 
 SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function<bool()> is_terminated) {
   struct utsname system_name;
@@ -40,7 +68,9 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
   telemetryItems.add_item(charger);
 
   telemetryItems.add_item(std::make_shared<telemetry::ItemChoice>(
-    machine->getId(), "Log level", std::initializer_list<std::string>{"debug", "info", "warn", "error"}, (int)logger::get_level(),
+    machine->getId(), "Log level",
+    std::initializer_list<std::string>{"debug", "info", "warn", "error"},
+    static_cast<int>(logger::get_level()),
     [](int new_level) {
       logger::set_level((logger::level)new_level);
     }));
@@ -51,10 +81,10 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
       if (sysinfo(&system_info) == -1) {
         logger::last("Failed to retrieve system information");
       } else {
-        long seconds = system_info.uptime % 60;
-        long minutes = (system_info.uptime / 60) % 60;
-        long hours = (system_info.uptime / 3600) % 24;
-        long days = (system_info.uptime / 3600) / 24;
+        int seconds = system_info.uptime % 60;
+        int minutes = (system_info.uptime / 60) % 60;
+        int hours = (system_info.uptime / 3600) % 24;
+        int days = (system_info.uptime / 3600) / 24;
         uptime->update(std::to_string(days) + ":" + std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds));
 
         float load_avg_1m = system_info.loads[0] * 1.f / (1 << SI_LOAD_SHIFT);

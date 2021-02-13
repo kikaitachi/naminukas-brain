@@ -1,5 +1,5 @@
-#ifndef NAMINUKAS_BRAIN_SYSTEMTELEMETRY_H_
-#define NAMINUKAS_BRAIN_SYSTEMTELEMETRY_H_
+#ifndef SRC_SYSTEMTELEMETRY_HPP_
+#define SRC_SYSTEMTELEMETRY_HPP_
 
 #include <sys/sysinfo.h>
 #include <sys/utsname.h>
@@ -7,12 +7,14 @@
 #include "Telemetry.hpp"
 
 class SystemTelemetry {
-  public:
-    SystemTelemetry(telemetry::Items& telemetryItems, std::function<bool()> is_terminated);
-    ~SystemTelemetry();
+ public:
+  SystemTelemetry(
+    telemetry::Items& telemetryItems,
+    std::function<bool()> is_terminated);
+  ~SystemTelemetry();
 
-  private:
-    bool battery_supported;
+ private:
+  bool battery_supported;
 };
 
-#endif  // NAMINUKAS_BRAIN_SYSTEMTELEMETRY_H_
+#endif  // SRC_SYSTEMTELEMETRY_HPP_
