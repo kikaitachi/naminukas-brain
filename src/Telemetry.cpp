@@ -24,7 +24,6 @@ namespace telemetry {
   }
 
   void Item::serialize_value(void **buf, int *buf_len) {
-    //message::write_int(buf, buf_len, id);
   }
 
   void Item::deserialize_value(void **buf, int *buf_len) {
@@ -118,8 +117,11 @@ namespace telemetry {
   // ItemCommand ***************************************************************
 
   ItemCommand::ItemCommand(
-      int parent_id, std::string name, std::string value, std::function<void(int, std::set<std::string>&)> action, std::vector<std::string> modifiers)
-      : Item(parent_id, TYPE_ACTION, name), value(value), action(action), modifiers(modifiers) {
+      int parent_id, std::string name, std::string value,
+      std::function<void(int, std::set<std::string>&)> action,
+      std::vector<std::string> modifiers)
+      : Item(parent_id, TYPE_ACTION, name), value(value),
+      action(action), modifiers(modifiers) {
   }
 
   void ItemCommand::serialize_definition(void **buf, int *buf_len) {
@@ -140,14 +142,15 @@ namespace telemetry {
         break;
       }
       modifiers.insert(modifier);
-    };
+    }
     action(value, modifiers);
   }
 
   // Models ********************************************************************
 
   Item3DModelBase::Item3DModelBase(
-      int parent_id, int type, std::string name, uint32_t color, std::vector<Transform> transforms)
+      int parent_id, int type, std::string name, uint32_t color,
+      std::vector<Transform> transforms)
       : Item(parent_id, type, name), color(color), transforms(transforms) {
   }
 
@@ -179,8 +182,10 @@ namespace telemetry {
   }
 
   Item3DModel::Item3DModel(
-      int parent_id, std::string name, std::string mime_type, std::string file_name, uint32_t color, std::vector<Transform> transforms)
-      : Item3DModelBase(parent_id, TYPE_3DMODEL, name, color, transforms), mime_type(mime_type), file_name(file_name) {
+      int parent_id, std::string name, std::string mime_type,
+      std::string file_name, uint32_t color, std::vector<Transform> transforms)
+      : Item3DModelBase(parent_id, TYPE_3DMODEL, name, color, transforms),
+      mime_type(mime_type), file_name(file_name) {
   }
 
   void Item3DModel::serialize_definition(void **buf, int *buf_len) {
@@ -197,8 +202,10 @@ namespace telemetry {
   }
 
   Item3DModelRef::Item3DModelRef(
-      int parent_id, std::string name, int ref_id, uint32_t color, std::vector<Transform> transforms)
-      : Item3DModelBase(parent_id, TYPE_3DMODEL_REF, name, color, transforms), ref_id(ref_id) {
+      int parent_id, std::string name, int ref_id, uint32_t color,
+      std::vector<Transform> transforms)
+      : Item3DModelBase(parent_id, TYPE_3DMODEL_REF, name, color, transforms),
+      ref_id(ref_id) {
   }
 
   void Item3DModelRef::serialize_definition(void **buf, int *buf_len) {
@@ -208,8 +215,9 @@ namespace telemetry {
 
   // ItemPointCloud ************************************************************
 
-  ItemPoints::ItemPoints(int parent_id, std::string name, std::vector<ColoredPoint> points) :
-      Item(parent_id, TYPE_POINTS, name), points(points) {
+  ItemPoints::ItemPoints(int parent_id, std::string name,
+      std::vector<ColoredPoint> points)
+      : Item(parent_id, TYPE_POINTS, name), points(points) {
   }
 
   void ItemPoints::serialize_definition(void **buf, int *buf_len) {
@@ -243,8 +251,11 @@ namespace telemetry {
 
   // ItemChoice ****************************************************************
 
-  ItemChoice::ItemChoice(int parent_id, std::string name, std::vector<std::string> choices, int selected, std::function<void(int)> on_change)
-      : Item(parent_id, TYPE_CHOICE, name), choices(choices), selected(selected), on_change(on_change) {
+  ItemChoice::ItemChoice(int parent_id, std::string name,
+      std::vector<std::string> choices, int selected,
+      std::function<void(int)> on_change)
+      : Item(parent_id, TYPE_CHOICE, name), choices(choices),
+      selected(selected), on_change(on_change) {
   }
 
   void ItemChoice::serialize_definition(void **buf, int *buf_len) {
@@ -272,7 +283,6 @@ namespace telemetry {
 
   void Items::add_item(std::shared_ptr<Item> item) {
     id_to_item[item->getId()] = item;
-    items.push_back(item);
     for (auto change_listener : change_listeners) {
       item->add_change_listener(change_listener);
     }
@@ -284,4 +294,5 @@ namespace telemetry {
       item->add_change_listener(change_listener);
     }
   }
-}
+
+}  // namespace telemetry

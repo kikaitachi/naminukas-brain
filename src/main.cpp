@@ -36,7 +36,7 @@ static void signal_handler(int signum) {
 
 void send_telemetry_definitions(
     const telemetry::Items &telemetryItems, WebSocketServer* server, int fd) {
-  for (const auto & item : telemetryItems.items) {
+  for (const auto & [id, item] : telemetryItems.id_to_item) {
     char message[MAX_MESSAGE_SIZE];
     void *buf = &message;
     int buf_len = MAX_MESSAGE_SIZE;
