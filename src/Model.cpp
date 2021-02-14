@@ -1,7 +1,11 @@
+#include <memory>
+#include <string>
+
 #include "Model.hpp"
 
 Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics) {
-  std::shared_ptr<telemetry::ItemString> parts = std::make_shared<telemetry::ItemString>(telemetry::ROOT_ITEM_ID, "Parts", "2");
+  std::shared_ptr<telemetry::ItemString> parts =
+    std::make_shared<telemetry::ItemString>(telemetry::ROOT_ITEM_ID, "Parts", "4");
   telemetryItems.add_item(parts);
 
   const char* model_dir_env = std::getenv("MODEL_DIR");
@@ -17,6 +21,29 @@ Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
     0x1E90FF, right_foot_transforms());
   telemetryItems.add_item(right_foot);
 
+  left_servo_bracket = std::make_shared<telemetry::Item3DModel>(parts->getId(),
+    "Left servo bracket", "model/stl", model_dir + "servo-bracket.stl",
+    0xD2691E, std::initializer_list<Transform>{
+      { TRANSFORM_TYPE_MOVE, 2, -4 },
+      { TRANSFORM_TYPE_ROTATE, 0, 180 },
+      { TRANSFORM_TYPE_ROTATE, 1, 90 },
+      { TRANSFORM_TYPE_MOVE, 2, -75 },
+      { TRANSFORM_TYPE_MOVE, 1, -48 }
+    });
+  telemetryItems.add_item(left_servo_bracket);
+
+  right_servo_bracket = std::make_shared<telemetry::Item3DModelRef>(parts->getId(),
+    "Right servo bracket", left_servo_bracket->getId(),
+    0x20B2AA, std::initializer_list<Transform>{
+      { TRANSFORM_TYPE_MOVE, 2, 4 },
+      { TRANSFORM_TYPE_ROTATE, 1, 180 },
+      { TRANSFORM_TYPE_ROTATE, 0, 180 },
+      { TRANSFORM_TYPE_ROTATE, 1, 90 },
+      { TRANSFORM_TYPE_MOVE, 2, -75 },
+      { TRANSFORM_TYPE_MOVE, 1, -48 }
+    });
+  telemetryItems.add_item(right_servo_bracket);
+
   reset();
 
   kinematics.add_position_listener([&] (auto joints) {
@@ -25,7 +52,7 @@ Model::Model(telemetry::Items& telemetryItems, hardware::Kinematics& kinematics)
 }
 
 void Model::update_joints(std::vector<hardware::JointPosition> joints) {
-  for (auto& joint: joints) {
+  for (auto& joint : joints) {
     switch (joint.joint) {
       case hardware::Joint::left_wheel:
         left_wheel_pos = joint.degrees;
