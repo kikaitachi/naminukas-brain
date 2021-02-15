@@ -61,6 +61,7 @@ set(COMMON_SOURCES
   src/Camera.cpp
   src/PIDController.cpp
   src/locomotion/Locomotion.cpp
+  src/locomotion/LocomotionGallop.cpp
   src/locomotion/LocomotionIdle.cpp
   src/locomotion/LocomotionPole.cpp
   src/locomotion/LocomotionPoleGestures.cpp

@@ -1,3 +1,4 @@
+#include "locomotion/LocomotionGallop.hpp"
 #include "locomotion/LocomotionIdle.hpp"
 #include "locomotion/LocomotionPole.hpp"
 #include "locomotion/LocomotionPoleGestures.hpp"
@@ -39,7 +40,8 @@ Robot::Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& k
   add_locomotion(new LocomotionTail(kinematics, imu), "Digit4");
   add_locomotion(new LocomotionWaddle(kinematics), "Digit5");
   add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit6");
-  add_locomotion(new LocomotionPoleGestures(kinematics, model, camera), "Digit6");
+  add_locomotion(new LocomotionPoleGestures(kinematics, model, camera), "Digit7");
+  add_locomotion(new LocomotionGallop(kinematics), "Digit8");
 
   telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Up", "ArrowUp", [&](int value, std::set<std::string>& modifiers) {
