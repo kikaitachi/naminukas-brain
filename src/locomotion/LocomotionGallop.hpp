@@ -12,6 +12,7 @@ class LocomotionGallop: public Locomotion {
   std::string name();
   Pose control_loop(Pose pose);
   void on_start();
+  void on_stop();
  private:
   hardware::Kinematics& kinematics;
   std::vector<hardware::JointPosition> initial_pos;

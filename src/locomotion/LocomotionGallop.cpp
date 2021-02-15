@@ -6,7 +6,7 @@
 #define POS_REACHED_THRESHOLD 5
 
 LocomotionGallop::LocomotionGallop(hardware::Kinematics& kinematics)
-    : Locomotion(200), kinematics(kinematics) {
+    : Locomotion(50), kinematics(kinematics) {
 }
 
 std::string LocomotionGallop::name() {
@@ -22,6 +22,7 @@ Pose LocomotionGallop::control_loop(Pose pose) {
       if ((fabs(current_pos[0].degrees - initial_ankle_angle - TILT_ANGLE) <= POS_REACHED_THRESHOLD) &&
           (fabs(current_pos[1].degrees - initial_ankle_angle - TILT_ANGLE) <= POS_REACHED_THRESHOLD)) {
         going_up = false;
+        logger::info("Top reached, going down");
         kinematics.set_joint_position({
           { hardware::Joint::left_ankle, initial_ankle_angle },
           { hardware::Joint::right_ankle, initial_ankle_angle },
@@ -30,8 +31,9 @@ Pose LocomotionGallop::control_loop(Pose pose) {
         });
       }
     } else {
-      if ((fabs(current_pos[0].degrees - initial_ankle_angle - TILT_ANGLE) <= POS_REACHED_THRESHOLD) &&
-          (fabs(current_pos[1].degrees - initial_ankle_angle - TILT_ANGLE) <= POS_REACHED_THRESHOLD)) {
+      if ((fabs(current_pos[0].degrees - initial_ankle_angle) <= POS_REACHED_THRESHOLD) &&
+          (fabs(current_pos[1].degrees - initial_ankle_angle) <= POS_REACHED_THRESHOLD)) {
+        logger::info("Bottom reached, going up");
         going_up = true;
         kinematics.set_joint_position({
           { hardware::Joint::left_ankle, initial_ankle_angle + TILT_ANGLE },
@@ -60,4 +62,11 @@ void LocomotionGallop::on_start() {
     hardware::Joint::left_wheel, hardware::Joint::right_wheel
   });
   going_up = false;
+}
+
+void LocomotionGallop::on_stop() {
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
