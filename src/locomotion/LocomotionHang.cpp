@@ -20,7 +20,7 @@ void LocomotionHang::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity, 2000);
   kinematics.set_joint_position({
-    { hardware::Joint::left_ankle, initial_ankle_angle - 90 },
+    { hardware::Joint::left_ankle, initial_ankle_angle - 45 },
     { hardware::Joint::right_ankle, initial_ankle_angle }
   });
 }
