@@ -1,5 +1,7 @@
 #include <cmath>
 #include <limits>
+#include <set>
+#include <string>
 
 #include "LocomotionSegway.hpp"
 
@@ -44,8 +46,8 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   }*/
   float goal_rpm = clamp(avg_diff * 0.01, -25, 25);
 
-  //float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
-  //float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
+  // float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
+  // float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 50000000 / 3 / control_loop_nanos;
   float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 50000000 / 3 / control_loop_nanos;
   float rpm_avg = (rpm_left + rpm_right) / 2;

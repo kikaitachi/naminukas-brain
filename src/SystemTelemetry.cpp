@@ -70,7 +70,8 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
 
   std::shared_ptr<telemetry::Item> machine = std::make_shared<telemetry::ItemString>(
     telemetry::ROOT_ITEM_ID, std::string(system_name.nodename),
-    std::string(system_name.sysname) + " " + std::string(system_name.release) + " " + std::string(system_name.version) + " " + std::string(system_name.machine));
+    std::string(system_name.sysname) + " " + std::string(system_name.release) + " " +
+    std::string(system_name.version) + " " + std::string(system_name.machine));
   telemetryItems.add_item(machine);
 
   std::shared_ptr<telemetry::ItemString> uptime = std::make_shared<telemetry::ItemString>(
@@ -110,7 +111,8 @@ SystemTelemetry::SystemTelemetry(telemetry::Items& telemetryItems, std::function
         int minutes = (system_info.uptime / 60) % 60;
         int hours = (system_info.uptime / 3600) % 24;
         int days = (system_info.uptime / 3600) / 24;
-        uptime->update(std::to_string(days) + ":" + std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds));
+        uptime->update(std::to_string(days) + ":" + std::to_string(hours) + ":" +
+          std::to_string(minutes) + ":" + std::to_string(seconds));
 
         load_average->update(format_load(system_info));
         freeMemory->update(system_info.freeram * system_info.mem_unit / (1024 * 1024));

@@ -1,11 +1,14 @@
-#include <stdexcept>
-#include <string>
-#include <cstring>
-#include <thread>
 #include <openssl/sha.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#include <algorithm>
+#include <stdexcept>
+#include <string>
+#include <cstring>
+#include <thread>
+
 #include "Logger.hpp"
 #include "WebSocket.hpp"
 
@@ -31,7 +34,7 @@ static int mod_table[] = {0, 2, 1};
 
 static char* base64_encode(const unsigned char *data, size_t data_length, size_t *encoded_length) {
   *encoded_length = 4 * ((data_length + 2) / 3);
-  char* encoded_data = (char*)malloc(*encoded_length + 1);
+  char* encoded_data = reinterpret_cast<char*>(malloc(*encoded_length + 1));
   if (encoded_data == NULL) {
     return NULL;
   }
@@ -98,7 +101,6 @@ void WebSocketServer::accept_client() {
 }
 
 void WebSocketServer::sendFrame(int fd, char opcode, void *data, size_t size) {
-  //logger::debug("Sending frame of size %d to %d", size, fd);
   char header[10];
   int header_length;
   header[0] = FINAL_FRAME | opcode;

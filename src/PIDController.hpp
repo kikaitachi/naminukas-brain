@@ -1,30 +1,30 @@
-#ifndef NAMINUKAS_BRAIN_PID_CONTROLLER_H_
-#define NAMINUKAS_BRAIN_PID_CONTROLLER_H_
+#ifndef SRC_PIDCONTROLLER_HPP_
+#define SRC_PIDCONTROLLER_HPP_
 
 #include <list>
 
 class PIDController {
-  public:
-    PIDController(float p, float i, float d, int max_prev_errors, float min, float max);
-    void reset();
-    float input(float value, float setpoint);
+ public:
+  PIDController(float p, float i, float d, int max_prev_errors, float min, float max);
+  void reset();
+  float input(float value, float setpoint);
 
-    /**
-     * Measure of how good controller is.
-     *
-     * @return Non-negative value. The smaller the better.
-     */
-    float get_fitness();
+  /**
+   * Measure of how good controller is.
+   *
+   * @return Non-negative value. The smaller the better.
+   */
+  float get_fitness();
 
-  private:
-    float p, i, d;
-    float min, max;
-    float prev_error;
-    float cum_error;
-    int max_prev_errors;
-    std::list<float> prev_errors;
-    float fitness;
-    std::list<float> prev_errors_squared;
+ private:
+  float p, i, d;
+  float min, max;
+  float prev_error;
+  float cum_error;
+  int max_prev_errors;
+  std::list<float> prev_errors;
+  float fitness;
+  std::list<float> prev_errors_squared;
 };
 
-#endif // NAMINUKAS_BRAIN_PID_CONTROLLER_H_
+#endif  // SRC_PIDCONTROLLER_HPP_

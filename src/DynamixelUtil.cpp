@@ -96,8 +96,7 @@ DynamixelConnection::DynamixelConnection(std::string device, float protocol, int
     if (!port_handler->setBaudRate(baudrate)) {
       logger::error("Failed to change baudrate");
     }
-  }
-  else {
+  } else {
     packet_handler = NULL;
     logger::error("Failed to open Dynamixel port");
   }

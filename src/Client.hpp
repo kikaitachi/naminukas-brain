@@ -1,14 +1,14 @@
-#ifndef NAMINUKAS_BRAIN_CLIENT_H_
-#define NAMINUKAS_BRAIN_CLIENT_H_
+#ifndef SRC_CLIENT_HPP_
+#define SRC_CLIENT_HPP_
 
 #include <unordered_set>
 
 class Client {
-  public:
-    int fd;
-    std::unordered_set<int> changed_telemetry_item_ids;
+ public:
+  int fd;
+  std::unordered_set<int> changed_telemetry_item_ids;
 
-    Client(int fd);
+  explicit Client(int fd);
 };
 
-#endif  // NAMINUKAS_BRAIN_CLIENT_H_
+#endif  // SRC_CLIENT_HPP_
