@@ -26,9 +26,15 @@ void Locomotion::start() {
         logger::debug("Pose: %f, %f", pose.location.x, pose.location.y);
         struct timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
-        uint64_t elapsed_nanos = (now.tv_sec - last_control_loop_time.tv_sec) * 1000000000 + (now.tv_nsec - last_control_loop_time.tv_nsec);
+        uint64_t elapsed_nanos = (now.tv_sec - last_control_loop_time.tv_sec) *
+          1000000000 + (now.tv_nsec - last_control_loop_time.tv_nsec);
         last_control_loop_time = now;
-        std::this_thread::sleep_for(std::chrono::nanoseconds(control_loop_nanos - elapsed_nanos));
+        int nanos_to_sleep = control_loop_nanos - elapsed_nanos;
+        if (nanos_to_sleep < 0) {
+          logger::warn("Control loop overran by %dns", nanos_to_sleep);
+        } else {
+          std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
+        }
       }
     });
   }
