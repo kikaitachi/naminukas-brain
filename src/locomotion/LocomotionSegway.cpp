@@ -37,6 +37,10 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   if (curr_pos.size() != 2) {
     return pose;
   }
+  std::vector<hardware::JointSpeed> curr_speed = kinematics.get_joint_speed({
+    hardware::Joint::left_wheel,
+    hardware::Joint::right_wheel
+  });
 
   float left_diff = expected_pos[0].degrees - curr_pos[0].degrees;
   float right_diff = curr_pos[1].degrees - expected_pos[1].degrees;
@@ -73,8 +77,9 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   expected_pos[0].degrees += pos_speed;
   expected_pos[1].degrees -= pos_speed;
 
-  logger::debug("pos diff: %f / %f, speed/pitch fitness: %f / %f",
-    left_diff, right_diff, speed_controller.get_fitness(), pitch_controller.get_fitness());
+  logger::debug("pos diff: %f / %f, speed/pitch fitness: %f / %f, dynamixel speed: %f / %f, robot speed: %f / %f",
+    left_diff, right_diff, speed_controller.get_fitness(), pitch_controller.get_fitness(),
+    curr_speed[0].rpm, curr_speed[1].rpm, rpm_left, rpm_right);
 
   // TODO: calculate new pose
   return pose;

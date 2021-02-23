@@ -15,6 +15,7 @@ class DynamixelKinematics: public hardware::Kinematics {
   void set_joint_position(std::vector<hardware::JointPosition> positions);
   void set_joint_speed(std::vector<hardware::JointSpeed> speeds);
   std::vector<hardware::JointPosition> get_joint_position(std::vector<hardware::Joint> joints);
+  std::vector<hardware::JointSpeed> get_joint_speed(std::vector<hardware::Joint> joints);
   bool reached_destination(std::vector<hardware::Joint> joints);
  private:
   DynamixelConnection* dynamixel_connection;
