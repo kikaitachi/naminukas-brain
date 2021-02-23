@@ -16,13 +16,12 @@ Pose Locomotion::control_loop(Pose pose) {
 void Locomotion::start() {
   if (stopped) {
     on_start();
-    Pose pose;
     stopped = false;
     control_loop_thread = new std::thread([&]() {
       struct timespec last_control_loop_time;
       clock_gettime(CLOCK_MONOTONIC, &last_control_loop_time);
       while (!stopped) {
-        pose = control_loop(pose);
+        Pose pose = control_loop(pose);
         // TODO: construct [wheel] odometry / trajectory from poses
         logger::debug("Pose: %f, %f", pose.location.x, pose.location.y);
         struct timespec now;
