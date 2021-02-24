@@ -23,6 +23,12 @@ Pose LocomotionPole::control_loop(Pose pose) {
     pose.location.y += dist * cos(angle);
     previous_angles = current_angles;
   }
+
+  for (auto& state : kinematics.get_joint_state({ hardware::Joint::left_wheel, hardware::Joint::left_ankle })) {
+    logger::info("position: %f, current: %f, velocity: %f",
+      state.position, state.current, state.rpm);
+  }
+
   return pose;
 }
 

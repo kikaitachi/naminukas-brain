@@ -129,7 +129,7 @@ std::vector<hardware::JointState> DynamixelKinematics::get_joint_state(std::vect
     ids.push_back(joint2id(joint));
   }
   std::vector<std::vector<int>> data = dynamixel_connection->read(
-      dynamixel_XM430W350.indirect_address(0).address, { 2, 4, 4 }, ids);
+      224, { 2, 4, 4 }, ids);  // TODO: extract magic number 224
   for (int i = 0; i < joints.size(); i++) {
     DynamixelModel& model = joint2model(joints[i]);
     result.push_back({
