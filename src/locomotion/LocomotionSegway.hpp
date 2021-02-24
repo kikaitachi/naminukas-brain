@@ -32,8 +32,8 @@ class LocomotionSegway: public Locomotion {
   float prev_rpm;
   float pos_speed;
   float left_turn_speed, right_turn_speed;
-  std::vector<hardware::JointState> expected_pos;
-  std::vector<hardware::JointState> prev_pos;
+  std::vector<hardware::JointPosition> expected_pos;
+  std::vector<hardware::JointPosition> prev_pos;
 };
 
 #endif  // SRC_LOCOMOTION_LOCOMOTIONSEGWAY_HPP_

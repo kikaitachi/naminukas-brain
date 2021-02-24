@@ -30,16 +30,20 @@ static float clamp(float value, float min, float max) {
 #define MAX_DIFF 30
 
 Pose LocomotionSegway::control_loop(Pose pose) {
-  std::vector<hardware::JointState> curr_pos = kinematics.get_joint_state({
+  std::vector<hardware::JointPosition> curr_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
   if (curr_pos.size() != 2) {
     return pose;
   }
+  std::vector<hardware::JointSpeed> curr_speed = kinematics.get_joint_speed({
+    hardware::Joint::left_wheel,
+    hardware::Joint::right_wheel
+  });
 
-  float left_diff = expected_pos[0].position - curr_pos[0].position;
-  float right_diff = curr_pos[1].position - expected_pos[1].position;
+  float left_diff = expected_pos[0].degrees - curr_pos[0].degrees;
+  float right_diff = curr_pos[1].degrees - expected_pos[1].degrees;
   float avg_diff = (left_diff + right_diff) / 2;
   /*if (fabs(avg_diff) < 10) {
     avg_diff = 0;
@@ -48,8 +52,8 @@ Pose LocomotionSegway::control_loop(Pose pose) {
 
   // float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
   // float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 60.0 * 1000000000 / 360 / control_loop_nanos;
-  float rpm_left = (curr_pos[0].position - prev_pos[0].position) * 50000000 / 3 / control_loop_nanos;
-  float rpm_right = (prev_pos[1].position - curr_pos[1].position) * 50000000 / 3 / control_loop_nanos;
+  float rpm_left = (curr_pos[0].degrees - prev_pos[0].degrees) * 50000000 / 3 / control_loop_nanos;
+  float rpm_right = (prev_pos[1].degrees - curr_pos[1].degrees) * 50000000 / 3 / control_loop_nanos;
   float rpm_avg = (rpm_left + rpm_right) / 2;
   float new_rpm = RPM_ALPHA * rpm_avg + (1 - RPM_ALPHA) * prev_rpm;
   prev_rpm = new_rpm;
@@ -66,16 +70,16 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   }*/
 
   kinematics.set_joint_position({
-    { hardware::Joint::left_wheel, curr_pos[0].position - input + left_turn_speed },
-    { hardware::Joint::right_wheel, curr_pos[1].position + input - right_turn_speed }
+    { hardware::Joint::left_wheel, curr_pos[0].degrees - input + left_turn_speed },
+    { hardware::Joint::right_wheel, curr_pos[1].degrees + input - right_turn_speed }
   });
   prev_pos = curr_pos;
-  expected_pos[0].position += pos_speed;
-  expected_pos[1].position -= pos_speed;
+  expected_pos[0].degrees += pos_speed;
+  expected_pos[1].degrees -= pos_speed;
 
   logger::debug("pos diff: %f / %f, speed/pitch fitness: %f / %f, dynamixel speed: %f / %f, robot speed: %f / %f",
     left_diff, right_diff, speed_controller.get_fitness(), pitch_controller.get_fitness(),
-    curr_pos[0].rpm, curr_pos[1].rpm, rpm_left, rpm_right);
+    curr_speed[0].rpm, curr_speed[1].rpm, rpm_left, rpm_right);
 
   // TODO: calculate new pose
   return pose;
@@ -93,7 +97,7 @@ void LocomotionSegway::on_start() {
   prev_rpm = 0;
   speed_controller.reset();
   pitch_controller.reset();
-  expected_pos = kinematics.get_joint_state({
+  expected_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
