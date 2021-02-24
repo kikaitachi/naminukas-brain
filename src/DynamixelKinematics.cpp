@@ -135,7 +135,7 @@ std::vector<hardware::JointState> DynamixelKinematics::get_joint_state(std::vect
     result.push_back({
       data[i][2] * 360.0 / model.positions_per_rotation(),
       model.value_to_rpm(data[i][1]),
-      model.value_to_current(data[i][0])
+      model.value_to_current(static_cast<int16_t>(data[i][0]))
     });
   }
   return result;
