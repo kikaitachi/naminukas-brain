@@ -100,7 +100,20 @@ DynamixelControlItem DynamixelXM430W350::indirect_address(int offset) {
   return DynamixelControlItem(168 + offset, 2);
 }
 
+#define USB_LATENCY_FILE_NAME "/sys/bus/usb-serial/devices/ttyUSB0/latency_timer"
+#define USB_LATENCY_VALUE 4
+
 DynamixelConnection::DynamixelConnection(std::string device, float protocol, int baudrate) {
+  // See http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_wizard2/#usb-latency-setting
+  FILE *latency_timer = fopen(USB_LATENCY_FILE_NAME, "w");
+  if (latency_timer == NULL) {
+    logger::error("Failed to open latency time file %s", USB_LATENCY_FILE_NAME);
+  } else {
+    fprintf(latency_timer, "%d\n", USB_LATENCY_VALUE);
+    fclose(latency_timer);
+    logger::info("Updated USB latency to %d", USB_LATENCY_VALUE);
+  }
+
   port_handler = dynamixel::PortHandler::getPortHandler(device.c_str());
   if (port_handler->openPort()) {
     logger::info("Succeeded to open Dynamixel port");
