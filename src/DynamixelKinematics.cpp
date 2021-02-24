@@ -25,6 +25,9 @@ static int joint2id(hardware::Joint joint) {
 
 DynamixelKinematics::DynamixelKinematics() {
   dynamixel_connection = new DynamixelConnection(DEVICENAME, PROTOCOL_VERSION, BAUDRATE);
+  map_indirect(0, dynamixel_XM430W350.present_current());
+  map_indirect(4, dynamixel_XM430W350.present_velocity());
+  map_indirect(12, dynamixel_XM430W350.present_position());
 }
 
 DynamixelKinematics::~DynamixelKinematics() {
@@ -119,6 +122,25 @@ std::vector<hardware::JointSpeed> DynamixelKinematics::get_joint_speed(std::vect
   return result;
 }
 
+std::vector<hardware::JointState> DynamixelKinematics::get_joint_state(std::vector<hardware::Joint> joints) {
+  std::vector<hardware::JointState> result;
+  std::vector<int> ids;
+  for (auto& joint : joints) {
+    ids.push_back(joint2id(joint));
+  }
+  std::vector<std::vector<int>> data = dynamixel_connection->read(
+      dynamixel_XM430W350.indirect_address(0).address, { 2, 4, 4 }, ids);
+  for (int i = 0; i < joints.size(); i++) {
+    DynamixelModel& model = joint2model(joints[i]);
+    result.push_back({
+      data[i][2] * 360.0 / model.positions_per_rotation(),
+      model.value_to_rpm(data[i][1]),
+      model.value_to_current(data[i][0])
+    });
+  }
+  return result;
+}
+
 bool DynamixelKinematics::reached_destination(std::vector<hardware::Joint> joints) {
   std::vector<int> ids;
   for (auto& joint : joints) {
@@ -134,4 +156,15 @@ bool DynamixelKinematics::reached_destination(std::vector<hardware::Joint> joint
 
 DynamixelModel& DynamixelKinematics::joint2model(hardware::Joint joint) {
   return dynamixel_XM430W350;
+}
+
+void DynamixelKinematics::map_indirect(int offset, DynamixelControlItem item) {
+  for (int i = 0; i < item.size; i++) {
+    dynamixel_connection->write(dynamixel_XM430W350.indirect_address(offset + i * 2), {
+      { 2, item.address + i },
+      { 3, item.address + i },
+      { 4, item.address + i },
+      { 5, item.address + i }
+    });
+  }
 }

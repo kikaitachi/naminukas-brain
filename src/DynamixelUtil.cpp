@@ -24,6 +24,10 @@ float DynamixelXM430W350::value_to_rpm(int value) {
   return value * 0.229;
 }
 
+float DynamixelXM430W350::value_to_current(int value) {
+  return value * 0.00269;
+}
+
 int DynamixelXM430W350::rpm2_to_value(double rpm2) {
   return round(rpm2 / 214.577);
 }
@@ -90,6 +94,10 @@ DynamixelControlItem DynamixelXM430W350::voltage() {
 
 DynamixelControlItem DynamixelXM430W350::temperature() {
   return DynamixelControlItem(146, 1);
+}
+
+DynamixelControlItem DynamixelXM430W350::indirect_address(int offset) {
+  return DynamixelControlItem(168 + offset, 2);
 }
 
 DynamixelConnection::DynamixelConnection(std::string device, float protocol, int baudrate) {
@@ -172,6 +180,55 @@ std::vector<int> DynamixelConnection::read(DynamixelControlItem item, std::vecto
     } else {
       result.push_back(group_sync_read.getData(id, item.address, item.size));
     }
+  }
+  group_sync_read.clearParam();
+  return result;
+}
+
+std::vector<std::vector<int>> DynamixelConnection::read(
+    int address, std::vector<int> sizes, std::vector<int> ids) {
+  std::vector<std::vector<int>> result;
+  if (packet_handler == NULL) {
+    return result;
+  }
+  int total_size = 0;
+  for (int size : sizes) {
+    total_size += size;
+  }
+  const std::lock_guard<std::mutex> lock(mutex);
+  dynamixel::GroupSyncRead group_sync_read(port_handler, packet_handler, address, total_size);
+  for (auto& id : ids) {
+    if (!group_sync_read.addParam(id)) {
+      logger::error("Failed to add parameter for reading from addresss %d of Dynamixel with id %d",
+        address, id);
+    }
+  }
+  int dxl_comm_result = group_sync_read.txRxPacket();
+  if (dxl_comm_result != COMM_SUCCESS) {
+    logger::error("Sync read from address %d failed: %s",
+      address, packet_handler->getTxRxResult(dxl_comm_result));
+  }
+  for (auto& id : ids) {
+    uint8_t dxl_error = 0;
+    if (group_sync_read.getError(id, &dxl_error)) {
+      logger::error("Failed to read address for Dynamixel with id %d: %s",
+        address, id, packet_handler->getRxPacketError(dxl_error));
+    }
+    int current_address = address;
+    int i = 0;
+    std::vector<int> data;
+    for (int size : sizes) {
+      bool dxl_getdata_result = group_sync_read.isAvailable(id, current_address, size);
+      if (dxl_getdata_result != true) {
+        logger::error("Sync read doesn't have data at address %d for Dynamixel with id %d",
+          current_address, id);
+      } else {
+        data.push_back(group_sync_read.getData(id, current_address, size));
+      }
+      current_address += size;
+      i++;
+    }
+    result.push_back(data);
   }
   group_sync_read.clearParam();
   return result;

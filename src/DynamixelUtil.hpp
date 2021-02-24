@@ -36,6 +36,7 @@ class DynamixelModel {
   virtual int positions_per_rotation() = 0;
   virtual int rpm_to_value(float rpm) = 0;
   virtual float value_to_rpm(int value) = 0;
+  virtual float value_to_current(int value) = 0;
 
   virtual DynamixelControlItem drive_mode() = 0;
   virtual DynamixelControlItem operating_mode() = 0;
@@ -53,6 +54,7 @@ class DynamixelModel {
   virtual DynamixelControlItem present_position() = 0;
   virtual DynamixelControlItem voltage() = 0;
   virtual DynamixelControlItem temperature() = 0;
+  virtual DynamixelControlItem indirect_address(int offset) = 0;
 };
 
 class DynamixelXM430W350: public DynamixelModel {
@@ -61,6 +63,7 @@ class DynamixelXM430W350: public DynamixelModel {
   int rpm_to_value(float rpm);
   float value_to_rpm(int value);
   int rpm2_to_value(double rpm2);
+  float value_to_current(int value);
 
   DynamixelControlItem drive_mode();
   DynamixelControlItem operating_mode();
@@ -78,6 +81,7 @@ class DynamixelXM430W350: public DynamixelModel {
   DynamixelControlItem present_position();
   DynamixelControlItem voltage();
   DynamixelControlItem temperature();
+  DynamixelControlItem indirect_address(int offset);
 };
 
 class DynamixelConnection {
@@ -86,6 +90,8 @@ class DynamixelConnection {
   ~DynamixelConnection();
   bool write(DynamixelControlItem item, std::vector<DynamixelControlValue> values);
   std::vector<int> read(DynamixelControlItem item, std::vector<int> ids);
+  std::vector<std::vector<int>> read(
+    int address, std::vector<int> sizes, std::vector<int> ids);
  private:
   dynamixel::PortHandler *port_handler;
   dynamixel::PacketHandler *packet_handler;
