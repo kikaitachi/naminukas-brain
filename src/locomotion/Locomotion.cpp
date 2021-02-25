@@ -1,9 +1,11 @@
+#include <chrono>
+
 #include "../Logger.hpp"
 #include "Locomotion.hpp"
 
 Locomotion::Locomotion(int control_loop_frequency)
     : control_loop_frequency(control_loop_frequency) {
-  control_loop_nanos = 1000000000 / control_loop_frequency;
+  control_loop_nanos = std::chrono::nanoseconds(1000000000 / control_loop_frequency);
 }
 
 Locomotion::~Locomotion() {
@@ -18,21 +20,22 @@ void Locomotion::start() {
     on_start();
     stopped = false;
     control_loop_thread = new std::thread([&]() {
-      struct timespec last_control_loop_time;
-      clock_gettime(CLOCK_MONOTONIC, &last_control_loop_time);
+      std::chrono::time_point<std::chrono::high_resolution_clock> last_control_loop_time =
+        std::chrono::high_resolution_clock::now();
       while (!stopped) {
         Pose pose = control_loop(pose);
         // TODO: construct [wheel] odometry / trajectory from poses
-        //logger::debug("Pose: %f, %f", pose.location.x, pose.location.y);
-        struct timespec now;
-        clock_gettime(CLOCK_MONOTONIC, &now);
-        uint64_t elapsed_nanos = (now.tv_sec - last_control_loop_time.tv_sec) *
-          1000000000 + (now.tv_nsec - last_control_loop_time.tv_nsec);
-        last_control_loop_time = now;
-        int nanos_to_sleep = control_loop_nanos - elapsed_nanos;
+        // logger::debug("Pose: %f, %f", pose.location.x, pose.location.y);
+        std::chrono::time_point<std::chrono::high_resolution_clock> now =
+          std::chrono::high_resolution_clock::now();
+        uint64_t elapsed_nanos = std::chrono::duration_cast<std::chrono::nanoseconds>
+          (now - last_control_loop_time).count();
+        int nanos_to_sleep = control_loop_nanos.count() - elapsed_nanos;
         if (nanos_to_sleep < 0) {
-          logger::warn("Control loop overran by %dns", -nanos_to_sleep);
+          logger::warn("%s: control loop overran by %dns", name().c_str(), -nanos_to_sleep);
+          last_control_loop_time = now;
         } else {
+          last_control_loop_time += control_loop_nanos;
           std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
         }
       }

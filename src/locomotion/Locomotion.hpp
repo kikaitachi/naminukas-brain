@@ -1,6 +1,7 @@
 #ifndef SRC_LOCOMOTION_LOCOMOTION_HPP_
 #define SRC_LOCOMOTION_LOCOMOTION_HPP_
 
+#include <chrono>
 #include <set>
 #include <string>
 #include <thread>
@@ -26,7 +27,7 @@ class Locomotion {
  protected:
   bool stopped = true;
   const double initial_ankle_angle = 360.0 / 16;
-  uint64_t control_loop_nanos;
+  std::chrono::nanoseconds control_loop_nanos;
  private:
   int control_loop_frequency;
   std::thread* control_loop_thread;

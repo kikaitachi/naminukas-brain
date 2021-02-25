@@ -1,3 +1,5 @@
+#include <string>
+
 #include "LocomotionIdle.hpp"
 
 LocomotionIdle::LocomotionIdle(hardware::Kinematics& kinematics)
