@@ -6,7 +6,7 @@
 #include "LocomotionSegway.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(100), kinematics(kinematics), imu(imu),
+    : Locomotion(50), kinematics(kinematics), imu(imu),
     speed_controller(2, 0, 0, 25, -45, 45),
     pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
 }
@@ -26,10 +26,14 @@ static float clamp(float value, float min, float max) {
 }
 
 Pose LocomotionSegway::control_loop(Pose pose) {
+  struct timespec start_time;
+  struct timespec end_time;
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
   std::vector<hardware::JointState> curr_pos = kinematics.get_joint_state({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
+  clock_gettime(CLOCK_MONOTONIC, &end_time);
   if (curr_pos.size() != 2) {
     return pose;
   }
@@ -62,9 +66,10 @@ Pose LocomotionSegway::control_loop(Pose pose) {
     });
   }
 
-  logger::debug("speed / pitch fitness: %f / %f, rpm: %f / %f",
-    speed_controller.get_fitness(), pitch_controller.get_fitness(),
-    rpm_left, rpm_right);
+  logger::debug("pitch: %f, speed / pitch fitness: %f / %f, rpm: %f / %f, read: %dns",
+    imu.get_pitch(), speed_controller.get_fitness(), pitch_controller.get_fitness(),
+    rpm_left, rpm_right, static_cast<int>((end_time.tv_sec - start_time.tv_sec) *
+      1000000000 + (end_time.tv_nsec - start_time.tv_nsec)));
 
   // TODO: calculate new pose
   return pose;
