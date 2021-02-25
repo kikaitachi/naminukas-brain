@@ -31,7 +31,6 @@ class LocomotionSegway: public Locomotion {
   PIDController pitch_controller;
   float pos_speed;
   float left_turn_speed, right_turn_speed;
-  std::vector<hardware::JointState> expected_pos;
 };
 
 #endif  // SRC_LOCOMOTION_LOCOMOTIONSEGWAY_HPP_

@@ -25,10 +25,6 @@ static float clamp(float value, float min, float max) {
   return value;
 }
 
-#define RPM_ALPHA 0.1
-#define MAX_TURN_SPEED 3.0
-#define MAX_DIFF 30
-
 Pose LocomotionSegway::control_loop(Pose pose) {
   std::vector<hardware::JointState> curr_pos = kinematics.get_joint_state({
     hardware::Joint::left_wheel,
@@ -66,9 +62,6 @@ Pose LocomotionSegway::control_loop(Pose pose) {
     });
   }
 
-  expected_pos[0].position += pos_speed;
-  expected_pos[1].position -= pos_speed;
-
   logger::debug("speed / pitch fitness: %f / %f, rpm: %f / %f",
     speed_controller.get_fitness(), pitch_controller.get_fitness(),
     rpm_left, rpm_right);
@@ -88,10 +81,6 @@ void LocomotionSegway::on_start() {
   });
   speed_controller.reset();
   pitch_controller.reset();
-  expected_pos = kinematics.get_joint_state({
-    hardware::Joint::left_wheel,
-    hardware::Joint::right_wheel
-  });
   pos_speed = left_turn_speed = right_turn_speed = 0;
 }
 
