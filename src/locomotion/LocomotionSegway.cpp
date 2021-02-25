@@ -6,8 +6,8 @@
 #include "LocomotionSegway.hpp"
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(50), kinematics(kinematics), imu(imu),
-    speed_controller(2, 0, 0, 25, -45, 45),
+    : Locomotion(100), kinematics(kinematics), imu(imu),
+    speed_controller(0.1, 0, 0, 25, -10, 10),
     pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
 }
 
@@ -39,10 +39,10 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   }
 
   float rpm_left = curr_pos[0].rpm;
-  float rpm_right = curr_pos[1].rpm;
+  float rpm_right = -curr_pos[1].rpm;
   float rpm_avg = (rpm_left + rpm_right) / 2;
   float goal_rpm = 0;
-  float goal_pitch = speed_controller.input(rpm_avg, goal_rpm);
+  float goal_pitch = -1 + speed_controller.input(rpm_avg, goal_rpm);
   float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
 
   float new_position_left = curr_pos[0].position - input + left_turn_speed;
@@ -66,7 +66,7 @@ Pose LocomotionSegway::control_loop(Pose pose) {
     });
   }
 
-  logger::debug("pitch: %f, speed / pitch fitness: %f / %f, rpm: %f / %f, read: %dns",
+  logger::info("pitch: %f, speed / pitch fitness: %f / %f, rpm: %f / %f, read: %dns",
     imu.get_pitch(), speed_controller.get_fitness(), pitch_controller.get_fitness(),
     rpm_left, rpm_right, static_cast<int>((end_time.tv_sec - start_time.tv_sec) *
       1000000000 + (end_time.tv_nsec - start_time.tv_nsec)));

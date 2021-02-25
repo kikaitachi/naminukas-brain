@@ -23,7 +23,7 @@ void Locomotion::start() {
       while (!stopped) {
         Pose pose = control_loop(pose);
         // TODO: construct [wheel] odometry / trajectory from poses
-        logger::debug("Pose: %f, %f", pose.location.x, pose.location.y);
+        //logger::debug("Pose: %f, %f", pose.location.x, pose.location.y);
         struct timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
         uint64_t elapsed_nanos = (now.tv_sec - last_control_loop_time.tv_sec) *
@@ -31,7 +31,7 @@ void Locomotion::start() {
         last_control_loop_time = now;
         int nanos_to_sleep = control_loop_nanos - elapsed_nanos;
         if (nanos_to_sleep < 0) {
-          logger::warn("Control loop overran by %dns", nanos_to_sleep);
+          logger::warn("Control loop overran by %dns", -nanos_to_sleep);
         } else {
           std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
         }
