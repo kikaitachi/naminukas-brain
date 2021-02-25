@@ -45,19 +45,27 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   float goal_pitch = speed_controller.input(rpm_avg, goal_rpm);
   float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
 
-  /*float turn_magnitude = clamp(fabs(fabs(left_diff) - fabs(right_diff)), 0, MAX_DIFF) / MAX_DIFF;
-  if (left_diff > right_diff) {
-    left_turn_speed = MAX_TURN_SPEED * turn_magnitude;
-    right_turn_speed = -MAX_TURN_SPEED * turn_magnitude;
+  float new_position_left = curr_pos[0].position - input + left_turn_speed;
+  float new_position_right = curr_pos[1].position + input - right_turn_speed;
+  if (curr_pos[0].position == new_position_left) {
+    if (curr_pos[1].position != new_position_right) {
+      kinematics.set_joint_position({
+        { hardware::Joint::right_wheel, new_position_right }
+      });
+    }
+  } else if (curr_pos[1].position == new_position_right) {
+    if (curr_pos[0].position != new_position_left) {
+      kinematics.set_joint_position({
+        { hardware::Joint::left_wheel, new_position_left }
+      });
+    }
   } else {
-    left_turn_speed = -MAX_TURN_SPEED * turn_magnitude;
-    right_turn_speed = MAX_TURN_SPEED * turn_magnitude;
-  }*/
+    kinematics.set_joint_position({
+      { hardware::Joint::left_wheel, new_position_left },
+      { hardware::Joint::right_wheel, new_position_right }
+    });
+  }
 
-  kinematics.set_joint_position({
-    { hardware::Joint::left_wheel, curr_pos[0].position - input + left_turn_speed },
-    { hardware::Joint::right_wheel, curr_pos[1].position + input - right_turn_speed }
-  });
   prev_pos = curr_pos;
   expected_pos[0].position += pos_speed;
   expected_pos[1].position -= pos_speed;
