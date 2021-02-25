@@ -66,7 +66,6 @@ Pose LocomotionSegway::control_loop(Pose pose) {
     });
   }
 
-  prev_pos = curr_pos;
   expected_pos[0].position += pos_speed;
   expected_pos[1].position -= pos_speed;
 
@@ -93,7 +92,6 @@ void LocomotionSegway::on_start() {
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
-  prev_pos = expected_pos;
   pos_speed = left_turn_speed = right_turn_speed = 0;
 }
 
