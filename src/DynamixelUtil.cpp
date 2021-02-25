@@ -101,7 +101,7 @@ DynamixelControlItem DynamixelXM430W350::indirect_address(int offset) {
 }
 
 #define USB_LATENCY_FILE_NAME "/sys/bus/usb-serial/devices/ttyUSB0/latency_timer"
-#define USB_LATENCY_VALUE 4
+#define USB_LATENCY_VALUE 2
 
 DynamixelConnection::DynamixelConnection(std::string device, float protocol, int baudrate) {
   // See http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_wizard2/#usb-latency-setting

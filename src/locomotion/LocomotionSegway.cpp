@@ -79,7 +79,6 @@ void LocomotionSegway::on_start() {
     { hardware::Joint::left_ankle, initial_ankle_angle - 90 },
     { hardware::Joint::right_ankle, initial_ankle_angle + 90 },
   });
-  prev_rpm = 0;
   speed_controller.reset();
   pitch_controller.reset();
   expected_pos = kinematics.get_joint_state({
