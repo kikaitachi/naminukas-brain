@@ -5,6 +5,9 @@
 
 #include "LocomotionSegway.hpp"
 
+#define ANKLE_DURATION_MS 1000
+#define SIDESTEP_MAGNITUDE 10
+
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu),
     speed_controller(0.1, 0, 0, 25, -10, 10),
@@ -65,10 +68,28 @@ Pose LocomotionSegway::control_loop(Pose pose) {
     });
   }
 
+  if (control_loop_iteration % 100 == 0) {
+    if (sidestep_direction_left != 0) {
+      kinematics.set_joint_position({
+        { hardware::Joint::left_ankle, initial_ankle_angle - 90 + SIDESTEP_MAGNITUDE * sidestep_direction_left },
+      });
+      sidestep_direction_left = -sidestep_direction_left;
+    }
+  } else if ((control_loop_iteration + 50) % 100 == 0) {
+    if (sidestep_direction_right != 0) {
+      kinematics.set_joint_position({
+        { hardware::Joint::right_ankle, initial_ankle_angle + 90 + SIDESTEP_MAGNITUDE * sidestep_direction_right },
+      });
+      sidestep_direction_right = -sidestep_direction_right;
+    }
+  }
+
   logger::info("pitch: %f, speed / pitch fitness: %f / %f, rpm: %f / %f, read: %dns",
     imu.get_pitch(), speed_controller.get_fitness(), pitch_controller.get_fitness(),
     rpm_left, rpm_right, static_cast<int>((end_time.tv_sec - start_time.tv_sec) *
       1000000000 + (end_time.tv_nsec - start_time.tv_nsec)));
+
+  control_loop_iteration++;
 
   // TODO: calculate new pose
   return pose;
@@ -76,8 +97,10 @@ Pose LocomotionSegway::control_loop(Pose pose) {
 
 void LocomotionSegway::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::position);
-  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position, 100);
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position, 100);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time,
+    0, 0, ANKLE_DURATION_MS / 2, ANKLE_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time,
+    0, 0, ANKLE_DURATION_MS / 2, ANKLE_DURATION_MS);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle - 90 },
@@ -87,6 +110,8 @@ void LocomotionSegway::on_start() {
   pitch_controller.reset();
   pos_speed = left_turn_speed = right_turn_speed = 0;
   goal_rpm = 0;
+  sidestep_direction_left = sidestep_direction_right = 0;
+  control_loop_iteration = 0;
 }
 
 void LocomotionSegway::on_stop() {
@@ -134,13 +159,17 @@ void LocomotionSegway::stop() {
 void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     if (modifiers.find("Control") != modifiers.end()) {
-      kinematics.set_joint_position({
+      /*kinematics.set_joint_position({
         { hardware::Joint::left_ankle, initial_ankle_angle - 80 },
         { hardware::Joint::right_ankle, initial_ankle_angle + 100 },
-      });
+      });*/
+      sidestep_direction_left = 1;
+      sidestep_direction_right = 1;
     } else {
       pos_speed = 2;
       goal_rpm = 10;
+      sidestep_direction_left = 0;
+      sidestep_direction_right = 0;
     }
   } else {
     pos_speed = 0;
@@ -151,13 +180,17 @@ void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
 void LocomotionSegway::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     if (modifiers.find("Control") != modifiers.end()) {
-      kinematics.set_joint_position({
+      /*kinematics.set_joint_position({
         { hardware::Joint::left_ankle, initial_ankle_angle - 80 },
         { hardware::Joint::right_ankle, initial_ankle_angle + 100 },
-      });
+      });*/
+      sidestep_direction_left = 1;
+      sidestep_direction_right = -1;
     } else {
       pos_speed = -2;
       goal_rpm = -10;
+      sidestep_direction_left = 0;
+      sidestep_direction_right = 0;
     }
   } else {
     pos_speed = 0;

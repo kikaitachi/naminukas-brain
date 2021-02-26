@@ -23,7 +23,7 @@ Pose LocomotionWaddle::control_loop(Pose pose) {
     });
     tilt_direction = -tilt_direction;
   } else if ((control_loop_iteration + cycle / 2)  % cycle == 0) {
-    if (initial_pos.size() == 2) { // Initial position is not available when not running on the robot
+    if (initial_pos.size() == 2) {  // Initial position is not available when not running on the robot
       initial_pos[0].degrees -= left_drive_distance * drive_direction;
       initial_pos[1].degrees -= right_drive_distance * drive_direction;
       kinematics.set_joint_position(initial_pos);
@@ -37,10 +37,14 @@ Pose LocomotionWaddle::control_loop(Pose pose) {
 }
 
 void LocomotionWaddle::on_start() {
-  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
-  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time,
+    0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time,
+    0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time,
+    0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time,
+    0, 0, ACTION_DURATION_MS / 2, ACTION_DURATION_MS);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle },
     { hardware::Joint::right_ankle, initial_ankle_angle }

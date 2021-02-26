@@ -33,11 +33,10 @@ void Locomotion::start() {
         int nanos_to_sleep = control_loop_nanos.count() - elapsed_nanos;
         if (nanos_to_sleep < 0) {
           logger::warn("%s: control loop overran by %dns", name().c_str(), -nanos_to_sleep);
-          last_control_loop_time = now;
         } else {
-          last_control_loop_time += control_loop_nanos;
           std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
         }
+        last_control_loop_time += control_loop_nanos;
       }
     });
   }

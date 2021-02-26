@@ -32,6 +32,8 @@ class LocomotionSegway: public Locomotion {
   float pos_speed;
   float left_turn_speed, right_turn_speed;
   float goal_rpm;
+  int sidestep_direction_left, sidestep_direction_right;
+  int control_loop_iteration;
 };
 
 #endif  // SRC_LOCOMOTION_LOCOMOTIONSEGWAY_HPP_
