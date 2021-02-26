@@ -133,8 +133,15 @@ void LocomotionSegway::stop() {
 
 void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    pos_speed = 2;
-    goal_rpm = 10;
+    if (modifiers.find("Control") != modifiers.end()) {
+      kinematics.set_joint_position({
+        { hardware::Joint::left_ankle, initial_ankle_angle - 80 },
+        { hardware::Joint::right_ankle, initial_ankle_angle + 100 },
+      });
+    } else {
+      pos_speed = 2;
+      goal_rpm = 10;
+    }
   } else {
     pos_speed = 0;
     goal_rpm = 0;
@@ -143,8 +150,15 @@ void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionSegway::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    pos_speed = -2;
-    goal_rpm = -10;
+    if (modifiers.find("Control") != modifiers.end()) {
+      kinematics.set_joint_position({
+        { hardware::Joint::left_ankle, initial_ankle_angle - 80 },
+        { hardware::Joint::right_ankle, initial_ankle_angle + 100 },
+      });
+    } else {
+      pos_speed = -2;
+      goal_rpm = -10;
+    }
   } else {
     pos_speed = 0;
     goal_rpm = 0;
