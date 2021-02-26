@@ -8,7 +8,7 @@
 #define CONTROL_LOOP_FREQUENCY 100
 #define ANKLE_DURATION_MS 500
 #define SIDESTEP_MAGNITUDE 10
-#define TILT_ANGLE -10
+#define TILT_ANGLE 90
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(CONTROL_LOOP_FREQUENCY), kinematics(kinematics), imu(imu),
