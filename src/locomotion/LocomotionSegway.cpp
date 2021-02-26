@@ -41,7 +41,6 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   float rpm_left = curr_pos[0].rpm;
   float rpm_right = -curr_pos[1].rpm;
   float rpm_avg = (rpm_left + rpm_right) / 2;
-  float goal_rpm = 0;
   float goal_pitch = -1 + speed_controller.input(rpm_avg, goal_rpm);
   float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
 
@@ -87,6 +86,7 @@ void LocomotionSegway::on_start() {
   speed_controller.reset();
   pitch_controller.reset();
   pos_speed = left_turn_speed = right_turn_speed = 0;
+  goal_rpm = 0;
 }
 
 void LocomotionSegway::on_stop() {
@@ -134,16 +134,20 @@ void LocomotionSegway::stop() {
 void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     pos_speed = 2;
+    goal_rpm = 10;
   } else {
     pos_speed = 0;
+    goal_rpm = 0;
   }
 }
 
 void LocomotionSegway::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     pos_speed = -2;
+    goal_rpm = -10;
   } else {
     pos_speed = 0;
+    goal_rpm = 0;
   }
 }
 

@@ -1,4 +1,6 @@
 #include <cmath>
+#include <vector>
+
 #include "LocomotionPole.hpp"
 
 LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model)
@@ -10,16 +12,10 @@ std::string LocomotionPole::name() {
 }
 
 Pose LocomotionPole::control_loop(Pose pose) {
-  struct timespec start_time;
-  struct timespec end_time;
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
   std::vector<hardware::JointPosition> current_angles = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
   });
-  clock_gettime(CLOCK_MONOTONIC, &end_time);
-  logger::info("got posit in %dns", (int)((end_time.tv_sec - start_time.tv_sec) *
-          1000000000 + (end_time.tv_nsec - start_time.tv_nsec)));
   if (current_angles.size() == 2) {
     double dist_left = (current_angles[0].degrees - previous_angles[0].degrees) * 2 * M_PI * wheel_radius / 360;
     double dist_right = (current_angles[1].degrees - previous_angles[1].degrees) * 2 * M_PI * wheel_radius / 360;
@@ -28,17 +24,6 @@ Pose LocomotionPole::control_loop(Pose pose) {
     pose.location.x += dist * sin(angle);
     pose.location.y += dist * cos(angle);
     previous_angles = current_angles;
-  }
-
-  clock_gettime(CLOCK_MONOTONIC, &start_time);
-  std::vector<hardware::JointState> states = kinematics.get_joint_state(
-    { hardware::Joint::left_wheel, hardware::Joint::left_ankle });
-  clock_gettime(CLOCK_MONOTONIC, &end_time);
-  logger::info("got state in %dns", (int)((end_time.tv_sec - start_time.tv_sec) *
-          1000000000 + (end_time.tv_nsec - start_time.tv_nsec)));
-  for (auto& state : states) {
-    logger::info("position: %f, current: %f, velocity: %f",
-      state.position, state.current, state.rpm);
   }
 
   return pose;
@@ -72,7 +57,9 @@ void LocomotionPole::halt() {
 
 void LocomotionPole::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm }
+    });
   } else {
     halt();
   }
@@ -80,7 +67,9 @@ void LocomotionPole::up(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionPole::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm }
+    });
   } else {
     halt();
   }
@@ -88,7 +77,9 @@ void LocomotionPole::down(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionPole::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm }
+    });
   } else {
     halt();
   }
@@ -96,7 +87,9 @@ void LocomotionPole::left(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionPole::right(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm }
+    });
   } else {
     halt();
   }
