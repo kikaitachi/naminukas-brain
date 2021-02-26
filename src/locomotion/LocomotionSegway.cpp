@@ -5,12 +5,13 @@
 
 #include "LocomotionSegway.hpp"
 
-#define ANKLE_DURATION_MS 1000
+#define CONTROL_LOOP_FREQUENCY 100
+#define ANKLE_DURATION_MS 500
 #define SIDESTEP_MAGNITUDE 10
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
-    : Locomotion(100), kinematics(kinematics), imu(imu),
-    speed_controller(0.1, 0, 0, 25, -10, 10),
+    : Locomotion(CONTROL_LOOP_FREQUENCY), kinematics(kinematics), imu(imu),
+    speed_controller(0.1, 0, 0, 25, -40, 40),
     pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
 }
 
@@ -44,7 +45,7 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   float rpm_left = curr_pos[0].rpm;
   float rpm_right = -curr_pos[1].rpm;
   float rpm_avg = (rpm_left + rpm_right) / 2;
-  float goal_pitch = -1 + speed_controller.input(rpm_avg, goal_rpm);
+  float goal_pitch = -2.5 + speed_controller.input(rpm_avg, goal_rpm);
   float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
 
   float new_position_left = curr_pos[0].position - input + left_turn_speed;
@@ -68,14 +69,14 @@ Pose LocomotionSegway::control_loop(Pose pose) {
     });
   }
 
-  if (control_loop_iteration % 100 == 0) {
+  if (control_loop_iteration % 50 == 0) {
     if (sidestep_direction_left != 0) {
       kinematics.set_joint_position({
         { hardware::Joint::left_ankle, initial_ankle_angle - 90 + SIDESTEP_MAGNITUDE * sidestep_direction_left },
       });
       sidestep_direction_left = -sidestep_direction_left;
     }
-  } else if ((control_loop_iteration + 50) % 100 == 0) {
+  } else if ((control_loop_iteration + 25) % 50 == 0) {
     if (sidestep_direction_right != 0) {
       kinematics.set_joint_position({
         { hardware::Joint::right_ankle, initial_ankle_angle + 90 + SIDESTEP_MAGNITUDE * sidestep_direction_right },
@@ -168,12 +169,12 @@ void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
     } else {
       pos_speed = 2;
       goal_rpm = 10;
-      sidestep_direction_left = 0;
-      sidestep_direction_right = 0;
     }
   } else {
     pos_speed = 0;
     goal_rpm = 0;
+    sidestep_direction_left = 0;
+    sidestep_direction_right = 0;
   }
 }
 
@@ -189,12 +190,12 @@ void LocomotionSegway::down(bool key_down, std::set<std::string>& modifiers) {
     } else {
       pos_speed = -2;
       goal_rpm = -10;
-      sidestep_direction_left = 0;
-      sidestep_direction_right = 0;
     }
   } else {
     pos_speed = 0;
     goal_rpm = 0;
+    sidestep_direction_left = 0;
+    sidestep_direction_right = 0;
   }
 }
 
