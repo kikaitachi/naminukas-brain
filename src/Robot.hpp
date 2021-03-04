@@ -27,6 +27,7 @@ class Robot {
   Model& model;
 
   void add_locomotion(Locomotion* locomotion, std::string key);
+  void play();
 };
 
 #endif  // SRC_ROBOT_HPP_
