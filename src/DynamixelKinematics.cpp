@@ -75,6 +75,9 @@ void DynamixelKinematics::set_joint_control_mode(
 }
 
 void DynamixelKinematics::set_joint_position(std::vector<hardware::JointPosition> positions) {
+  if (positions.empty()) {
+    return;
+  }
   std::vector<DynamixelControlValue> values;
   for (auto& position : positions) {
     values.push_back({
