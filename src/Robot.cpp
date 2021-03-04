@@ -97,6 +97,7 @@ void Robot::play() {
   int nanos_per_sample = 1000000000 / sample_rate;
 
   logger::info("Read %d samples", length);
+  int count = 0;
   std::chrono::time_point<std::chrono::high_resolution_clock> start_time =
         std::chrono::high_resolution_clock::now();
   for ( ; ; ) {
@@ -108,15 +109,16 @@ void Robot::play() {
     if (i > sample_rate * 10) {
       break;
     }
-    float speed = 20 + buffer[i] / 8.0;
+    float speed = 0 + buffer[i] / 2.0;
     kinematics.set_joint_speed({ { hardware::Joint::right_wheel, speed } });
+    count++;
   }
   kinematics.set_joint_speed({ { hardware::Joint::right_wheel, 0 } });
 
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 
-  logger::info("Over");
+  logger::info("Over: %d", count);
 }
 
 Robot::~Robot() {
