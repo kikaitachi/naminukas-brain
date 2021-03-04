@@ -10,6 +10,8 @@
 #define SIDESTEP_MAGNITUDE 10
 #define TILT_ANGLE 90
 
+#define LOW_PASS(prev, new, alpha) prev + alpha * (new - prev)
+
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(CONTROL_LOOP_FREQUENCY), kinematics(kinematics), imu(imu),
     speed_controller(0.01, 0, 0, 25, -40, 40),
@@ -45,9 +47,10 @@ Pose LocomotionSegway::control_loop(Pose pose) {
 
   float rpm_left = curr_pos[0].rpm;
   float rpm_right = -curr_pos[1].rpm;
-  float rpm_avg = (rpm_left + rpm_right) / 2;
-  float goal_pitch = -2.49; // + speed_controller.input(rpm_avg, goal_rpm);
-  float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
+  rpm_avg = LOW_PASS(rpm_avg, (rpm_left + rpm_right) / 2, 0.5);
+  float goal_pitch = -2.49;  // + speed_controller.input(rpm_avg, goal_rpm);
+  pitch = LOW_PASS(pitch, imu.get_pitch(), 0.5);
+  float input = pitch_controller.input(pitch, goal_pitch);
 
   float new_position_left = curr_pos[0].position + input + left_turn_speed;
   float new_position_right = curr_pos[1].position - input - right_turn_speed;
@@ -101,7 +104,8 @@ void LocomotionSegway::on_start() {
   speed_controller.reset();
   pitch_controller.reset();
   pos_speed = left_turn_speed = right_turn_speed = 0;
-  goal_rpm = 0;
+  goal_rpm = rpm_avg = 0;
+  pitch = imu.get_pitch();
   sidestep_direction_left = sidestep_direction_right = 0;
   control_loop_iteration = 0;
 }

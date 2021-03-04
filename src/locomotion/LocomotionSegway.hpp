@@ -31,7 +31,8 @@ class LocomotionSegway: public Locomotion {
   PIDController<float> pitch_controller;
   float pos_speed;
   float left_turn_speed, right_turn_speed;
-  float goal_rpm;
+  float goal_rpm, rpm_avg;
+  float pitch;
   int sidestep_direction_left, sidestep_direction_right;
   int control_loop_iteration;
 };
