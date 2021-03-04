@@ -12,8 +12,8 @@
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(CONTROL_LOOP_FREQUENCY), kinematics(kinematics), imu(imu),
-    speed_controller(0.1, 0, 0, 25, -40, 40),
-    pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
+    speed_controller(0.01, 0, 0, 25, -40, 40),
+    pitch_controller(2.5, 0, 0.1, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
 }
 
 std::string LocomotionSegway::name() {
@@ -46,7 +46,7 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   float rpm_left = curr_pos[0].rpm;
   float rpm_right = -curr_pos[1].rpm;
   float rpm_avg = (rpm_left + rpm_right) / 2;
-  float goal_pitch = -2.5 + speed_controller.input(rpm_avg, goal_rpm);
+  float goal_pitch = -2.49; // + speed_controller.input(rpm_avg, goal_rpm);
   float input = pitch_controller.input(imu.get_pitch(), goal_pitch);
 
   float new_position_left = curr_pos[0].position + input + left_turn_speed;
