@@ -27,8 +27,8 @@ class LocomotionSegway: public Locomotion {
  protected:
   hardware::Kinematics& kinematics;
   IMU& imu;
-  PIDController speed_controller;
-  PIDController pitch_controller;
+  PIDController<float> speed_controller;
+  PIDController<float> pitch_controller;
   float pos_speed;
   float left_turn_speed, right_turn_speed;
   float goal_rpm;

@@ -59,7 +59,6 @@ set(COMMON_SOURCES
   src/Model.cpp
   src/Transform.cpp
   src/Camera.cpp
-  src/PIDController.cpp
   src/locomotion/Locomotion.cpp
   src/locomotion/LocomotionGallop.cpp
   src/locomotion/LocomotionHang.cpp

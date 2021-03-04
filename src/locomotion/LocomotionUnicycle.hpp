@@ -21,7 +21,7 @@ class LocomotionUnicycle: public Locomotion {
 
   protected:
     hardware::Kinematics& kinematics;
-    PIDController roll_controller;
+    PIDController<float> roll_controller;
     IMU& imu;
 };
 
