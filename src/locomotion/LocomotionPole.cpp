@@ -63,7 +63,7 @@ void LocomotionPole::halt() {
 void LocomotionPole::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     if (modifiers.find("Control") != modifiers.end()) {
-      tilt_angle += 10;
+      tilt_angle += 5;
       tilt();
     } else {
       kinematics.set_joint_speed({
@@ -78,7 +78,7 @@ void LocomotionPole::up(bool key_down, std::set<std::string>& modifiers) {
 void LocomotionPole::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     if (modifiers.find("Control") != modifiers.end()) {
-      tilt_angle -= 10;
+      tilt_angle -= 5;
       tilt();
     } else {
       kinematics.set_joint_speed({
