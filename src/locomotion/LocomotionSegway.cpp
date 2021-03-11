@@ -48,7 +48,7 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   float rpm_left = curr_pos[0].rpm;
   float rpm_right = -curr_pos[1].rpm;
   rpm_avg = LOW_PASS(rpm_avg, (rpm_left + rpm_right) / 2, 0.05);
-  //rpm_avg = (rpm_left + rpm_right) / 2;
+  // rpm_avg = (rpm_left + rpm_right) / 2;
   // float goal_pitch = -2.49;
   float goal_pitch = -2.49 - speed_controller.input(rpm_avg, goal_rpm);
   // pitch = LOW_PASS(pitch, imu.get_pitch(), 0.5);
@@ -69,14 +69,16 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   if (control_loop_iteration % 50 == 0) {
     if (sidestep_direction_left != 0) {
       kinematics.set_joint_position({
-        { hardware::Joint::left_ankle, initial_ankle_angle - TILT_ANGLE + SIDESTEP_MAGNITUDE * sidestep_direction_left },
+        { hardware::Joint::left_ankle, initial_ankle_angle - TILT_ANGLE +
+            SIDESTEP_MAGNITUDE * sidestep_direction_left },
       });
       sidestep_direction_left = -sidestep_direction_left;
     }
   } else if ((control_loop_iteration + 25) % 50 == 0) {
     if (sidestep_direction_right != 0) {
       kinematics.set_joint_position({
-        { hardware::Joint::right_ankle, initial_ankle_angle + TILT_ANGLE + SIDESTEP_MAGNITUDE * sidestep_direction_right },
+        { hardware::Joint::right_ankle, initial_ankle_angle + TILT_ANGLE +
+            SIDESTEP_MAGNITUDE * sidestep_direction_right },
       });
       sidestep_direction_right = -sidestep_direction_right;
     }

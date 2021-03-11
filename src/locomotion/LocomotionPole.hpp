@@ -26,7 +26,9 @@ class LocomotionPole: public Locomotion {
     const double distance_between_wheels = 0.213;
 
     std::vector<hardware::JointPosition> previous_angles;
+    int tilt_angle;
 
+    void tilt();
     void halt();
 };
 

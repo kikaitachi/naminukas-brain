@@ -34,10 +34,8 @@ void LocomotionPole::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::position);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity, 2000);
-  kinematics.set_joint_position({
-    { hardware::Joint::left_ankle, initial_ankle_angle + 10 },
-    { hardware::Joint::right_ankle, initial_ankle_angle - 10 },
-  });
+  tilt_angle = 10;
+  tilt();
   previous_angles = kinematics.get_joint_position({
     hardware::Joint::left_wheel,
     hardware::Joint::right_wheel
@@ -51,15 +49,27 @@ void LocomotionPole::on_stop() {
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 }
 
+void LocomotionPole::tilt() {
+  kinematics.set_joint_position({
+    { hardware::Joint::left_ankle, initial_ankle_angle + tilt_angle },
+    { hardware::Joint::right_ankle, initial_ankle_angle - tilt_angle },
+  });
+}
+
 void LocomotionPole::halt() {
   kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
 }
 
 void LocomotionPole::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({
-      { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm }
-    });
+    if (modifiers.find("Control") != modifiers.end()) {
+      tilt_angle += 10;
+      tilt();
+    } else {
+      kinematics.set_joint_speed({
+        { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm }
+      });
+    }
   } else {
     halt();
   }
@@ -67,9 +77,14 @@ void LocomotionPole::up(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionPole::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({
-      { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm }
-    });
+    if (modifiers.find("Control") != modifiers.end()) {
+      tilt_angle -= 10;
+      tilt();
+    } else {
+      kinematics.set_joint_speed({
+        { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm }
+      });
+    }
   } else {
     halt();
   }
