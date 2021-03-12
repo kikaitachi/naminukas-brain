@@ -55,7 +55,7 @@ set(COMMON_SOURCES
   src/Robot.cpp
   src/SystemTelemetry.cpp
   src/Client.cpp
-  src/BeagleBoneBlueIMU.cpp
+  src/HardwareBeagleBoneBlue.cpp
   src/Model.cpp
   src/Transform.cpp
   src/Camera.cpp

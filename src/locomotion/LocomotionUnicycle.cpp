@@ -4,7 +4,7 @@
 #define WALKING_ANGLE 6
 #define GLIDE_RATIO 2.5
 
-LocomotionUnicycle::LocomotionUnicycle(hardware::Kinematics& kinematics, IMU& imu)
+LocomotionUnicycle::LocomotionUnicycle(hardware::Kinematics& kinematics, hardware::IMU& imu)
     : Locomotion(100), roll_controller(2, 0, 0, 20, -3, 3), kinematics(kinematics), imu(imu) {
 }
 

@@ -1,4 +1,6 @@
-#include "BeagleBoneBlueIMU.hpp"
+#include <robotcontrol.h>
+
+#include "HardwareBeagleBoneBlue.hpp"
 #include "Logger.hpp"
 
 // bus for Robotics Cape and BeagleboneBlue is 2, interrupt pin is on gpio3.21

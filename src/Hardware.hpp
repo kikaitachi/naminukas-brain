@@ -72,6 +72,13 @@ class Pneumatics {
   virtual void right_foot_vent(bool vent) = 0;
 };
 
-}
+class IMU {
+ public:
+  virtual double get_yaw() = 0;
+  virtual double get_pitch() = 0;
+  virtual double get_roll() = 0;
+};
+
+}  // namespace hardware
 
 #endif  // SRC_HARDWARE_HPP_

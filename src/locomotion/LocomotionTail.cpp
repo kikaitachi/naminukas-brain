@@ -1,6 +1,6 @@
 #include "LocomotionTail.hpp"
 
-LocomotionTail::LocomotionTail(hardware::Kinematics& kinematics, IMU& imu)
+LocomotionTail::LocomotionTail(hardware::Kinematics& kinematics, hardware::IMU& imu)
     : Locomotion(10), kinematics(kinematics), imu(imu) {
 }
 
@@ -33,7 +33,10 @@ void LocomotionTail::halt() {
 
 void LocomotionTail::up(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, -max_rpm },
+      { hardware::Joint::right_wheel, max_rpm }
+    });
   } else {
     halt();
   }
@@ -41,7 +44,10 @@ void LocomotionTail::up(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionTail::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, max_rpm },
+      { hardware::Joint::right_wheel, -max_rpm }
+    });
   } else {
     halt();
   }
@@ -54,7 +60,10 @@ void LocomotionTail::left(bool key_down, std::set<std::string>& modifiers) {
         { hardware::Joint::right_ankle, initial_ankle_angle - 50 }
       });
     } else {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
+      kinematics.set_joint_speed({
+        { hardware::Joint::left_wheel, max_rpm },
+        { hardware::Joint::right_wheel, max_rpm }
+      });
     }
   } else {
     halt();
@@ -68,7 +77,10 @@ void LocomotionTail::right(bool key_down, std::set<std::string>& modifiers) {
         { hardware::Joint::right_ankle, initial_ankle_angle + 90 }
       });
     } else {
-      kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+      kinematics.set_joint_speed({
+        { hardware::Joint::left_wheel, -max_rpm },
+        { hardware::Joint::right_wheel, -max_rpm }
+      });
     }
   } else {
     halt();

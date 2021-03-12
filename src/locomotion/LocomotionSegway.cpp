@@ -12,7 +12,7 @@
 
 #define LOW_PASS(prev, new, alpha) prev + alpha * (new - prev)
 
-LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
+LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, hardware::IMU& imu)
     : Locomotion(CONTROL_LOOP_FREQUENCY), kinematics(kinematics), imu(imu),
     speed_controller(0.2, 0, 0, 25, -40, 40),
     pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max()) {

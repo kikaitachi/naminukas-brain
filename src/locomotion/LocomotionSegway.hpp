@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../IMU.hpp"
+#include "../Hardware.hpp"
 #include "Locomotion.hpp"
 #include "../PIDController.hpp"
 
@@ -14,7 +14,7 @@
  */
 class LocomotionSegway: public Locomotion {
  public:
-  LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu);
+  LocomotionSegway(hardware::Kinematics& kinematics, hardware::IMU& imu);
   std::string name();
   Pose control_loop(Pose pose);
   void on_start();
@@ -26,7 +26,7 @@ class LocomotionSegway: public Locomotion {
   void stop();
  protected:
   hardware::Kinematics& kinematics;
-  IMU& imu;
+  hardware::IMU& imu;
   PIDController<double> speed_controller;
   PIDController<double> pitch_controller;
   double pos_speed;

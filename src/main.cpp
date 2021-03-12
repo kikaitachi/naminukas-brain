@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "BeagleBoneBlueIMU.hpp"
+#include "HardwareBeagleBoneBlue.hpp"
 #include "DynamixelKinematics.hpp"
 #include "Logger.hpp"
 #include "IOServer.hpp"

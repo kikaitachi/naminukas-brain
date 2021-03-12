@@ -7,18 +7,22 @@
 
 #include "Camera.hpp"
 #include "Hardware.hpp"
-#include "IMU.hpp"
 #include "locomotion/Locomotion.hpp"
 #include "Model.hpp"
 #include "Telemetry.hpp"
 
 class Robot {
  public:
-  Robot(telemetry::Items& telemetryItems, IMU& imu, hardware::Kinematics& kinematics, Model& model, PointCloud& camera);
+  Robot(
+    telemetry::Items& telemetryItems,
+    hardware::IMU& imu,
+    hardware::Kinematics& kinematics,
+    Model& model,
+    PointCloud& camera);
   ~Robot();
 
  private:
-  IMU& imu;
+  hardware::IMU& imu;
   hardware::Kinematics& kinematics;
   telemetry::Items& telemetryItems;
   std::shared_ptr<telemetry::ItemString> mode;

@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-#include "../IMU.hpp"
+#include "../Hardware.hpp"
 #include "Locomotion.hpp"
 
 /**
@@ -14,7 +14,7 @@
  */
 class LocomotionSki: public Locomotion {
  public:
-  LocomotionSki(hardware::Kinematics& kinematics, IMU& imu);
+  LocomotionSki(hardware::Kinematics& kinematics, hardware::IMU& imu);
   std::string name();
   Pose control_loop(Pose pose);
   void on_start();
@@ -26,7 +26,7 @@ class LocomotionSki: public Locomotion {
 
  protected:
   hardware::Kinematics& kinematics;
-  IMU& imu;
+  hardware::IMU& imu;
   const double max_rpm = 20;
   const double turn_rpm = 10;
   const double initial_ankle_angle = 360.0 / 16;

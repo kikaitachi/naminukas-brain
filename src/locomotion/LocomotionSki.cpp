@@ -1,6 +1,6 @@
 #include "LocomotionSki.hpp"
 
-LocomotionSki::LocomotionSki(hardware::Kinematics& kinematics, IMU& imu)
+LocomotionSki::LocomotionSki(hardware::Kinematics& kinematics, hardware::IMU& imu)
     : Locomotion(100), kinematics(kinematics), imu(imu) {
 }
 

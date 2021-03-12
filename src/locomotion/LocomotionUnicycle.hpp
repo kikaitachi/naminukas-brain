@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-#include "../IMU.hpp"
+#include "../Hardware.hpp"
 #include "Locomotion.hpp"
 #include "../PIDController.hpp"
 
@@ -14,7 +14,7 @@
  */
 class LocomotionUnicycle: public Locomotion {
  public:
-  LocomotionUnicycle(hardware::Kinematics& kinematics, IMU& imu);
+  LocomotionUnicycle(hardware::Kinematics& kinematics, hardware::IMU& imu);
   std::string name();
   Pose control_loop(Pose pose);
   void on_start();
@@ -25,7 +25,7 @@ class LocomotionUnicycle: public Locomotion {
  protected:
   hardware::Kinematics& kinematics;
   PIDController<double> roll_controller;
-  IMU& imu;
+  hardware::IMU& imu;
 };
 
 #endif  // SRC_LOCOMOTION_LOCOMOTIONUNICYCLE_HPP_
