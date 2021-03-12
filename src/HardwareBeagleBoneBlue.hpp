@@ -7,7 +7,7 @@ class BeagleBoneBluePneumatics: public hardware::Pneumatics {
  public:
   BeagleBoneBluePneumatics();
   virtual ~BeagleBoneBluePneumatics();
-  void vacuum_pump_on(bool on);
+  void set_vacuum_pump_speed(double speed);
   void left_foot_vent(bool vent);
   void right_foot_vent(bool vent);
 };

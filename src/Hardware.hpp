@@ -67,7 +67,10 @@ class Kinematics {
 
 class Pneumatics {
  public:
-  virtual void vacuum_pump_on(bool on) = 0;
+  /**
+   * 0 = off, 1 = max speed/suction power.
+   */
+  virtual void set_vacuum_pump_speed(double speed) = 0;
   virtual void left_foot_vent(bool vent) = 0;
   virtual void right_foot_vent(bool vent) = 0;
 };

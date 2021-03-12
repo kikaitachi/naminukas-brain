@@ -80,7 +80,7 @@ Robot::Robot(
     mode->getId(), "Toggle pump", "KeyP", [&](int value, std::set<std::string>& modifiers) {
       if (value == 1) {
         pump_state = !pump_state;
-        pneumatics.vacuum_pump_on(pump_state);
+        pneumatics.set_vacuum_pump_speed(pump_state ? 1 : 0);
       }
     }, std::initializer_list<std::string>{ }));
 
@@ -94,8 +94,8 @@ Robot::Robot(
 
 void Robot::play() {
   // Super experimental
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
+  // kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
+  // kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
 
   std::ifstream is;
   is.open("/tmp/test.raw", std::ios::binary);
@@ -121,14 +121,23 @@ void Robot::play() {
     if (i > sample_rate * 10) {
       break;
     }
-    double speed = 0 + buffer[i] / 2.0;
-    kinematics.set_joint_speed({ { hardware::Joint::right_wheel, speed } });
+    // double speed = 0 + buffer[i] / 2.0;
+    // kinematics.set_joint_speed({ { hardware::Joint::right_wheel, speed } });
+    double speed = 0.2 + buffer[i] / 1280.0;
+    if (speed < 0) {
+      logger::error("Negative speed: %f", speed);
+    } else if (speed > 0.3) {
+      logger::error("Speed too high: %f", speed);
+    } else {
+      pneumatics.set_vacuum_pump_speed(speed);
+    }
     count++;
   }
-  kinematics.set_joint_speed({ { hardware::Joint::right_wheel, 0 } });
+  pneumatics.set_vacuum_pump_speed(0);
+  // kinematics.set_joint_speed({ { hardware::Joint::right_wheel, 0 } });
 
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
+  // kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+  // kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 
   logger::info("Over: %d", count);
 }
