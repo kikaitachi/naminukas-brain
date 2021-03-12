@@ -12,6 +12,38 @@
 static rc_mpu_data_t mpu_data;
 static double yaw, pitch, roll;
 
+BeagleBoneBluePneumatics::BeagleBoneBluePneumatics() {
+  if (rc_motor_init() == -1) {
+    logger::error("Failed to initialise H-bridge");
+  }
+}
+
+BeagleBoneBluePneumatics::~BeagleBoneBluePneumatics() {
+  if (rc_motor_cleanup() == -1) {
+    logger::error("Failed to shutdown H-bridge");
+  }
+}
+
+void BeagleBoneBluePneumatics::vacuum_pump_on(bool on) {
+  if (on) {
+    if (rc_motor_set(1, 1) == -1) {
+      logger::error("Failed to start vacuum pump");
+    }
+  } else {
+    if (rc_motor_free_spin(1) == -1) {
+      logger::error("Failed to stop vacuum pump");
+    }
+  }
+}
+
+void BeagleBoneBluePneumatics::left_foot_vent(bool vent) {
+  // TODO: implement
+}
+
+void BeagleBoneBluePneumatics::right_foot_vent(bool vent) {
+  // TODO: implement
+}
+
 static void on_imu_changed() {
   yaw = mpu_data.dmp_TaitBryan[TB_YAW_Z] * RAD_TO_DEG;
   pitch = mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;

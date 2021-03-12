@@ -31,9 +31,13 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
 }
 
 Robot::Robot(
-  telemetry::Items& telemetryItems, hardware::IMU& imu,
-  hardware::Kinematics& kinematics, Model& model, PointCloud& camera)
-    : telemetryItems(telemetryItems), imu(imu), kinematics(kinematics), model(model) {
+  telemetry::Items& telemetryItems,
+  hardware::IMU& imu,
+  hardware::Kinematics& kinematics,
+  hardware::Pneumatics& pneumatics,
+  Model& model,
+  PointCloud& camera)
+    : telemetryItems(telemetryItems), imu(imu), kinematics(kinematics), pneumatics(pneumatics), model(model) {
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
 
   current_locomotion_mode = locomotion_idle;
@@ -71,6 +75,12 @@ Robot::Robot(
     mode->getId(), "Right", "ArrowRight", [&](int value, std::set<std::string>& modifiers) {
       current_locomotion_mode->right(value == 1, modifiers);
     }, std::initializer_list<std::string>{ "Control", "Shift" }));
+
+  telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
+    mode->getId(), "Toggle pump", "p", [&](int value, std::set<std::string>& modifiers) {
+      pump_state != pump_state;
+      pneumatics.vacuum_pump_on(pump_state);
+    }, std::initializer_list<std::string>{ }));
 
   telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Sound", "p", [&](int value, std::set<std::string>& modifiers) {

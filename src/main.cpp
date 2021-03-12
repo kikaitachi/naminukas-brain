@@ -85,7 +85,9 @@ int main(int argc, const char *argv[]) {
 
   Model model(telemetryItems, dynamixelKinematics);
 
-  Robot robot(telemetryItems, imu, dynamixelKinematics, model, point_cloud);
+  BeagleBoneBluePneumatics pneumatics;
+
+  Robot robot(telemetryItems, imu, dynamixelKinematics, pneumatics, model, point_cloud);
 
   ioServer.start(&is_terminated);
 
