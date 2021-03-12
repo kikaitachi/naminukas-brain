@@ -78,12 +78,14 @@ Robot::Robot(
 
   telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Toggle pump", "p", [&](int value, std::set<std::string>& modifiers) {
-      pump_state != pump_state;
-      pneumatics.vacuum_pump_on(pump_state);
+      if (value == 1) {
+        pump_state = !pump_state;
+        pneumatics.vacuum_pump_on(pump_state);
+      }
     }, std::initializer_list<std::string>{ }));
 
   telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
-    mode->getId(), "Sound", "p", [&](int value, std::set<std::string>& modifiers) {
+    mode->getId(), "Sound", "k", [&](int value, std::set<std::string>& modifiers) {
       if (value == 1) {
         play();
       }

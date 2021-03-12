@@ -26,10 +26,12 @@ BeagleBoneBluePneumatics::~BeagleBoneBluePneumatics() {
 
 void BeagleBoneBluePneumatics::vacuum_pump_on(bool on) {
   if (on) {
+    logger::info("Start vacuum pump");
     if (rc_motor_set(1, 1) == -1) {
       logger::error("Failed to start vacuum pump");
     }
   } else {
+    logger::info("Stop vacuum pump");
     if (rc_motor_free_spin(1) == -1) {
       logger::error("Failed to stop vacuum pump");
     }
