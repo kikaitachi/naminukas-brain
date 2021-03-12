@@ -1,15 +1,17 @@
-#ifndef NAMINUKAS_BRAIN_LOCOMOTION_IDLE_H_
-#define NAMINUKAS_BRAIN_LOCOMOTION_IDLE_H_
+#ifndef SRC_LOCOMOTION_LOCOMOTIONIDLE_HPP_
+#define SRC_LOCOMOTION_LOCOMOTIONIDLE_HPP_
+
+#include <string>
 
 #include "Locomotion.hpp"
 
 class LocomotionIdle: public Locomotion {
-  public:
-    LocomotionIdle(hardware::Kinematics& kinematics);
-    std::string name();
+ public:
+  explicit LocomotionIdle(hardware::Kinematics& kinematics);
+  std::string name();
 
-  protected:
-    hardware::Kinematics& kinematics;
+ protected:
+  hardware::Kinematics& kinematics;
 };
 
-#endif // NAMINUKAS_BRAIN_LOCOMOTION_IDLE_H_
+#endif  // SRC_LOCOMOTION_LOCOMOTIONIDLE_HPP_

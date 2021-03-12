@@ -14,6 +14,7 @@ class DynamixelKinematics: public hardware::Kinematics {
     double max_acceleration, double max_rpm, int acceleration_ms, int total_ms);
   void set_joint_position(std::vector<hardware::JointPosition> positions);
   void set_joint_speed(std::vector<hardware::JointSpeed> speeds);
+  void set_joint_pwm(std::vector<hardware::JointPWM> pwms);
   std::vector<hardware::JointPosition> get_joint_position(std::vector<hardware::Joint> joints);
   std::vector<hardware::JointSpeed> get_joint_speed(std::vector<hardware::Joint> joints);
   std::vector<hardware::JointState> get_joint_state(std::vector<hardware::Joint> joints);

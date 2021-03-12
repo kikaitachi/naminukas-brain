@@ -34,9 +34,11 @@ class DynamixelControlValue {
 class DynamixelModel {
  public:
   virtual int positions_per_rotation() = 0;
-  virtual int rpm_to_value(float rpm) = 0;
-  virtual float value_to_rpm(int value) = 0;
-  virtual float value_to_current(int value) = 0;
+  virtual int rpm_to_value(double rpm) = 0;
+  virtual double value_to_rpm(int value) = 0;
+  virtual int rpm2_to_value(double rpm2) = 0;
+  virtual double value_to_current(int value) = 0;
+  virtual int pwm_to_value(double pwm) = 0;
 
   virtual DynamixelControlItem drive_mode() = 0;
   virtual DynamixelControlItem operating_mode() = 0;
@@ -60,10 +62,11 @@ class DynamixelModel {
 class DynamixelXM430W350: public DynamixelModel {
  public:
   int positions_per_rotation();
-  int rpm_to_value(float rpm);
-  float value_to_rpm(int value);
+  int rpm_to_value(double rpm);
+  double value_to_rpm(int value);
   int rpm2_to_value(double rpm2);
-  float value_to_current(int value);
+  double value_to_current(int value);
+  int pwm_to_value(double pwm);
 
   DynamixelControlItem drive_mode();
   DynamixelControlItem operating_mode();

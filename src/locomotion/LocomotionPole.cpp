@@ -1,4 +1,6 @@
 #include <cmath>
+#include <set>
+#include <string>
 #include <vector>
 
 #include "LocomotionPole.hpp"

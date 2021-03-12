@@ -13,9 +13,9 @@ std::string LocomotionUnicycle::name() {
 }
 
 Pose LocomotionUnicycle::control_loop(Pose pose) {
-  float roll = imu.get_roll();
-  float goal_roll = -37;
-  float roll_input = roll_controller.input(roll, goal_roll);
+  double roll = imu.get_roll();
+  double goal_roll = -37;
+  double roll_input = roll_controller.input(roll, goal_roll);
 
   /*kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle - STATIONARY_ANGLE - roll_input },

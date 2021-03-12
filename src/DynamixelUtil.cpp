@@ -16,16 +16,20 @@ int DynamixelXM430W350::positions_per_rotation() {
   return 4096;
 }
 
-int DynamixelXM430W350::rpm_to_value(float rpm) {
+int DynamixelXM430W350::rpm_to_value(double rpm) {
   return round(rpm / 0.229);
 }
 
-float DynamixelXM430W350::value_to_rpm(int value) {
+double DynamixelXM430W350::value_to_rpm(int value) {
   return value * 0.229;
 }
 
-float DynamixelXM430W350::value_to_current(int value) {
+double DynamixelXM430W350::value_to_current(int value) {
   return value * 0.00269;
+}
+
+int DynamixelXM430W350::pwm_to_value(double pwm) {
+  return pwm * 885;
 }
 
 int DynamixelXM430W350::rpm2_to_value(double rpm2) {

@@ -109,7 +109,7 @@ void Robot::play() {
     if (i > sample_rate * 10) {
       break;
     }
-    float speed = 0 + buffer[i] / 2.0;
+    double speed = 0 + buffer[i] / 2.0;
     kinematics.set_joint_speed({ { hardware::Joint::right_wheel, speed } });
     count++;
   }

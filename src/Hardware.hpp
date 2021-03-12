@@ -8,18 +8,26 @@ namespace hardware {
 
 enum class Joint { left_wheel, right_wheel, left_ankle, right_ankle };
 
-enum class JointControlMode { off, position, velocity, time };
+enum class JointControlMode { off, position, velocity, time, pwm };
 
-class JointPosition {
- public:
+struct JointPosition {
   Joint joint;
   double degrees;
 };
 
-class JointSpeed {
- public:
+struct JointSpeed {
   Joint joint;
   double rpm;
+};
+
+struct JointPWM {
+  Joint joint;
+
+  /**
+   * Number between -1 and 1.
+   * 1 = 100% throttle, 0 = 0% throttle, -1 = -100% throttle.
+   */
+  double pwm;
 };
 
 class JointState {
@@ -27,17 +35,17 @@ class JointState {
   /**
    * In degrees.
    */
-  float position;
+  double position;
 
   /**
    * Revolutions per minute.
    */
-  float rpm;
+  double rpm;
 
   /**
    * In amperes.
    */
-  float current;
+  double current;
 };
 
 class Kinematics {
@@ -47,6 +55,7 @@ class Kinematics {
     double max_acceleration = 0, double max_rpm = 0, int acceleration_ms = 0, int total_ms = 0) = 0;
   virtual void set_joint_position(std::vector<JointPosition> positions) = 0;
   virtual void set_joint_speed(std::vector<JointSpeed> speeds) = 0;
+  virtual void set_joint_pwm(std::vector<JointPWM> pwms) = 0;
   virtual std::vector<JointPosition> get_joint_position(std::vector<Joint> joints) = 0;
   virtual std::vector<JointSpeed> get_joint_speed(std::vector<Joint> joints) = 0;
   virtual std::vector<JointState> get_joint_state(std::vector<Joint> joints) = 0;

@@ -8,7 +8,7 @@
 #define GPIO_INT_PIN_PIN 21
 
 static rc_mpu_data_t mpu_data;
-static float yaw, pitch, roll;
+static double yaw, pitch, roll;
 
 static void on_imu_changed() {
   yaw = mpu_data.dmp_TaitBryan[TB_YAW_Z] * RAD_TO_DEG;
@@ -34,14 +34,14 @@ BeagleBoneBlueIMU::~BeagleBoneBlueIMU() {
   rc_mpu_power_off();
 }
 
-float BeagleBoneBlueIMU::get_yaw() {
+double BeagleBoneBlueIMU::get_yaw() {
   return yaw;
 }
 
-float BeagleBoneBlueIMU::get_pitch() {
+double BeagleBoneBlueIMU::get_pitch() {
   return pitch;
 }
 
-float BeagleBoneBlueIMU::get_roll() {
+double BeagleBoneBlueIMU::get_roll() {
   return roll;
 }

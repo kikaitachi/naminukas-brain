@@ -1,6 +1,7 @@
 #ifndef SRC_LOCOMOTION_LOCOMOTIONHANG_HPP_
 #define SRC_LOCOMOTION_LOCOMOTIONHANG_HPP_
 
+#include <set>
 #include <string>
 #include <vector>
 

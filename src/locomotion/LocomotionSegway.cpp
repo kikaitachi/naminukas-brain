@@ -15,21 +15,11 @@
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, IMU& imu)
     : Locomotion(CONTROL_LOOP_FREQUENCY), kinematics(kinematics), imu(imu),
     speed_controller(0.2, 0, 0, 25, -40, 40),
-    pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) {
+    pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max()) {
 }
 
 std::string LocomotionSegway::name() {
   return "Segway";
-}
-
-static float clamp(float value, float min, float max) {
-  if (value < min) {
-    return min;
-  }
-  if (value > max) {
-    return max;
-  }
-  return value;
 }
 
 Pose LocomotionSegway::control_loop(Pose pose) {
@@ -45,18 +35,18 @@ Pose LocomotionSegway::control_loop(Pose pose) {
     return pose;
   }
 
-  float rpm_left = curr_pos[0].rpm;
-  float rpm_right = -curr_pos[1].rpm;
+  double rpm_left = curr_pos[0].rpm;
+  double rpm_right = -curr_pos[1].rpm;
   rpm_avg = LOW_PASS(rpm_avg, (rpm_left + rpm_right) / 2, 0.05);
   // rpm_avg = (rpm_left + rpm_right) / 2;
-  // float goal_pitch = -2.49;
-  float goal_pitch = -2.49 - speed_controller.input(rpm_avg, goal_rpm);
+  // double goal_pitch = -2.49;
+  double goal_pitch = -2.49 - speed_controller.input(rpm_avg, goal_rpm);
   // pitch = LOW_PASS(pitch, imu.get_pitch(), 0.5);
   pitch = imu.get_pitch();
-  float input = pitch_controller.input(pitch, goal_pitch);
+  double input = pitch_controller.input(pitch, goal_pitch);
 
-  float new_position_left = curr_pos[0].position + input + left_turn_speed;
-  float new_position_right = curr_pos[1].position - input - right_turn_speed;
+  double new_position_left = curr_pos[0].position + input + left_turn_speed;
+  double new_position_right = curr_pos[1].position - input - right_turn_speed;
   std::vector<hardware::JointPosition> positions;
   if (curr_pos[0].position != new_position_left) {
     positions.push_back({ hardware::Joint::left_wheel, new_position_left });

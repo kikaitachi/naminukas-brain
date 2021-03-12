@@ -9,12 +9,11 @@ std::string LocomotionSki::name() {
 }
 
 Pose LocomotionSki::control_loop(Pose pose) {
-  float pitch = imu.get_pitch();
-  float error = pitch - expected_pitch;
-  float p = 2.5;
-  float d = 0.1;
-  float input = error * p + (error - prev_error) * d;
-  //logger::debug("pitch: %f, error: %f, input: %f", pitch, error, input);
+  double pitch = imu.get_pitch();
+  double error = pitch - expected_pitch;
+  double p = 2.5;
+  double d = 0.1;
+  double input = error * p + (error - prev_error) * d;
   if (input < -max_ankle_change) {
       input = -max_ankle_change;
   }
@@ -66,7 +65,10 @@ void LocomotionSki::up(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionSki::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, -max_rpm }, { hardware::Joint::right_wheel, -max_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, -max_rpm },
+      { hardware::Joint::right_wheel, -max_rpm }
+    });
   } else {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 } });
   }
@@ -74,7 +76,10 @@ void LocomotionSki::down(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionSki::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm + turn_rpm }, { hardware::Joint::right_wheel, max_rpm - turn_rpm } });
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, max_rpm + turn_rpm },
+      { hardware::Joint::right_wheel, max_rpm - turn_rpm }
+    });
   } else {
     kinematics.set_joint_speed({ { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm } });
   }
