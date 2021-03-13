@@ -94,6 +94,7 @@ Robot::Robot(
 
 void Robot::play() {
   // Super experimental
+  /*
   // kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::position);
   // kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
 
@@ -140,6 +141,28 @@ void Robot::play() {
   // kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
 
   logger::info("Over: %d", count);
+  */
+
+  int gap = 10;
+  int beat = 400;
+  for (int i = 0; i < 10; i++) {
+    pneumatics.set_vacuum_pump_speed(0.3);
+    std::this_thread::sleep_for(std::chrono::milliseconds(beat));
+    pneumatics.set_vacuum_pump_speed(0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(gap));
+  }
+  for (int i = 0; i < 10; i++) {
+    pneumatics.set_vacuum_pump_speed(0.2);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    pneumatics.set_vacuum_pump_speed(0.3);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    pneumatics.set_vacuum_pump_speed(0.4);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    pneumatics.set_vacuum_pump_speed(0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(gap));
+  }
+
+  pneumatics.set_vacuum_pump_speed(0);
 }
 
 Robot::~Robot() {
