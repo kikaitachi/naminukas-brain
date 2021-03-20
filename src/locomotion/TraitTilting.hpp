@@ -9,7 +9,7 @@ class TraitTilting {
  protected:
   hardware::Kinematics& kinematics;
   const double flat_ankle_angle = 360.0 / 16;
-  double tilt_angle;
+  double tilt_angle = flat_ankle_angle;
 
   void tilt();
 };

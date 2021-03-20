@@ -91,16 +91,13 @@ void LocomotionSegway::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time,
     0, 0, ANKLE_DURATION_MS / 2, ANKLE_DURATION_MS);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
-  kinematics.set_joint_position({
-    { hardware::Joint::left_ankle, initial_ankle_angle - tilt_angle },
-    { hardware::Joint::right_ankle, initial_ankle_angle + tilt_angle },
-  });
+  tilt_angle = 90;
+  tilt();
   speed_controller.reset();
   pitch_controller.reset();
   pos_speed = left_turn_speed = right_turn_speed = 0;
   goal_rpm = rpm_avg = 0;
   pitch = imu.get_pitch();
-  tilt_angle = 90;
   sidestep_direction_left = sidestep_direction_right = 0;
   control_loop_iteration = 0;
 }
