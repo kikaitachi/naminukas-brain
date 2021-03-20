@@ -43,6 +43,9 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   // pitch = LOW_PASS(pitch, imu.get_pitch(), 0.5);
   pitch = imu.get_pitch();
   double input = pitch_controller.input(pitch, goal_pitch);
+  if (tilt_angle > 0) {
+    input = -input;
+  }
 
   double new_position_left = curr_pos[0].position + input + left_turn_speed;
   double new_position_right = curr_pos[1].position - input - right_turn_speed;
