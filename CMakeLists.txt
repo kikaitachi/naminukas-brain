@@ -70,6 +70,7 @@ set(COMMON_SOURCES
   src/locomotion/LocomotionTail.cpp
   src/locomotion/LocomotionUnicycle.cpp
   src/locomotion/LocomotionWaddle.cpp
+  src/locomotion/TraitTilting.cpp
   ${DynamixelSDK_SRC})
 
 add_executable(${PROJECT_NAME}

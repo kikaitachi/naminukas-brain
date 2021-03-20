@@ -6,7 +6,7 @@
 #include "LocomotionPole.hpp"
 
 LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model)
-    : Locomotion(10), kinematics(kinematics), model(model) {
+    : Locomotion(10), TraitTilting(kinematics), kinematics(kinematics), model(model) {
 }
 
 std::string LocomotionPole::name() {
@@ -49,13 +49,6 @@ void LocomotionPole::on_stop() {
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
-}
-
-void LocomotionPole::tilt() {
-  kinematics.set_joint_position({
-    { hardware::Joint::left_ankle, initial_ankle_angle + tilt_angle },
-    { hardware::Joint::right_ankle, initial_ankle_angle - tilt_angle },
-  });
 }
 
 void LocomotionPole::halt() {

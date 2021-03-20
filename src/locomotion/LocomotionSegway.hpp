@@ -7,12 +7,13 @@
 
 #include "../Hardware.hpp"
 #include "Locomotion.hpp"
+#include "TraitTilting.hpp"
 #include "../PIDController.hpp"
 
 /**
  * Segway like balancing on two wheels.
  */
-class LocomotionSegway: public Locomotion {
+class LocomotionSegway: public Locomotion, public TraitTilting {
  public:
   LocomotionSegway(hardware::Kinematics& kinematics, hardware::IMU& imu);
   std::string name();

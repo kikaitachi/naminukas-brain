@@ -8,12 +8,11 @@
 #define CONTROL_LOOP_FREQUENCY 100
 #define ANKLE_DURATION_MS 500
 #define SIDESTEP_MAGNITUDE 10
-#define TILT_ANGLE 90
 
 #define LOW_PASS(prev, new, alpha) prev + alpha * (new - prev)
 
 LocomotionSegway::LocomotionSegway(hardware::Kinematics& kinematics, hardware::IMU& imu)
-    : Locomotion(CONTROL_LOOP_FREQUENCY), kinematics(kinematics), imu(imu),
+    : Locomotion(CONTROL_LOOP_FREQUENCY), TraitTilting(kinematics), kinematics(kinematics), imu(imu),
     speed_controller(0.2, 0, 0, 25, -40, 40),
     pitch_controller(2.5, 0, 0, 25, -std::numeric_limits<double>::max(), std::numeric_limits<double>::max()) {
 }
@@ -59,7 +58,7 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   if (control_loop_iteration % 50 == 0) {
     if (sidestep_direction_left != 0) {
       kinematics.set_joint_position({
-        { hardware::Joint::left_ankle, initial_ankle_angle - TILT_ANGLE +
+        { hardware::Joint::left_ankle, initial_ankle_angle - tilt_angle +
             SIDESTEP_MAGNITUDE * sidestep_direction_left },
       });
       sidestep_direction_left = -sidestep_direction_left;
@@ -67,7 +66,7 @@ Pose LocomotionSegway::control_loop(Pose pose) {
   } else if ((control_loop_iteration + 25) % 50 == 0) {
     if (sidestep_direction_right != 0) {
       kinematics.set_joint_position({
-        { hardware::Joint::right_ankle, initial_ankle_angle + TILT_ANGLE +
+        { hardware::Joint::right_ankle, initial_ankle_angle + tilt_angle +
             SIDESTEP_MAGNITUDE * sidestep_direction_right },
       });
       sidestep_direction_right = -sidestep_direction_right;
@@ -93,14 +92,15 @@ void LocomotionSegway::on_start() {
     0, 0, ANKLE_DURATION_MS / 2, ANKLE_DURATION_MS);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
   kinematics.set_joint_position({
-    { hardware::Joint::left_ankle, initial_ankle_angle - TILT_ANGLE },
-    { hardware::Joint::right_ankle, initial_ankle_angle + TILT_ANGLE },
+    { hardware::Joint::left_ankle, initial_ankle_angle - tilt_angle },
+    { hardware::Joint::right_ankle, initial_ankle_angle + tilt_angle },
   });
   speed_controller.reset();
   pitch_controller.reset();
   pos_speed = left_turn_speed = right_turn_speed = 0;
   goal_rpm = rpm_avg = 0;
   pitch = imu.get_pitch();
+  tilt_angle = 90;
   sidestep_direction_left = sidestep_direction_right = 0;
   control_loop_iteration = 0;
 }
@@ -154,8 +154,10 @@ void LocomotionSegway::up(bool key_down, std::set<std::string>& modifiers) {
         { hardware::Joint::left_ankle, initial_ankle_angle - 80 },
         { hardware::Joint::right_ankle, initial_ankle_angle + 100 },
       });*/
-      sidestep_direction_left = 1;
-      sidestep_direction_right = 1;
+      // sidestep_direction_left = 1;
+      // sidestep_direction_right = 1;
+      tilt_angle += 5;
+      tilt();
     } else {
       pos_speed = 2;
       goal_rpm = 10;
@@ -175,8 +177,10 @@ void LocomotionSegway::down(bool key_down, std::set<std::string>& modifiers) {
         { hardware::Joint::left_ankle, initial_ankle_angle - 80 },
         { hardware::Joint::right_ankle, initial_ankle_angle + 100 },
       });*/
-      sidestep_direction_left = 1;
-      sidestep_direction_right = -1;
+      // sidestep_direction_left = 1;
+      // sidestep_direction_right = -1;
+      tilt_angle -= 5;
+      tilt();
     } else {
       pos_speed = -2;
       goal_rpm = -10;

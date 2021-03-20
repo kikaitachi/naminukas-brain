@@ -6,9 +6,10 @@
 #include <vector>
 
 #include "Locomotion.hpp"
+#include "TraitTilting.hpp"
 #include "../Model.hpp"
 
-class LocomotionPole: public Locomotion {
+class LocomotionPole: public Locomotion, public TraitTilting {
  public:
   LocomotionPole(hardware::Kinematics& kinematics, Model& model);
   std::string name();
@@ -30,9 +31,7 @@ class LocomotionPole: public Locomotion {
   const double distance_between_wheels = 0.213;
 
   std::vector<hardware::JointPosition> previous_angles;
-  int tilt_angle;
 
-  void tilt();
   void halt();
 };
 
