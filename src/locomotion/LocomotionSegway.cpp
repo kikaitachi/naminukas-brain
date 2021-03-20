@@ -91,7 +91,7 @@ void LocomotionSegway::on_start() {
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time,
     0, 0, ANKLE_DURATION_MS / 2, ANKLE_DURATION_MS);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position);
-  tilt_angle = 90;
+  tilt_angle = -90;
   tilt();
   speed_controller.reset();
   pitch_controller.reset();
