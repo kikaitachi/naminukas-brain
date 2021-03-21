@@ -13,13 +13,14 @@ std::string LocomotionCaterpillar::name() {
 }
 
 Pose LocomotionCaterpillar::control_loop(Pose pose) {
-  if (control_loop_index % 80 == 0) {
+  if (control_loop_index % 60 == 0) {
     direction_left = -direction_left;
     kinematics.set_joint_position({
       { hardware::Joint::left_ankle, initial_ankle_angle + TILT_ANGLE * direction_left },
       { hardware::Joint::left_wheel, initial_pos[0].degrees + TILT_ANGLE * direction_left }
     });
-  } else if ((control_loop_index + 40) % 80 == 0) {
+  }
+  if ((control_loop_index + 15) % 60 == 0) {
     direction_right = -direction_right;
     kinematics.set_joint_position({
       { hardware::Joint::right_ankle, initial_ankle_angle + TILT_ANGLE * direction_right },
@@ -32,10 +33,10 @@ Pose LocomotionCaterpillar::control_loop(Pose pose) {
 }
 
 void LocomotionCaterpillar::on_start() {
-  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, 400, 800);
-  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, 400, 800);
-  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, 400, 800);
-  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, 400, 800);
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::time, 0, 0, 300, 600);
+  kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::time, 0, 0, 300, 600);
+  kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::time, 0, 0, 300, 600);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::time, 0, 0, 300, 600);
   kinematics.set_joint_position({
     { hardware::Joint::left_ankle, initial_ankle_angle },
     { hardware::Joint::right_ankle, initial_ankle_angle }
