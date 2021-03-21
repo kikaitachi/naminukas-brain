@@ -60,7 +60,7 @@ set(COMMON_SOURCES
   src/Transform.cpp
   src/Camera.cpp
   src/locomotion/Locomotion.cpp
-  src/locomotion/LocomotionGallop.cpp
+  src/locomotion/LocomotionCaterpillar.cpp
   src/locomotion/LocomotionHang.cpp
   src/locomotion/LocomotionIdle.cpp
   src/locomotion/LocomotionPole.cpp

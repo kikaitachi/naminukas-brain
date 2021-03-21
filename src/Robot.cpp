@@ -2,7 +2,7 @@
 #include <fstream>
 #include <set>
 
-#include "locomotion/LocomotionGallop.hpp"
+#include "locomotion/LocomotionCaterpillar.hpp"
 #include "locomotion/LocomotionHang.hpp"
 #include "locomotion/LocomotionIdle.hpp"
 #include "locomotion/LocomotionPole.hpp"
@@ -54,7 +54,7 @@ Robot::Robot(
   add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit6");
   add_locomotion(new LocomotionPoleGestures(kinematics, model, camera), "Digit7");
   add_locomotion(new LocomotionHang(kinematics), "Digit8");
-  add_locomotion(new LocomotionGallop(kinematics), "Digit9");
+  add_locomotion(new LocomotionCaterpillar(kinematics), "Digit9");
 
   telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
     mode->getId(), "Up", "ArrowUp", [&](int value, std::set<std::string>& modifiers) {

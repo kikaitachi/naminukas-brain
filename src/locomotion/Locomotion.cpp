@@ -18,6 +18,7 @@ Pose Locomotion::control_loop(Pose pose) {
 void Locomotion::start() {
   if (stopped) {
     on_start();
+    control_loop_index = 0;
     stopped = false;
     control_loop_thread = new std::thread([&]() {
       std::chrono::time_point<std::chrono::high_resolution_clock> last_control_loop_time =
@@ -37,6 +38,7 @@ void Locomotion::start() {
           std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
         }
         last_control_loop_time += control_loop_nanos;
+        control_loop_index++;
       }
     });
   }

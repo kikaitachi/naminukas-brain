@@ -28,6 +28,7 @@ class Locomotion {
   bool stopped = true;
   const double initial_ankle_angle = 360.0 / 16;
   std::chrono::nanoseconds control_loop_nanos;
+  int control_loop_index;
  private:
   int control_loop_frequency;
   std::thread* control_loop_thread;
