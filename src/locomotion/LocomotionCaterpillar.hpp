@@ -17,6 +17,8 @@ class LocomotionCaterpillar: public Locomotion {
   Pose control_loop(Pose pose);
   void on_start();
   void on_stop();
+  void up(bool key_down, std::set<std::string>& modifiers);
+  void down(bool key_down, std::set<std::string>& modifiers);
  private:
   hardware::Kinematics& kinematics;
   std::vector<hardware::JointPosition> initial_pos;

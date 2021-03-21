@@ -43,7 +43,7 @@ void LocomotionCaterpillar::on_start() {
   initial_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel, hardware::Joint::right_wheel
   });
-  direction_left = direction_right = 1;
+  direction_left = direction_right = 0;
 }
 
 void LocomotionCaterpillar::on_stop() {
@@ -51,4 +51,21 @@ void LocomotionCaterpillar::on_stop() {
   kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
   kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
+}
+
+void LocomotionCaterpillar::up(bool key_down, std::set<std::string>& modifiers) {
+  if (key_down) {
+    direction_left = direction_right = 1;
+  } else {
+    direction_left = direction_right = 0;
+  }
+}
+
+void LocomotionCaterpillar::down(bool key_down, std::set<std::string>& modifiers) {
+  if (key_down) {
+    direction_left = 1;
+    direction_right = -1;
+  } else {
+    direction_left = direction_right = 0;
+  }
 }
