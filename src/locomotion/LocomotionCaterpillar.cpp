@@ -43,6 +43,7 @@ void LocomotionCaterpillar::on_start() {
   initial_pos = kinematics.get_joint_position({
     hardware::Joint::left_wheel, hardware::Joint::right_wheel
   });
+  direction_left = direction_right = 1;
 }
 
 void LocomotionCaterpillar::on_stop() {
