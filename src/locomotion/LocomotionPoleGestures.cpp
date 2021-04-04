@@ -1,13 +1,15 @@
 #include <cmath>
 #include <limits>
+#include <string>
 
 #include "LocomotionPoleGestures.hpp"
 
 #define MAX_RPM 40
 #define MAX_DIST 0.3
 
-LocomotionPoleGestures::LocomotionPoleGestures(hardware::Kinematics& kinematics, Model& model, PointCloud& camera)
-    : LocomotionPole(kinematics, model) {
+LocomotionPoleGestures::LocomotionPoleGestures(
+  hardware::Kinematics& kinematics, Model& model, PointCloud& camera, hardware::IMU& imu)
+    : LocomotionPole(kinematics, model, camera, imu) {
   camera.add_depth_listener([&](rs2::depth_frame& depth_frame) {
     if (!stopped) {
       int width = depth_frame.get_width();
@@ -32,7 +34,7 @@ LocomotionPoleGestures::LocomotionPoleGestures(hardware::Kinematics& kinematics,
         }
       }
       if (min_left == std::numeric_limits<float>::max() && min_right == std::numeric_limits<float>::max()) {
-        halt(); // No object within MAX_DIST, stop moving
+        halt();  // No object within MAX_DIST, stop moving
       } else if (min_left == std::numeric_limits<float>::max()) {
         float rpm = MAX_RPM * min_right_index / (width / 2);
         kinematics.set_joint_speed({ { hardware::Joint::left_wheel, rpm }, { hardware::Joint::right_wheel, -rpm } });

@@ -7,11 +7,12 @@
 
 #include "Locomotion.hpp"
 #include "TraitTilting.hpp"
+#include "../Camera.hpp"
 #include "../Model.hpp"
 
 class LocomotionPole: public Locomotion, public TraitTilting {
  public:
-  LocomotionPole(hardware::Kinematics& kinematics, Model& model);
+  LocomotionPole(hardware::Kinematics& kinematics, Model& model, PointCloud& camera, hardware::IMU& imu);
   std::string name();
   Pose control_loop(Pose pose);
   void on_start();
@@ -24,6 +25,8 @@ class LocomotionPole: public Locomotion, public TraitTilting {
  protected:
   hardware::Kinematics& kinematics;
   Model& model;
+  PointCloud& camera;
+  hardware::IMU& imu;
   const double max_rpm = 20;
 
   // Determine experimentally

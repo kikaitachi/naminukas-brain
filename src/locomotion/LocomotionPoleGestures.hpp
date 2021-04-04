@@ -1,15 +1,15 @@
-#ifndef NAMINUKAS_BRAIN_LOCOMOTION_POLE_GESTURES_H_
-#define NAMINUKAS_BRAIN_LOCOMOTION_POLE_GESTURES_H_
+#ifndef SRC_LOCOMOTION_LOCOMOTIONPOLEGESTURES_HPP_
+#define SRC_LOCOMOTION_LOCOMOTIONPOLEGESTURES_HPP_
+
+#include <string>
 
 #include "../Camera.hpp"
 #include "LocomotionPole.hpp"
 
 class LocomotionPoleGestures: public LocomotionPole {
-  public:
-    LocomotionPoleGestures(hardware::Kinematics& kinematics, Model& model, PointCloud& camera);
-    std::string name();
-
-  private:
+ public:
+  LocomotionPoleGestures(hardware::Kinematics& kinematics, Model& model, PointCloud& camera, hardware::IMU& imu);
+  std::string name();
 };
 
-#endif // NAMINUKAS_BRAIN_LOCOMOTION_POLE_GESTURES_H_
+#endif  // SRC_LOCOMOTION_LOCOMOTIONPOLEGESTURES_HPP_

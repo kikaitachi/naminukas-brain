@@ -5,8 +5,8 @@
 
 #include "LocomotionPole.hpp"
 
-LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model)
-    : Locomotion(10), TraitTilting(kinematics), kinematics(kinematics), model(model) {
+LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model, PointCloud& camera, hardware::IMU& imu)
+    : Locomotion(10), TraitTilting(kinematics), kinematics(kinematics), model(model), camera(camera), imu(imu) {
 }
 
 std::string LocomotionPole::name() {
@@ -27,6 +27,7 @@ Pose LocomotionPole::control_loop(Pose pose) {
     pose.location.y += dist * cos(angle);
     previous_angles = current_angles;
   }
+  logger::info("Yaw: %d", imu.get_yaw());
 
   return pose;
 }
@@ -87,9 +88,15 @@ void LocomotionPole::down(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionPole::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    kinematics.set_joint_speed({
-      { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm }
-    });
+    const std::set<std::string> all_modifiers = {"Alt", "Control", "Shift"};
+    if (modifiers == all_modifiers) {
+      logger::info("Start calibration");
+      // TODO: implement
+    } else {
+      kinematics.set_joint_speed({
+        { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm }
+      });
+    }
   } else {
     halt();
   }

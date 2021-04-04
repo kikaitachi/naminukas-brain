@@ -46,13 +46,13 @@ Robot::Robot(
   telemetryItems.add_item(mode);
 
   add_locomotion(locomotion_idle, "Escape");
-  add_locomotion(new LocomotionPole(kinematics, model), "Digit1");
+  add_locomotion(new LocomotionPole(kinematics, model, camera, imu), "Digit1");
   add_locomotion(new LocomotionSegway(kinematics, imu), "Digit2");
   add_locomotion(new LocomotionSki(kinematics, imu), "Digit3");
   add_locomotion(new LocomotionTail(kinematics, imu), "Digit4");
   add_locomotion(new LocomotionWaddle(kinematics), "Digit5");
   add_locomotion(new LocomotionUnicycle(kinematics, imu), "Digit6");
-  add_locomotion(new LocomotionPoleGestures(kinematics, model, camera), "Digit7");
+  add_locomotion(new LocomotionPoleGestures(kinematics, model, camera, imu), "Digit7");
   add_locomotion(new LocomotionHang(kinematics), "Digit8");
   add_locomotion(new LocomotionCaterpillar(kinematics), "Digit9");
 
