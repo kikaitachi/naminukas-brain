@@ -45,9 +45,9 @@ void BeagleBoneBluePneumatics::right_foot_vent(bool vent) {
 }
 
 static void on_imu_changed() {
-  yaw = mpu_data.fused_TaitBryan[TB_YAW_Z] * RAD_TO_DEG;
-  pitch = mpu_data.fused_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
-  roll = mpu_data.fused_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
+  yaw = mpu_data.dmp_TaitBryan[TB_YAW_Z] * RAD_TO_DEG;
+  pitch = mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
+  roll = mpu_data.dmp_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
 }
 
 BeagleBoneBlueIMU::BeagleBoneBlueIMU() {

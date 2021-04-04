@@ -27,7 +27,7 @@ Pose LocomotionPole::control_loop(Pose pose) {
     pose.location.y += dist * cos(angle);
     previous_angles = current_angles;
   }
-  logger::info("Yaw: %d", imu.get_yaw());
+  logger::info("Yaw: %f", imu.get_yaw());
 
   return pose;
 }
