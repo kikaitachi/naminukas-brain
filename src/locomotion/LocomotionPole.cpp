@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include <robotcontrol.h>
+
 #include "LocomotionPole.hpp"
 
 LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model, PointCloud& camera, hardware::IMU& imu)
@@ -71,6 +73,50 @@ void LocomotionPole::up(bool key_down, std::set<std::string>& modifiers) {
   }
 }
 
+void LocomotionPole::calibrate() {
+  logger::info("Start calibration");
+  std::vector<hardware::JointPosition> start_angles = kinematics.get_joint_position({
+    hardware::Joint::left_wheel,
+    hardware::Joint::right_wheel
+  });
+  double start_yaw = imu.get_yaw();
+  const int calibrate_speed = 1;  // RPM
+  kinematics.set_joint_speed({
+    { hardware::Joint::left_wheel, calibrate_speed }, { hardware::Joint::right_wheel, calibrate_speed }
+  });
+  std::this_thread::sleep_for(std::chrono::seconds(3));
+  kinematics.set_joint_speed({
+    { hardware::Joint::left_wheel, 0 }, { hardware::Joint::right_wheel, 0 }
+  });
+  std::vector<hardware::JointPosition> end_angles = kinematics.get_joint_position({
+    hardware::Joint::left_wheel,
+    hardware::Joint::right_wheel
+  });
+  double end_yaw = imu.get_yaw();
+  double delta_pos_left = end_angles[0].degrees - start_angles[0].degrees;
+  double delta_pos_right = end_angles[1].degrees - start_angles[1].degrees;
+  double delta_yaw = atan2(
+    sin((end_yaw - start_yaw) * DEG_TO_RAD),
+    cos((end_yaw - start_yaw) * DEG_TO_RAD)) * RAD_TO_DEG;
+  yaw_to_wheel = (delta_pos_left + delta_pos_right) / 2 / delta_yaw;
+  logger::info("End calibration");
+  turn(180);
+}
+
+void LocomotionPole::turn(double degrees) {
+  double delta = degrees * yaw_to_wheel;
+  logger::info("Turning - delta yaw: %f, delta wheel: %f", degrees, delta);
+  kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::position, 2000);
+  kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::position, 2000);
+  std::vector<hardware::JointPosition> angles = kinematics.get_joint_position({
+    hardware::Joint::left_wheel,
+    hardware::Joint::right_wheel
+  });
+  angles[0].degrees += delta;
+  angles[1].degrees += delta;
+  kinematics.set_joint_position(angles);
+}
+
 void LocomotionPole::down(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     if (modifiers.find("Control") != modifiers.end()) {
@@ -90,8 +136,7 @@ void LocomotionPole::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
     const std::set<std::string> all_modifiers = {"Alt", "Control", "Shift"};
     if (modifiers == all_modifiers) {
-      logger::info("Start calibration");
-      // TODO: implement
+      calibrate();
     } else {
       kinematics.set_joint_speed({
         { hardware::Joint::left_wheel, max_rpm }, { hardware::Joint::right_wheel, max_rpm }

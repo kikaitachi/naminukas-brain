@@ -33,9 +33,14 @@ class LocomotionPole: public Locomotion, public TraitTilting {
   const double wheel_radius = 0.045;
   const double distance_between_wheels = 0.213;
 
+  // Calibration results
+  double yaw_to_wheel = 1;
+
   std::vector<hardware::JointPosition> previous_angles;
 
   void halt();
+  void calibrate();
+  void turn(double degrees);
 };
 
 #endif  // SRC_LOCOMOTION_LOCOMOTIONPOLE_HPP_
