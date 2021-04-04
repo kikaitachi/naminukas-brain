@@ -1,9 +1,9 @@
+#include <robotcontrol.h>
+
 #include <cmath>
 #include <set>
 #include <string>
 #include <vector>
-
-#include <robotcontrol.h>
 
 #include "LocomotionPole.hpp"
 
