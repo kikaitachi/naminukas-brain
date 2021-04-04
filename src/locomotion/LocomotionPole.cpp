@@ -134,7 +134,7 @@ void LocomotionPole::down(bool key_down, std::set<std::string>& modifiers) {
 
 void LocomotionPole::left(bool key_down, std::set<std::string>& modifiers) {
   if (key_down) {
-    const std::set<std::string> all_modifiers = {"Alt", "Control", "Shift"};
+    const std::set<std::string> all_modifiers = {"Alt"};
     if (modifiers == all_modifiers) {
       calibrate();
     } else {
