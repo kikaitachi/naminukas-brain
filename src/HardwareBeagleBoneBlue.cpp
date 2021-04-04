@@ -51,14 +51,15 @@ static void on_imu_changed() {
   pitch = mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
   roll = mpu_data.dmp_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
   imu_log
-    << mpu_data.raw_gyro[0] << mpu_data.raw_gyro[1] << mpu_data.raw_gyro[2]
-    << mpu_data.raw_accel[0] << mpu_data.raw_accel[1] << mpu_data.raw_accel[2]
+    << mpu_data.raw_gyro[0] << "," << mpu_data.raw_gyro[1] << "," << mpu_data.raw_gyro[2]  << ","
+    << mpu_data.raw_accel[0] << "," << mpu_data.raw_accel[1] << "," << mpu_data.raw_accel[2]
     << std::endl;
 }
 
 BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
   rc_mpu_config_t mpu_config = rc_mpu_default_config();
   mpu_config.dmp_sample_rate = 200;
+  mpu_config.dmp_fetch_accel_gyro = 1;  // provide raw data too
   mpu_config.orient = ORIENTATION_X_UP;
   mpu_config.i2c_bus = I2C_BUS;
   mpu_config.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
