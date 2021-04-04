@@ -1,6 +1,8 @@
 #ifndef SRC_HARDWAREBEAGLEBONEBLUE_HPP_
 #define SRC_HARDWAREBEAGLEBONEBLUE_HPP_
 
+#include <fstream>
+
 #include "Hardware.hpp"
 
 class BeagleBoneBluePneumatics: public hardware::Pneumatics {

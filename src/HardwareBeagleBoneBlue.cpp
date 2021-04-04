@@ -12,6 +12,8 @@
 static rc_mpu_data_t mpu_data;
 static double yaw, pitch, roll;
 
+static std::ofstream imu_log("/tmp/imu.csv", std::ios::out);
+
 BeagleBoneBluePneumatics::BeagleBoneBluePneumatics() {
   if (rc_motor_init() == -1) {
     logger::error("Failed to initialise H-bridge");
@@ -48,6 +50,10 @@ static void on_imu_changed() {
   yaw = mpu_data.dmp_TaitBryan[TB_YAW_Z] * RAD_TO_DEG;
   pitch = mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
   roll = mpu_data.dmp_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
+  imu_log
+    << mpu_data.raw_gyro[0] << mpu_data.raw_gyro[1] << mpu_data.raw_gyro[2]
+    << mpu_data.raw_accel[0] << mpu_data.raw_accel[1] << mpu_data.raw_accel[2]
+    << std::endl;
 }
 
 BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
