@@ -57,6 +57,10 @@ static void on_imu_changed() {
     << std::endl;
 }
 
+static void tap_callback(int direction, int counter) {
+  logger::info("Tap direction: %d, count: %d", direction, counter);
+}
+
 BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
   rc_mpu_config_t mpu_config = rc_mpu_default_config();
   mpu_config.dmp_sample_rate = 200;
@@ -69,6 +73,7 @@ BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
     logger::error("Can't initialize inertial measurement unit");
   } else {
     rc_mpu_set_dmp_callback(&on_imu_changed);
+    rc_mpu_set_tap_callback(&tap_callback);
   }
 }
 
