@@ -21,6 +21,7 @@ class BeagleBoneBlueIMU: public hardware::IMU {
   double get_yaw();
   double get_pitch();
   double get_roll();
+  char get_tap_code();
 };
 
 #endif  // SRC_HARDWAREBEAGLEBONEBLUE_HPP_

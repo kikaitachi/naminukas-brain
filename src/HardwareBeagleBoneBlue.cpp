@@ -1,5 +1,8 @@
 #include <robotcontrol.h>
 
+#include <chrono>
+#include <vector>
+
 #include "HardwareBeagleBoneBlue.hpp"
 #include "Logger.hpp"
 
@@ -13,6 +16,20 @@ static rc_mpu_data_t mpu_data;
 static double yaw, pitch, roll;
 
 static std::ofstream imu_log("/tmp/imu.csv", std::ios::out);
+
+#define TAP_MAX_GAP_MS 800
+static std::chrono::time_point<std::chrono::high_resolution_clock> last_tap_time =
+  std::chrono::high_resolution_clock::now();
+static int tap_count = 0;
+static std::vector<int> taps;
+static const char tap_codes[] = {
+  'a', 'b', 'c', 'd', 'e',
+  'f', 'g', 'h', 'i', 'j',
+  'l', 'm', 'n', 'o', 'o',
+  'q', 'r', 's', 't', 'u',
+  'v', 'w', 'x', 'y', 'z'
+};
+static char tap_code = '\0';
 
 BeagleBoneBluePneumatics::BeagleBoneBluePneumatics() {
   if (rc_motor_init() == -1) {
@@ -51,14 +68,27 @@ static void on_imu_changed() {
   pitch = mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
   roll = mpu_data.dmp_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
   imu_log
-    << mpu_data.raw_gyro[0] << "," << mpu_data.raw_gyro[1] << "," << mpu_data.raw_gyro[2] << ","
     << mpu_data.raw_accel[0] << "," << mpu_data.raw_accel[1] << "," << mpu_data.raw_accel[2] << ","
-    << mpu_data.tap_detected << "," << mpu_data.last_tap_direction << "," << mpu_data.last_tap_count
+    // << mpu_data.tap_detected << "," << mpu_data.last_tap_direction << "," << mpu_data.last_tap_count
     << std::endl;
 }
 
 static void tap_callback(int direction, int counter) {
-  logger::info("Tap direction: %d, count: %d", direction, counter);
+  std::chrono::time_point<std::chrono::high_resolution_clock> now =
+    std::chrono::high_resolution_clock::now();
+  int elapsed_millis = std::chrono::duration_cast<std::chrono::milliseconds>
+    (now - last_tap_time).count();
+  if (elapsed_millis <= TAP_MAX_GAP_MS && tap_count < 5) {
+    tap_count++;
+  } else {
+    taps.push_back(tap_count - 1);
+    tap_count = 0;
+    if (taps.size() == 2) {
+      tap_code = tap_codes[taps[0] * 5 + taps[1]];
+      taps.clear();
+    }
+  }
+  logger::info("Tap direction: %d, count: %d, code: %c", direction, counter, tap_code);
 }
 
 BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
@@ -92,4 +122,10 @@ double BeagleBoneBlueIMU::get_pitch() {
 
 double BeagleBoneBlueIMU::get_roll() {
   return roll;
+}
+
+char BeagleBoneBlueIMU::get_tap_code() {
+  char code = tap_code;
+  tap_code == '\0';  // consume code on read
+  return code;
 }

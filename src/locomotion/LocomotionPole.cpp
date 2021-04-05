@@ -7,6 +7,8 @@
 
 #include "LocomotionPole.hpp"
 
+static std::set<std::string> no_modifiers;
+
 LocomotionPole::LocomotionPole(hardware::Kinematics& kinematics, Model& model, PointCloud& camera, hardware::IMU& imu)
     : Locomotion(10), TraitTilting(kinematics), kinematics(kinematics), model(model), camera(camera), imu(imu) {
 }
@@ -29,7 +31,20 @@ Pose LocomotionPole::control_loop(Pose pose) {
     pose.location.y += dist * cos(angle);
     previous_angles = current_angles;
   }
-  logger::info("Yaw: %f", imu.get_yaw());
+  switch (imu.get_tap_code()) {
+    case 'w':
+      up(true, no_modifiers);
+      break;
+    case 's':
+      down(true, no_modifiers);
+      break;
+    case 'a':
+      left(true, no_modifiers);
+      break;
+    case 'd':
+      right(true, no_modifiers);
+      break;
+  }
 
   return pose;
 }

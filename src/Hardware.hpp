@@ -80,6 +80,7 @@ class IMU {
   virtual double get_yaw() = 0;
   virtual double get_pitch() = 0;
   virtual double get_roll() = 0;
+  virtual char get_tap_code() = 0;
 };
 
 }  // namespace hardware
