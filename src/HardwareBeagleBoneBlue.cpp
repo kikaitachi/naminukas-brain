@@ -65,6 +65,7 @@ BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
   rc_mpu_config_t mpu_config = rc_mpu_default_config();
   mpu_config.dmp_sample_rate = 200;
   mpu_config.dmp_fetch_accel_gyro = 1;  // provide raw data too
+  mpu_config.tap_threshold = 2;
   mpu_config.orient = ORIENTATION_X_UP;
   mpu_config.i2c_bus = I2C_BUS;
   mpu_config.gpio_interrupt_pin_chip = GPIO_INT_PIN_CHIP;
