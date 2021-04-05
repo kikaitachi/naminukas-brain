@@ -82,6 +82,7 @@ static void on_imu_changed() {
       if (taps.size() == 2) {
         tap_code = tap_codes[taps[0] * 5 + taps[1]];
         taps.clear();
+        logger::info("Tap code: %c", tap_code);
       }
     }
   }
@@ -90,7 +91,7 @@ static void on_imu_changed() {
 static void tap_callback(int direction, int counter) {
   tap_count++;
   last_tap_time = std::chrono::high_resolution_clock::now();
-  logger::info("Tap direction: %d, count: %d, code: %c", direction, counter, tap_code);
+  logger::info("Tap direction: %d, count: %d", direction, counter);
 }
 
 BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
