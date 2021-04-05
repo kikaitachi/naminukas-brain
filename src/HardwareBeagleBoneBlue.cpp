@@ -51,8 +51,9 @@ static void on_imu_changed() {
   pitch = mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
   roll = mpu_data.dmp_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
   imu_log
-    << mpu_data.raw_gyro[0] << "," << mpu_data.raw_gyro[1] << "," << mpu_data.raw_gyro[2]  << ","
-    << mpu_data.raw_accel[0] << "," << mpu_data.raw_accel[1] << "," << mpu_data.raw_accel[2]
+    << mpu_data.raw_gyro[0] << "," << mpu_data.raw_gyro[1] << "," << mpu_data.raw_gyro[2] << ","
+    << mpu_data.raw_accel[0] << "," << mpu_data.raw_accel[1] << "," << mpu_data.raw_accel[2] << ","
+    << mpu_data.tap_detected << "," << mpu_data.last_tap_direction << "," << mpu_data.last_tap_count
     << std::endl;
 }
 
