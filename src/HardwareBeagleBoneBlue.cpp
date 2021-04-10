@@ -67,8 +67,13 @@ static void on_imu_changed() {
   yaw = mpu_data.dmp_TaitBryan[TB_YAW_Z] * RAD_TO_DEG;
   pitch = mpu_data.dmp_TaitBryan[TB_PITCH_X] * RAD_TO_DEG;
   roll = mpu_data.dmp_TaitBryan[TB_ROLL_Y] * RAD_TO_DEG;
+  rc_bmp_data_t barometer_data;
+  if (rc_bmp_read(&barometer_data) == -1) {
+    logger::error("Failed to read barometer data");
+  }
   imu_log
     << mpu_data.raw_accel[0] << "," << mpu_data.raw_accel[1] << "," << mpu_data.raw_accel[2] << ","
+    << barometer_data.pressure_pa
     // << mpu_data.tap_detected << "," << mpu_data.last_tap_direction << "," << mpu_data.last_tap_count
     << std::endl;
   if (tap_count > 0) {
@@ -109,6 +114,12 @@ BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
     rc_mpu_set_dmp_callback(&on_imu_changed);
     rc_mpu_set_tap_callback(&tap_callback);
   }
+  if (rc_bmp_init(BMP_OVERSAMPLE_2, BMP_FILTER_OFF)) {
+    logger::error("Can't initialize barometer");
+  }
+  imu_log
+    << "accelerometer x,accelerometer y,accelerometer z,pressure"
+    << std::endl;
 }
 
 BeagleBoneBlueIMU::~BeagleBoneBlueIMU() {
