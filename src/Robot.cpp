@@ -33,11 +33,13 @@ void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
 Robot::Robot(
   telemetry::Items& telemetryItems,
   hardware::IMU& imu,
+  hardware::Barometer& barometer,
   hardware::Kinematics& kinematics,
   hardware::Pneumatics& pneumatics,
   Model& model,
   PointCloud& camera)
-    : telemetryItems(telemetryItems), imu(imu), kinematics(kinematics), pneumatics(pneumatics), model(model) {
+    : telemetryItems(telemetryItems), imu(imu), barometer(barometer),
+      kinematics(kinematics), pneumatics(pneumatics), model(model) {
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
 
   current_locomotion_mode = locomotion_idle;
@@ -143,7 +145,7 @@ void Robot::play() {
   logger::info("Over: %d", count);
   */
 
-  int gap = 10;
+  /*int gap = 10;
   int beat = 400;
   for (int i = 0; i < 10; i++) {
     pneumatics.set_vacuum_pump_speed(0.3);
@@ -162,7 +164,34 @@ void Robot::play() {
     std::this_thread::sleep_for(std::chrono::milliseconds(gap));
   }
 
-  pneumatics.set_vacuum_pump_speed(0);
+  pneumatics.set_vacuum_pump_speed(0);*/
+
+  std::ofstream imu_log("/tmp/barometer.csv", std::ios::out);
+  imu_log
+    << "time,pressure"
+    << std::endl;
+  std::chrono::time_point<std::chrono::high_resolution_clock> last_control_loop_time =
+      std::chrono::high_resolution_clock::now();
+  int frequency = 200;
+  std::chrono::nanoseconds control_loop_nanos = std::chrono::nanoseconds(1000000000 / frequency);
+  for (int i = 0; i < frequency * 10; i++) {  // 10 seconds @ 200Hz
+    imu_log
+      << 1100000
+      << ','
+      << barometer.get_pressure()
+      << std::endl;
+    std::chrono::time_point<std::chrono::high_resolution_clock> now =
+      std::chrono::high_resolution_clock::now();
+    uint64_t elapsed_nanos = std::chrono::duration_cast<std::chrono::nanoseconds>
+      (now - last_control_loop_time).count();
+    int nanos_to_sleep = control_loop_nanos.count() - elapsed_nanos;
+    if (nanos_to_sleep < 0) {
+      logger::warn("Barmometer sampling loop overran by %dns", -nanos_to_sleep);
+    } else {
+      std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
+    }
+    last_control_loop_time += control_loop_nanos;
+  }
 }
 
 Robot::~Robot() {

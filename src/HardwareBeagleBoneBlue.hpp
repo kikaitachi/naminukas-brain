@@ -24,4 +24,10 @@ class BeagleBoneBlueIMU: public hardware::IMU {
   char get_tap_code();
 };
 
+class BeagleBoneBlueBarometer: public hardware::Barometer {
+ public:
+  BeagleBoneBlueBarometer();
+  double get_pressure();
+};
+
 #endif  // SRC_HARDWAREBEAGLEBONEBLUE_HPP_

@@ -16,6 +16,7 @@ class Robot {
   Robot(
     telemetry::Items& telemetryItems,
     hardware::IMU& imu,
+    hardware::Barometer& barometer,
     hardware::Kinematics& kinematics,
     hardware::Pneumatics& pneumatics,
     Model& model,
@@ -24,6 +25,7 @@ class Robot {
 
  private:
   hardware::IMU& imu;
+  hardware::Barometer& barometer;
   hardware::Kinematics& kinematics;
   hardware::Pneumatics& pneumatics;
   telemetry::Items& telemetryItems;

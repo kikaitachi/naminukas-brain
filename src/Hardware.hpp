@@ -83,6 +83,11 @@ class IMU {
   virtual char get_tap_code() = 0;
 };
 
+class Barometer {
+ public:
+  virtual double get_pressure() = 0;
+};
+
 }  // namespace hardware
 
 #endif  // SRC_HARDWARE_HPP_
