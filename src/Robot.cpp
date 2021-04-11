@@ -166,17 +166,18 @@ void Robot::play() {
 
   pneumatics.set_vacuum_pump_speed(0);*/
 
+  int frequency = 200;
+  std::chrono::nanoseconds control_loop_nanos = std::chrono::nanoseconds(1000000000 / frequency);
   std::ofstream imu_log("/tmp/barometer.csv", std::ios::out);
   imu_log
     << "time,pressure"
     << std::endl;
   std::chrono::time_point<std::chrono::high_resolution_clock> last_control_loop_time =
       std::chrono::high_resolution_clock::now();
-  int frequency = 200;
-  std::chrono::nanoseconds control_loop_nanos = std::chrono::nanoseconds(1000000000 / frequency);
+  std::chrono::time_point<std::chrono::high_resolution_clock> start = last_control_loop_time;
   for (int i = 0; i < frequency * 10; i++) {  // 10 seconds @ 200Hz
     imu_log
-      << 1100000
+      << std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count()
       << ','
       << barometer.get_pressure()
       << std::endl;
