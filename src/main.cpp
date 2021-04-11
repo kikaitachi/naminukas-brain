@@ -49,6 +49,8 @@ void send_telemetry_definitions(
 int main(int argc, const char *argv[]) {
   signal(SIGINT, signal_handler);
 
+  BeagleBoneBluePneumatics pneumatics;
+  BeagleBoneBlueBarometer barometer;
   BeagleBoneBlueIMU imu;
   DynamixelKinematics dynamixelKinematics;
   telemetry::Items telemetryItems;
@@ -84,10 +86,6 @@ int main(int argc, const char *argv[]) {
   PointCloud point_cloud(telemetryItems, &is_terminated);
 
   Model model(telemetryItems, dynamixelKinematics);
-
-  BeagleBoneBluePneumatics pneumatics;
-
-  BeagleBoneBlueBarometer barometer;
 
   Robot robot(telemetryItems, imu, barometer, dynamixelKinematics, pneumatics, model, point_cloud);
 
