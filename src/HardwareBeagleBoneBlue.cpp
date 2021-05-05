@@ -33,6 +33,12 @@ BeagleBoneBluePneumatics::BeagleBoneBluePneumatics() {
   if (rc_motor_init() == -1) {
     logger::error("Failed to initialise H-bridge");
   }
+  if (rc_spi_init_manual_slave(RC_BB_SPI1_SS1, SPI_MODE_0, RC_SPI_MAX_SPEED, RC_BLUE_SS1_GPIO) == -1) {
+    logger::error("Failed to initialize SPI for left pressure sensor");
+  }
+  if (rc_spi_init_manual_slave(RC_BB_SPI1_SS2, SPI_MODE_0, RC_SPI_MAX_SPEED, RC_BLUE_SS1_GPIO) == -1) {
+    logger::error("Failed to initialize SPI for right pressure sensor");
+  }
 }
 
 BeagleBoneBluePneumatics::~BeagleBoneBluePneumatics() {
@@ -59,6 +65,31 @@ void BeagleBoneBluePneumatics::left_foot_vent(bool vent) {
 
 void BeagleBoneBluePneumatics::right_foot_vent(bool vent) {
   // TODO: implement
+}
+
+double BeagleBoneBluePneumatics::get_pressure_left() {
+  uint8_t tx_buffer[4] = { 0xAA, 0, 0, 0 };
+  uint8_t rx_buffer[4];
+  if (rc_spi_transfer(RC_BB_SPI1_SS1, tx_buffer, 3, rx_buffer) == -1) {
+    logger::error("Failed to read from left foot pressure sensor via SPI: init command");
+    return -1;
+  }
+  rc_usleep(5);
+  tx_buffer[0] = 0xF0;
+  if (rc_spi_transfer(RC_BB_SPI1_SS1, tx_buffer, 4, rx_buffer) == -1) {
+    logger::error("Failed to read from left foot pressure sensor via SPI: data command");
+    return -1;
+  }
+  double p_min = 0;
+  double p_max = 15;
+  int output_min = 1677722;
+  int output_max = 0xE66666;
+  int output = rx_buffer[1] << 16 | rx_buffer[2] << 8 | rx_buffer[3];
+  return (output - output_min) * (p_max - p_min) / (output_max - output_min) + p_min;
+}
+
+double BeagleBoneBluePneumatics::get_pressure_right() {
+  //
 }
 
 static void on_imu_changed() {

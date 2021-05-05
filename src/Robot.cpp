@@ -166,7 +166,7 @@ void Robot::play() {
 
   pneumatics.set_vacuum_pump_speed(0);*/
 
-  int frequency = 200;
+  /*int frequency = 200;
   std::chrono::nanoseconds control_loop_nanos = std::chrono::nanoseconds(1000000000 / frequency);
   std::ofstream imu_log("/tmp/barometer.csv", std::ios::out);
   imu_log
@@ -192,7 +192,9 @@ void Robot::play() {
       std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
     }
     last_control_loop_time += control_loop_nanos;
-  }
+  }*/
+
+  logger::info("Left foot presure: %f", pneumatics.get_pressure_left());
 }
 
 Robot::~Robot() {

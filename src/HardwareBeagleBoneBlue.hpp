@@ -12,6 +12,8 @@ class BeagleBoneBluePneumatics: public hardware::Pneumatics {
   void set_vacuum_pump_speed(double speed);
   void left_foot_vent(bool vent);
   void right_foot_vent(bool vent);
+  double get_pressure_left();
+  double get_pressure_right();
 };
 
 class BeagleBoneBlueIMU: public hardware::IMU {

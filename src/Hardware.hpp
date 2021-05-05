@@ -73,6 +73,8 @@ class Pneumatics {
   virtual void set_vacuum_pump_speed(double speed) = 0;
   virtual void left_foot_vent(bool vent) = 0;
   virtual void right_foot_vent(bool vent) = 0;
+  virtual double get_pressure_left() = 0;
+  virtual double get_pressure_right() = 0;
 };
 
 class IMU {
