@@ -31,7 +31,7 @@ Pose LocomotionPole::control_loop(Pose pose) {
     pose.location.y += dist * cos(angle);
     previous_angles = current_angles;
   }
-  switch (imu.get_tap_code()) {
+  /*switch (imu.get_tap_code()) {
     case 'w':
       up(true, no_modifiers);
       break;
@@ -44,7 +44,7 @@ Pose LocomotionPole::control_loop(Pose pose) {
     case 'd':
       right(true, no_modifiers);
       break;
-  }
+  }*/
 
   return pose;
 }

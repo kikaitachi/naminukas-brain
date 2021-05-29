@@ -83,7 +83,7 @@ double BeagleBoneBluePneumatics::get_pressure_left() {
   double p_min = 0;
   double p_max = 15;
   int output_min = 1677722;
-  int output_max = 0xE66666;
+  int output_max = 15099494;
   int output = rx_buffer[1] << 16 | rx_buffer[2] << 8 | rx_buffer[3];
   return (output - output_min) * (p_max - p_min) / (output_max - output_min) + p_min;
 }
