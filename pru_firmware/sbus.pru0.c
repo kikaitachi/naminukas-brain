@@ -26,13 +26,17 @@ inline int read_pin() {
 uint8_t read_byte() {
   reset_iep();
   uint8_t result = 0;
+  uint8_t sliding_bit = 1;
   int i;
   for (i = 1; i <= 8; i++) {
     while (read_iep() < CYCLES_PER_UART_BIT * i + CYCLES_PER_UART_BIT / 2) {}
-    result = (result << 1) | read_pin();
+    if (!read_pin()) {
+      result |= sliding_bit;
+    }
+    sliding_bit <<= 1;
   }
   // Ignore parity for now
-  while (read_iep() < CYCLES_PER_UART_BIT * 9 + CYCLES_PER_UART_BIT / 2) { }
+  while (read_iep() < CYCLES_PER_UART_BIT * 10) { }
   // 2 stop bits can be safely ignored
   return result;
 }
@@ -53,7 +57,7 @@ void main(void) {
     for (i = 0; i < 25; i++) {
       reset_iep();
       // Wait for start bit
-      while (!read_pin()) {
+      while (read_pin() == 0) {
         if (read_iep() > CYCLES_PER_UART_BIT * 20) {
           goto restart;
         }
@@ -63,8 +67,8 @@ void main(void) {
     //if (sbus_packet[24] == 0) {
       uint32_t byte1 = sbus_packet[1];
       uint32_t byte2 = sbus_packet[2];
-      *addr = (byte1 << 3) | (byte2 >> 5);
+      *addr = ((byte2 << 8) | byte1) & 0x07FF;
     //}
-    *addr = sbus_packet[24]; // Header 0x0F
+    //*addr = sbus_packet[22]; // Header 0x0F
   }
 }
