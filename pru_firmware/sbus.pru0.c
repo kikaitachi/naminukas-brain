@@ -45,10 +45,9 @@ void main(void) {
   // Clear SYSCFG[STANDBY_INIT] to enable OCP master port
   CT_CFG.SYSCFG_bit.STANDBY_INIT = 0;
 
-  // Use then same address as librobot control for quadrature encoder 4
+  // Use then same address as librobotcontrol for quadrature encoder 4
   // in order not to mess up other PRU used for servo motor control
-  uint32_t *addr = (uint32_t*)(0x10000 + 16 * 4);
-  *addr = 0;
+  uint32_t *channels = (uint32_t*)(0x10000 + 16 * 4);
 
   int i;
   uint8_t sbus_packet[25];
@@ -64,11 +63,23 @@ void main(void) {
       }
       sbus_packet[i] = read_byte();
     }
-    //if (sbus_packet[24] == 0) {
-      uint32_t byte1 = sbus_packet[1];
-      uint32_t byte2 = sbus_packet[2];
-      *addr = ((byte2 << 8) | byte1) & 0x07FF;
-    //}
-    //*addr = sbus_packet[22]; // Header 0x0F
+    if (sbus_packet[24] == 0) {  // If footer is correct
+      channels[ 0] = (sbus_packet[ 1]      | sbus_packet[ 2] << 8                        ) & 0x07FF;
+      channels[ 1] = (sbus_packet[ 2]      | sbus_packet[ 3] << 5                        ) & 0x07FF;
+      channels[ 2] = (sbus_packet[ 3] >> 6 | sbus_packet[ 4] << 2 | sbus_packet[ 5] << 10) & 0x07FF;
+      channels[ 3] = (sbus_packet[ 5] >> 1 | sbus_packet[ 6] << 7                        ) & 0x07FF;
+    	channels[ 4] = (sbus_packet[ 6] >> 4 | sbus_packet[ 7] << 4                        ) & 0x07FF;
+    	channels[ 5] = (sbus_packet[ 7] >> 7 | sbus_packet[ 8] << 1 | sbus_packet[ 9] <<  9) & 0x07FF;
+    	channels[ 6] = (sbus_packet[ 9] >> 2 | sbus_packet[10] << 6                        ) & 0x07FF;
+    	channels[ 7] = (sbus_packet[10] >> 5 | sbus_packet[11] << 3                        ) & 0x07FF;
+    	channels[ 8] = (sbus_packet[12]      | sbus_packet[13] << 8                        ) & 0x07FF;
+    	channels[ 9] = (sbus_packet[13] >> 3 | sbus_packet[14] << 5                        ) & 0x07FF;
+    	channels[10] = (sbus_packet[14] >> 6 | sbus_packet[15] << 2 | sbus_packet[16] << 10) & 0x07FF;
+    	channels[11] = (sbus_packet[16] >> 1 | sbus_packet[17] << 7                        ) & 0x07FF;
+    	channels[12] = (sbus_packet[17] >> 4 | sbus_packet[18] << 4                        ) & 0x07FF;
+    	channels[13] = (sbus_packet[18] >> 7 | sbus_packet[19] << 1 | sbus_packet[20] <<  9) & 0x07FF;
+    	channels[14] = (sbus_packet[20] >> 2 | sbus_packet[21] << 6                        ) & 0x07FF;
+    	channels[15] = (sbus_packet[21] >> 5 | sbus_packet[22] << 3                        ) & 0x07FF;
+    }
   }
 }
