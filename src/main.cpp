@@ -13,6 +13,7 @@
 #include "Message.hpp"
 #include "Telemetry.hpp"
 #include "SystemTelemetry.hpp"
+#include "impl/RCRadio_PRU_SBUS.hpp"
 
 #define DAFAULT_PORT 3001
 #define MAX_MESSAGE_SIZE 1024 * 1024 * 4
@@ -87,7 +88,9 @@ int main(int argc, const char *argv[]) {
 
   Model model(telemetryItems, dynamixelKinematics);
 
-  Robot robot(telemetryItems, imu, barometer, dynamixelKinematics, pneumatics, model, point_cloud);
+  RCRadio_PRU_SBUS rc_radio;
+
+  Robot robot(telemetryItems, imu, barometer, dynamixelKinematics, pneumatics, model, point_cloud, rc_radio);
 
   ioServer.start(&is_terminated);
 

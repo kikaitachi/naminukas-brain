@@ -37,9 +37,11 @@ Robot::Robot(
   hardware::Kinematics& kinematics,
   hardware::Pneumatics& pneumatics,
   Model& model,
-  PointCloud& camera)
+  PointCloud& camera,
+  RCRadio& rc_radio)
     : telemetryItems(telemetryItems), imu(imu), barometer(barometer),
-      kinematics(kinematics), pneumatics(pneumatics), model(model) {
+      kinematics(kinematics), pneumatics(pneumatics), model(model),
+      rc_radio(rc_radio) {
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
 
   current_locomotion_mode = locomotion_idle;
@@ -92,6 +94,8 @@ Robot::Robot(
         play();
       }
     }, std::initializer_list<std::string>{ }));
+  
+  rc_radio.init(*this);
 }
 
 void Robot::play() {
@@ -202,4 +206,8 @@ Robot::~Robot() {
     delete locomotion;
   }
   locomotion_modes.clear();
+}
+
+void Robot::on_rc_radio_channel_change(int channel, int new_value) {
+  // TODO: implement
 }
