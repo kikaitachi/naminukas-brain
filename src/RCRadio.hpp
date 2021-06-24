@@ -11,6 +11,8 @@ class RCRadioChannelChangedHandler {
 class RCRadio {
  public:
   virtual void init(RCRadioChannelChangedHandler& change_handler) = 0;
+  virtual int channel_min_value() = 0;
+  virtual int channel_max_value() = 0;
 };
 
 #endif  // SRC_RCRADIO_HPP_

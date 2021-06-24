@@ -36,3 +36,11 @@ void RCRadio_PRU_SBUS::init(RCRadioChannelChangedHandler& change_handler) {
   });
   poll_channels.detach();
 }
+
+int RCRadio_PRU_SBUS::channel_min_value() {
+  return 224;
+}
+
+int RCRadio_PRU_SBUS::channel_max_value() {
+  return 1759;
+}

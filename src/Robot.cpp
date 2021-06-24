@@ -209,6 +209,36 @@ Robot::~Robot() {
 }
 
 void Robot::on_rc_radio_channel_change(int channel, int new_value) {
-  // TODO: implement
   logger::info("Channel %d changed to %d", channel, new_value);
+  double range = rc_radio.channel_max_value() - rc_radio.channel_min_value();
+  double middle = range / 2 + rc_radio.channel_min_value();
+  switch (channel) {
+    case 0:
+      turn((new_value - middle) * 2 / range);
+      break;
+    case 1:
+      // Go forward/backward
+      break;
+    case 2:
+    case 3:
+      // Not currently used
+      break;
+    case 4:
+      // Choose left motors
+      break;
+    case 5:
+      // Control left valve
+      break;
+    case 6:
+      // Control right valve
+      break;
+    case 7:
+      // Control right motors
+      break;
+  }
+}
+
+void Robot::turn(double speed) {
+  // TODO: implement
+  logger::info("Turn: %f", speed);
 }

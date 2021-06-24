@@ -41,7 +41,24 @@ class Robot : public RCRadioChannelChangedHandler {
   void add_locomotion(Locomotion* locomotion, std::string key);
   void play();
 
+  /**
+   * Called when RC radio channel changes.
+   *
+   * @param channel Zero based channel index.
+   * @param new_value Value from RCRadio::channel_min_value to RCRadio::channel_max_value.
+   */
   void on_rc_radio_channel_change(int channel, int new_value);
+
+  /**
+   * Turn depending on which state robot is.
+   * Might be turning whole robot or just a single joint.
+   *
+   * @param speed Value from -1 to 1 proportional to desired turning speed.
+   *              -1 means turn left or counterclockwise at full speed.
+   *              0 means stop.
+   *              1 means turn right or clockwise at full speed.
+   */
+  void turn(double speed);
 };
 
 #endif  // SRC_ROBOT_HPP_
