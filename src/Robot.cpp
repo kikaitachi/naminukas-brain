@@ -210,4 +210,5 @@ Robot::~Robot() {
 
 void Robot::on_rc_radio_channel_change(int channel, int new_value) {
   // TODO: implement
+  logger::info("Channel %d changed to %d", channel, new_value);
 }
