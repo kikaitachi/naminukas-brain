@@ -9,3 +9,8 @@ Stop:
 ```
 make TARGET=sbus.pru0 stop
 ```
+
+Install:
+```
+sudo cp ./am335x-pru0-sbus-fw /lib/firmware/
+```
