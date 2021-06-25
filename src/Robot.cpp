@@ -244,7 +244,7 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
         pneumatics.set_vacuum_pump_speed(0);
       } else {
         pneumatics.set_vacuum_pump_speed(1);
-        pneumatics.left_foot_vent(state == RCChannelState::middle);
+        pneumatics.left_foot_vent(state != RCChannelState::low);
       }
       break;
     case 6:
@@ -253,7 +253,7 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
         pneumatics.set_vacuum_pump_speed(0);
       } else {
         pneumatics.set_vacuum_pump_speed(1);
-        pneumatics.right_foot_vent(state == RCChannelState::middle);
+        pneumatics.right_foot_vent(state != RCChannelState::low);
       }
       break;
     case 7:

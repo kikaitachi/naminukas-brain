@@ -1,6 +1,7 @@
 #include <robotcontrol.h>
 
 #include <chrono>
+#include <thread>
 #include <vector>
 
 #include "HardwareBeagleBoneBlue.hpp"
@@ -33,6 +34,9 @@ BeagleBoneBluePneumatics::BeagleBoneBluePneumatics() {
   if (rc_motor_init() == -1) {
     logger::error("Failed to initialise H-bridge");
   }
+  if (rc_servo_init() == -1) {
+    logger::error("Failed to initialise servos");
+  }
   if (rc_spi_init_manual_slave(RC_BB_SPI1_SS1, SPI_MODE_0, RC_SPI_MAX_SPEED, RC_BLUE_SS1_GPIO) == -1) {
     logger::error("Failed to initialize SPI for left pressure sensor");
   }
@@ -59,12 +63,30 @@ void BeagleBoneBluePneumatics::set_vacuum_pump_speed(double speed) {
   }
 }
 
+void start_servo_control_task(int servo, double value) {
+	std::thread send_pulses([=] {
+    for (int i = 0; i < 30; i++) {
+      rc_servo_send_pulse_normalized(servo, value);
+      std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+	});
+  send_pulses.detach();
+}
+
 void BeagleBoneBluePneumatics::left_foot_vent(bool vent) {
-  // TODO: implement
+  if (vent) {
+    start_servo_control_task(2, -0.4);
+  } else {
+    start_servo_control_task(2, 0.9);
+  }
 }
 
 void BeagleBoneBluePneumatics::right_foot_vent(bool vent) {
-  // TODO: implement
+  if (vent) {
+    start_servo_control_task(1, -0.4);
+  } else {
+    start_servo_control_task(1, 0.9);
+  }
 }
 
 double BeagleBoneBluePneumatics::get_pressure_left() {
