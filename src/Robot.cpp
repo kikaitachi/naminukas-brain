@@ -212,6 +212,11 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
   logger::info("Channel %d changed to %d", channel, new_value);
   double range = rc_radio.channel_max_value() - rc_radio.channel_min_value();
   double middle = range / 2 + rc_radio.channel_min_value();
+  double middle_low = middle - range / 4;
+  double middle_hi = middle + range / 4;
+  RCChannelState state = new_value < middle_low ?
+    RCChannelState::low : new_value > middle_hi ?
+    RCChannelState::high : RCChannelState::middle;
   switch (channel) {
     case 0:
       turn((new_value - middle) * 2 / range);
@@ -224,16 +229,42 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
       // Not currently used
       break;
     case 4:
-      // Choose left motors
+      left_motor_channel = state;
+      if (state == RCChannelState::high) {
+        kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
+        kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
+      } else {
+        kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
+        kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::velocity);
+      }
       break;
     case 5:
-      // Control left valve
+      left_pump_channel = state;
+      if (state == RCChannelState::high && right_pump_channel == RCChannelState::high) {
+        pneumatics.set_vacuum_pump_speed(0);
+      } else {
+        pneumatics.set_vacuum_pump_speed(1);
+        pneumatics.left_foot_vent(state == RCChannelState::middle);
+      }
       break;
     case 6:
-      // Control right valve
+      right_pump_channel = state;
+      if (state == RCChannelState::high && left_pump_channel == RCChannelState::high) {
+        pneumatics.set_vacuum_pump_speed(0);
+      } else {
+        pneumatics.set_vacuum_pump_speed(1);
+        pneumatics.right_foot_vent(state == RCChannelState::middle);
+      }
       break;
     case 7:
-      // Control right motors
+      right_motor_channel = state;
+      if (state == RCChannelState::high) {
+        kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
+        kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
+      } else {
+        kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
+        kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::velocity);
+      }
       break;
   }
 }

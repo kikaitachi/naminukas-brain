@@ -132,7 +132,7 @@ BeagleBoneBlueIMU::BeagleBoneBlueIMU() {
     logger::error("Can't initialize inertial measurement unit");
   } else {
     rc_mpu_set_dmp_callback(&on_imu_changed);
-    rc_mpu_set_tap_callback(&tap_callback);
+    //rc_mpu_set_tap_callback(&tap_callback);
   }
 }
 

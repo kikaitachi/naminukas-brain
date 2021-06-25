@@ -12,6 +12,12 @@
 #include "RCRadio.hpp"
 #include "Telemetry.hpp"
 
+enum class RCChannelState {
+  low,
+  middle,
+  high
+};
+
 class Robot : public RCRadioChannelChangedHandler {
  public:
   Robot(
@@ -37,6 +43,11 @@ class Robot : public RCRadioChannelChangedHandler {
   Model& model;
   RCRadio& rc_radio;
   bool pump_state = false;
+
+  RCChannelState left_motor_channel = RCChannelState::high;
+  RCChannelState right_motor_channel = RCChannelState::high;
+  RCChannelState left_pump_channel = RCChannelState::high;
+  RCChannelState right_pump_channel = RCChannelState::high;
 
   void add_locomotion(Locomotion* locomotion, std::string key);
   void play();
