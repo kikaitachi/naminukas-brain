@@ -70,6 +70,17 @@ class Robot : public RCRadioChannelChangedHandler {
    *              1 means turn right or clockwise at full speed.
    */
   void turn(double speed);
+
+  /**
+   * Move depending on which state robot is.
+   * Might be moving whole robot or just a single joint.
+   *
+   * @param speed Value from -1 to 1 proportional to desired moving speed.
+   *              -1 means move forward at full speed.
+   *              0 means stop.
+   *              1 means move backward at full speed.
+   */
+  void move(double speed);
 };
 
 #endif  // SRC_ROBOT_HPP_

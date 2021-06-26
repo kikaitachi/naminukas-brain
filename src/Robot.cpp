@@ -15,6 +15,8 @@
 #include "Logger.hpp"
 #include "Robot.hpp"
 
+#define MAX_RPM 40
+
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
   locomotion_modes.push_back(locomotion);
   telemetryItems.add_item(std::make_shared<telemetry::ItemCommand>(
@@ -222,7 +224,7 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
       turn((new_value - middle) * 2 / range);
       break;
     case 1:
-      // Go forward/backward
+      move((new_value - middle) * 2 / range);
       break;
     case 2:
     case 3:
@@ -272,4 +274,21 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
 void Robot::turn(double speed) {
   // TODO: implement
   logger::info("Turn: %f", speed);
+}
+
+void Robot::move(double speed) {
+  logger::info("Move: %f", speed);
+  if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::middle) {
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, MAX_RPM * speed },
+      { hardware::Joint::right_wheel, MAX_RPM * speed }
+    });
+  } else if (left_motor_channel == RCChannelState::low && right_motor_channel == RCChannelState::low) {
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_ankle, MAX_RPM * speed },
+      { hardware::Joint::left_wheel, MAX_RPM * speed },
+      { hardware::Joint::right_ankle, MAX_RPM * speed },
+      { hardware::Joint::right_wheel, MAX_RPM * speed }
+    });
+  }
 }
