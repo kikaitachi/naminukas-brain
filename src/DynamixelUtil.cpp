@@ -44,6 +44,14 @@ DynamixelControlItem DynamixelXM430W350::operating_mode() {
   return DynamixelControlItem(11, 1);
 }
 
+DynamixelControlItem DynamixelXM430W350::max_position_limit() {
+  return DynamixelControlItem(48, 4);
+}
+
+DynamixelControlItem DynamixelXM430W350::min_position_limit() {
+  return DynamixelControlItem(52, 4);
+}
+
 DynamixelControlItem DynamixelXM430W350::torque_enable() {
   return DynamixelControlItem(64, 1);
 }

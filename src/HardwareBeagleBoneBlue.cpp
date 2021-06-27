@@ -111,7 +111,8 @@ double BeagleBoneBluePneumatics::get_pressure_left() {
 }
 
 double BeagleBoneBluePneumatics::get_pressure_right() {
-  //
+  // TODO: implement
+  return 0;
 }
 
 static void on_imu_changed() {

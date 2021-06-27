@@ -42,6 +42,8 @@ class DynamixelModel {
 
   virtual DynamixelControlItem drive_mode() = 0;
   virtual DynamixelControlItem operating_mode() = 0;
+  virtual DynamixelControlItem max_position_limit() = 0;
+  virtual DynamixelControlItem min_position_limit() = 0;
   virtual DynamixelControlItem torque_enable() = 0;
   virtual DynamixelControlItem goal_pwm() = 0;
   virtual DynamixelControlItem goal_current() = 0;
@@ -70,6 +72,8 @@ class DynamixelXM430W350: public DynamixelModel {
 
   DynamixelControlItem drive_mode();
   DynamixelControlItem operating_mode();
+  DynamixelControlItem max_position_limit();
+  DynamixelControlItem min_position_limit();
   DynamixelControlItem torque_enable();
   DynamixelControlItem goal_pwm();
   DynamixelControlItem goal_current();
