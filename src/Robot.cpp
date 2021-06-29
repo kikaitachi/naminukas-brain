@@ -1,6 +1,8 @@
 #include <chrono>
 #include <fstream>
 #include <set>
+#include <thread>
+#include <vector>
 
 #include "locomotion/LocomotionCaterpillar.hpp"
 #include "locomotion/LocomotionHang.hpp"
@@ -16,6 +18,7 @@
 #include "Robot.hpp"
 
 #define MAX_RPM 40
+#define CONTROL_LOOP_FREQUENCY 100
 
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
   locomotion_modes.push_back(locomotion);
@@ -40,10 +43,11 @@ Robot::Robot(
   hardware::Pneumatics& pneumatics,
   Model& model,
   PointCloud& camera,
-  RCRadio& rc_radio)
+  RCRadio& rc_radio,
+  std::function<bool()> is_terminated)
     : telemetryItems(telemetryItems), imu(imu), barometer(barometer),
       kinematics(kinematics), pneumatics(pneumatics), model(model),
-      rc_radio(rc_radio) {
+      rc_radio(rc_radio), is_terminated(is_terminated) {
   LocomotionIdle* locomotion_idle = new LocomotionIdle(kinematics);
 
   current_locomotion_mode = locomotion_idle;
@@ -96,8 +100,12 @@ Robot::Robot(
         play();
       }
     }, std::initializer_list<std::string>{ }));
-  
+
   rc_radio.init(*this);
+  std::thread control_loop_tread([&] {
+    control_loop();
+  });
+  control_loop_tread.detach();
 }
 
 void Robot::play() {
@@ -290,5 +298,40 @@ void Robot::move(double speed) {
       { hardware::Joint::right_ankle, MAX_RPM * speed },
       { hardware::Joint::right_wheel, MAX_RPM * speed }
     });
+  }
+}
+
+void Robot::control_loop() {
+  std::chrono::nanoseconds control_loop_nanos = std::chrono::nanoseconds(1000000000 / CONTROL_LOOP_FREQUENCY);
+  std::chrono::time_point<std::chrono::high_resolution_clock> last_control_loop_time =
+    std::chrono::high_resolution_clock::now();
+  while (!is_terminated()) {
+    // Poll actuator joint states
+    std::vector<hardware::JointState> joint_states = kinematics.get_joint_state({
+      hardware::Joint::left_wheel, hardware::Joint::left_ankle,
+      hardware::Joint::right_ankle, hardware::Joint::right_wheel
+    });
+
+    // Prevent self-collisions
+    if (joint_states.size() == 4) {  // Running on real hardware
+      if (joint_states[1].position < flat_ankle_angle + min_tilt_angle) {
+        logger::warn("Outward collision");
+      } else if (joint_states[1].position < flat_ankle_angle + max_tilt_angle) {
+        logger::warn("Inward collision");
+      }
+    }
+
+    // Sleep remaining time
+    std::chrono::time_point<std::chrono::high_resolution_clock> now =
+      std::chrono::high_resolution_clock::now();
+    uint64_t elapsed_nanos = std::chrono::duration_cast<std::chrono::nanoseconds>
+      (now - last_control_loop_time).count();
+    int nanos_to_sleep = control_loop_nanos.count() - elapsed_nanos;
+    if (nanos_to_sleep < 0) {
+      logger::warn("Control loop overran by %dns", -nanos_to_sleep);
+    } else {
+      std::this_thread::sleep_for(std::chrono::nanoseconds(nanos_to_sleep));
+    }
+    last_control_loop_time += control_loop_nanos;
   }
 }

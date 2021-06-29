@@ -15,7 +15,7 @@
 #include "SystemTelemetry.hpp"
 #include "impl/RCRadio_PRU_SBUS.hpp"
 
-#define DAFAULT_PORT 3001
+#define DEFAULT_PORT 3001
 #define MAX_MESSAGE_SIZE 1024 * 1024 * 4
 
 static bool terminated = false;
@@ -63,7 +63,7 @@ int main(int argc, const char *argv[]) {
   if (const char* env_port = std::getenv("PORT")) {
     port = atoi(env_port);
   } else {
-    port = DAFAULT_PORT;
+    port = DEFAULT_PORT;
   }
   WebSocketServer webSocketServer(telemetryItems, port,
     [&](WebSocketServer* server, int fd) {
@@ -90,7 +90,13 @@ int main(int argc, const char *argv[]) {
 
   RCRadio_PRU_SBUS rc_radio;
 
-  Robot robot(telemetryItems, imu, barometer, dynamixelKinematics, pneumatics, model, point_cloud, rc_radio);
+  Robot robot(
+    telemetryItems,
+    imu, barometer,
+    dynamixelKinematics, pneumatics,
+    model, point_cloud,
+    rc_radio,
+    &is_terminated);
 
   ioServer.start(&is_terminated);
 

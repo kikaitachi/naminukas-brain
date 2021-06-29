@@ -1,6 +1,7 @@
 #ifndef SRC_ROBOT_HPP_
 #define SRC_ROBOT_HPP_
 
+#include <functional>
 #include <list>
 #include <memory>
 #include <string>
@@ -28,7 +29,8 @@ class Robot : public RCRadioChannelChangedHandler {
     hardware::Pneumatics& pneumatics,
     Model& model,
     PointCloud& camera,
-    RCRadio& rc_radio);
+    RCRadio& rc_radio,
+    std::function<bool()> is_terminated);
   ~Robot();
 
  private:
@@ -42,6 +44,24 @@ class Robot : public RCRadioChannelChangedHandler {
   Locomotion* current_locomotion_mode;
   Model& model;
   RCRadio& rc_radio;
+  std::function<bool()> is_terminated;
+
+  /**
+   * Ankle angle in degrees when feet are flat, i.e. not tiled.
+   */
+  const double flat_ankle_angle = 360.0 / 16;
+
+  /**
+   * How much ankle can tilt to outside relative to flat_ankle_angle.
+   * -90 corresponds to robot being in Segway mode.
+   */
+  const double min_tilt_angle = -40;
+
+  /**
+   * How much ankle can tilt to inside relative to flat_ankle_angle.
+   */
+  const double max_tilt_angle = 20;
+
   bool pump_state = false;
 
   RCChannelState left_motor_channel = RCChannelState::high;
@@ -81,6 +101,8 @@ class Robot : public RCRadioChannelChangedHandler {
    *              1 means move backward at full speed.
    */
   void move(double speed);
+
+  void control_loop();
 };
 
 #endif  // SRC_ROBOT_HPP_
