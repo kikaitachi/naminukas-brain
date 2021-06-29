@@ -315,9 +315,14 @@ void Robot::control_loop() {
     // Prevent self-collisions
     if (joint_states.size() == 4) {  // Running on real hardware
       if (joint_states[1].position < flat_ankle_angle + min_tilt_angle) {
-        logger::warn("Outward collision");
-      } else if (joint_states[1].position < flat_ankle_angle + max_tilt_angle) {
-        logger::warn("Inward collision");
+        logger::warn("Left foot: outward collision");
+      } else if (joint_states[1].position > flat_ankle_angle + max_tilt_angle) {
+        logger::warn("Left foot: inward collision");
+      }
+      if (joint_states[2].position < flat_ankle_angle + min_tilt_angle) {
+        logger::warn("Right foot: outward collision");
+      } else if (joint_states[2].position > flat_ankle_angle + max_tilt_angle) {
+        logger::warn("Right foot: inward collision");
       }
     }
 
