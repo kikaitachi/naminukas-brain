@@ -52,6 +52,10 @@ PointCloud::PointCloud(telemetry::Items& telemetryItems, std::function<bool()> i
     telemetry::ROOT_ITEM_ID, "Point cloud", std::initializer_list<telemetry::ColoredPoint>{});
   // telemetryItems.add_item(points_telemetry);
 
+  if (!is_terminated()) {  // Temporary disable camera
+    return;
+  }
+
   std::thread video_thread([=]() {
     int frame_index = 0;
     std::ofstream timelapse_rgb(TIMELAPSE_DIR + "timelapse-rgb.txt", std::ios::out);
