@@ -319,9 +319,9 @@ void Robot::control_loop() {
       } else if (joint_states[1].position > flat_ankle_angle + max_tilt_angle) {
         logger::warn("Left foot: inward collision");
       }
-      if (joint_states[2].position < flat_ankle_angle + min_tilt_angle) {
+      if (joint_states[2].position > flat_ankle_angle + max_tilt_angle) {
         logger::warn("Right foot: outward collision");
-      } else if (joint_states[2].position > flat_ankle_angle + max_tilt_angle) {
+      } else if (joint_states[2].position < flat_ankle_angle + min_tilt_angle) {
         logger::warn("Right foot: inward collision");
       }
     }
