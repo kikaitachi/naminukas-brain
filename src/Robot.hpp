@@ -55,12 +55,12 @@ class Robot : public RCRadioChannelChangedHandler {
    * How much ankle can tilt to outside relative to flat_ankle_angle.
    * -90 corresponds to robot being in Segway mode.
    */
-  const double min_tilt_angle = -85;
+  const double min_tilt_angle = -75;
 
   /**
    * How much ankle can tilt to inside relative to flat_ankle_angle.
    */
-  const double max_tilt_angle = 40;
+  const double max_tilt_angle = 35;
 
   bool pump_state = false;
 
