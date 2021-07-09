@@ -5,6 +5,7 @@
 
 volatile register unsigned int __R31;
 
+// 200,000,000 / 115200 = 1736.(1)
 #define CYCLES_PER_UART_BIT 1736
 
 inline void reset_iep(void) {
@@ -20,22 +21,70 @@ inline int read_iep(void) {
 }
 
 inline int read_pin() {
-  return __R31 & (1 << 15) ? 1 : 0;
+  return __R31 & (1 << 15) ? 0 : 1;
 }
 
-uint8_t read_byte() {
+inline void delay_cycles(int cycles) {
+  reset_iep();
+  while (read_iep() < cycles);
+}
+
+inline void wait_for_transmission_start() {
+  // Ensure ongoning transmission finishes
+  // by waiting for at least 20 zero bits (2x 1 start bit, 8 data bits and 1 stop bit)
+  reset_iep();
+  while (read_iep() < CYCLES_PER_UART_BIT * 20) {
+    if (read_pin()) {
+      reset_iep();
+    }
+  }
+  // There is some kind of phantom spike/logic reversal before transmission which need to be filtered out
+/*
+Channel 0 changed to -1038796
+Channel 1 changed to 1364
+Channel 2 changed to -3444
+Channel 3 changed to 10376
+-1712
+1712
+-1712
+1708
+-3448
+3444
+-5180
+1712
+-15580
+1708
+-10380
+6914
+*/
+  while (!read_pin());
+  while (read_pin());
+  // End of filtering
+}
+
+inline /*uint8_t*/int read_byte() {
+  /*int value = read_pin();
+  reset_iep();
+  while (read_pin() == value);
+  return value == 0 ? -read_iep() : read_iep();*/
+
+  // Wait for the first rising edge
+  //while (read_pin());
+
   reset_iep();
   uint8_t result = 0;
   uint8_t sliding_bit = 1;
   int i;
   for (i = 1; i <= 8; i++) {
-    while (read_iep() < CYCLES_PER_UART_BIT * i + CYCLES_PER_UART_BIT / 2) {}
-    if (!read_pin()) {
+    while (read_iep() < (CYCLES_PER_UART_BIT * i + CYCLES_PER_UART_BIT / 2));
+    if (read_pin()) {
       result |= sliding_bit;
     }
     sliding_bit <<= 1;
   }
-  // Stop bit can be safely ignored
+  while (read_iep() < CYCLES_PER_UART_BIT * 10) {}
+  // Wait for stop bit
+  //while (!read_pin());
   return result;
 }
 
@@ -49,33 +98,48 @@ void main(void) {
 
   int i;
   uint8_t sbus_packet[24];
-  uint8_t byte, len;
+  uint8_t byte;
   for ( ; ; ) {
    restart:
-    for () {
-      reset_iep();
-      // Wait for start bit
-      while (read_pin() == 0) {
-        if (read_iep() > CYCLES_PER_UART_BIT * 20) {
-          // Too long until next bit, assume something is broken and restart
-          goto restart;
-        }
-      }
-    }
-    byte = read_byte();
-    if (byte != 0x7E) {
+    wait_for_transmission_start();
+    read_byte();
+    read_byte();
+    //read_byte();
+    /*channels[0] = read_byte();
+    channels[1] = read_byte();
+    channels[2] = read_byte();
+    channels[3] = read_byte();
+    channels[4] = read_byte();
+    channels[5] = read_byte();
+    channels[6] = read_byte();
+    channels[7] = read_byte();
+    channels[8] = read_byte();
+    channels[9] = read_byte();
+    channels[10] = read_byte();
+    channels[11] = read_byte();
+    channels[12] = read_byte();
+    channels[13] = read_byte();
+    channels[14] = read_byte();
+    channels[15] = read_byte();*/
+    //channels[1] = read_byte();
+    //channels[2] = read_byte();
+    //byte = read_byte();
+    /*if (byte != 0x7E) {
       // Invalid header
+      channels[0] = 79;
       goto restart;
-    }
-    len = read_byte();
-    byte = read_byte();
-    if (byte != 0) {
+    } else {
+      channels[0] = 80;
+    }*/
+    //len = read_byte();
+    //byte = read_byte();
+    //channels[1] = len;
+    //channels[2] = byte;
+    /*if (byte != 0) {
       // Not SBUS data
-      reset_iep();
-      while (read_iep() < CYCLES_PER_UART_BIT * (len + 2));
       goto restart;
-    }
-    for (i = 0; i < 25; i++) {
+    }*/
+    for (i = 0; i < 24; i++) {
       byte = read_byte();
       if (byte == 0x7D) {
         byte = read_byte() ^ 0x20;

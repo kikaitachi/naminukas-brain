@@ -227,6 +227,7 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
   RCChannelState state = new_value < middle_low ?
     RCChannelState::low : new_value > middle_hi ?
     RCChannelState::high : RCChannelState::middle;
+  return;  // Not safe to run until fport works
   switch (channel) {
     case 0:
       turn((new_value - middle) * 2 / range);

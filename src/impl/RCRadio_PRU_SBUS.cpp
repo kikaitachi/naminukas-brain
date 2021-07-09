@@ -5,15 +5,15 @@
 #include <thread>
 
 #define FIRMWARE_FILE_NAME "am335x-pru0-sbus-fw"
-#define CHANNELS 8
+#define CHANNELS 16
 #define OFFSET 16
 
 void RCRadio_PRU_SBUS::init(RCRadioChannelChangedHandler& change_handler) {
   std::thread poll_channels([&] {
-    if (rc_pru_start(0, FIRMWARE_FILE_NAME) == -1) {
+    /*if (rc_pru_start(0, FIRMWARE_FILE_NAME) == -1) {
       logger::error("Failed to start firmware: %s", FIRMWARE_FILE_NAME);
       return;
-    }
+    }*/
     volatile uint32_t* addr = rc_pru_shared_mem_ptr();
     if (addr == NULL) {
         logger::error("Can't map PRU memory. Program must be executed as root.");
