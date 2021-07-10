@@ -13,7 +13,7 @@
 #include "Message.hpp"
 #include "Telemetry.hpp"
 #include "SystemTelemetry.hpp"
-#include "impl/RCRadio_PRU_SBUS.hpp"
+#include "impl/RCRadio_PRU.hpp"
 
 #define DEFAULT_PORT 3001
 #define MAX_MESSAGE_SIZE 1024 * 1024 * 4
@@ -88,7 +88,7 @@ int main(int argc, const char *argv[]) {
 
   Model model(telemetryItems, dynamixelKinematics);
 
-  RCRadio_PRU_SBUS rc_radio;
+  RCRadio_PRU rc_radio;
 
   Robot robot(
     telemetryItems,

@@ -71,7 +71,7 @@ set(COMMON_SOURCES
   src/locomotion/LocomotionUnicycle.cpp
   src/locomotion/LocomotionWaddle.cpp
   src/locomotion/TraitTilting.cpp
-  src/impl/RCRadio_PRU_SBUS.cpp
+  src/impl/RCRadio_PRU.cpp
   ${DynamixelSDK_SRC})
 
 add_executable(${PROJECT_NAME}
