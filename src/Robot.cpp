@@ -227,27 +227,26 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
   RCChannelState state = new_value < middle_low ?
     RCChannelState::low : new_value > middle_hi ?
     RCChannelState::high : RCChannelState::middle;
-  return;  // Not safe to run until fport works
   switch (channel) {
     case 0:
-      turn((new_value - middle) * 2 / range);
+      //turn((new_value - middle) * 2 / range);
       break;
     case 1:
-      move((new_value - middle) * 2 / range);
+      //move((new_value - middle) * 2 / range);
       break;
     case 2:
     case 3:
       // Not currently used
       break;
     case 4:
-      left_motor_channel = state;
+      /*left_motor_channel = state;
       if (state == RCChannelState::high) {
         kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
         kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
       } else {
         kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
         kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::velocity);
-      }
+      }*/
       break;
     case 5:
       left_pump_channel = state;
@@ -268,14 +267,14 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
       }
       break;
     case 7:
-      right_motor_channel = state;
+      /*right_motor_channel = state;
       if (state == RCChannelState::high) {
         kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
         kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
       } else {
         kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
         kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::velocity);
-      }
+      }*/
       break;
   }
 }

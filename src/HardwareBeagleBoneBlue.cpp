@@ -31,9 +31,6 @@ static const char tap_codes[] = {
 static char tap_code = '\0';
 
 BeagleBoneBluePneumatics::BeagleBoneBluePneumatics() {
-  /*if (rc_motor_init() == -1) {
-    logger::error("Failed to initialise H-bridge");
-  }*/
   if (rc_servo_init() == -1) {
     logger::error("Failed to initialise servos");
   }
@@ -46,18 +43,16 @@ BeagleBoneBluePneumatics::BeagleBoneBluePneumatics() {
 }
 
 BeagleBoneBluePneumatics::~BeagleBoneBluePneumatics() {
-  /*if (rc_motor_cleanup() == -1) {
-    logger::error("Failed to shutdown H-bridge");
-  }*/
+  rc_servo_power_rail_en(0);
 }
 
 void BeagleBoneBluePneumatics::set_vacuum_pump_speed(double speed) {
   if (speed > 0) {
-    if (rc_motor_set(1, speed) == -1) {
+    if (rc_servo_power_rail_en(1) == -1) {
       logger::error("Failed to start vacuum pump");
     }
   } else {
-    if (rc_motor_free_spin(1) == -1) {
+    if (rc_servo_power_rail_en(0) == -1) {
       logger::error("Failed to stop vacuum pump");
     }
   }
