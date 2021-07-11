@@ -39,9 +39,9 @@ void RCRadio_PRU::init(RCRadioChannelChangedHandler& change_handler) {
 }
 
 int RCRadio_PRU::channel_min_value() {
-  return 224;
+  return 172;  // 224
 }
 
 int RCRadio_PRU::channel_max_value() {
-  return 1759;
+  return 1810;  // 1759
 }
