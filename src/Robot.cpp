@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cmath>
 #include <fstream>
 #include <set>
 #include <thread>
@@ -280,25 +281,40 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
 }
 
 void Robot::turn(double speed) {
-  // TODO: implement
   logger::info("Turn: %f", speed);
+  if (fabs(speed) < min_speed) {
+    turn_speed = 0;
+  } else {
+    turn_speed = speed;
+  }
+  if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::middle) {
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, -MAX_RPM * move_speed },
+      { hardware::Joint::right_wheel, MAX_RPM * move_speed }
+    });
+  }
 }
 
 void Robot::move(double speed) {
   logger::info("Move: %f", speed);
-  /*if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::middle) {
+  if (fabs(speed) < min_speed) {
+    move_speed = 0;
+  } else {
+    move_speed = speed;
+  }
+  if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::middle) {
     kinematics.set_joint_speed({
-      { hardware::Joint::left_wheel, MAX_RPM * speed },
-      { hardware::Joint::right_wheel, MAX_RPM * speed }
+      { hardware::Joint::left_wheel, MAX_RPM * move_speed },
+      { hardware::Joint::right_wheel, MAX_RPM * move_speed }
     });
-  } else if (left_motor_channel == RCChannelState::low && right_motor_channel == RCChannelState::low) {
+  } else if (left_motor_channel == RCChannelState::high && right_motor_channel == RCChannelState::high) {
     kinematics.set_joint_speed({
-      { hardware::Joint::left_ankle, MAX_RPM * speed },
-      { hardware::Joint::left_wheel, MAX_RPM * speed },
-      { hardware::Joint::right_ankle, MAX_RPM * speed },
-      { hardware::Joint::right_wheel, MAX_RPM * speed }
+      { hardware::Joint::left_ankle, MAX_RPM * move_speed },
+      { hardware::Joint::left_wheel, MAX_RPM * move_speed },
+      { hardware::Joint::right_ankle, MAX_RPM * move_speed },
+      { hardware::Joint::right_wheel, MAX_RPM * move_speed }
     });
-  }*/
+  }
 }
 
 void Robot::control_loop() {
@@ -314,6 +330,7 @@ void Robot::control_loop() {
 
     // Prevent self-collisions
     if (joint_states.size() == 4) {  // Running on real hardware
+      // TODO: actually prevent instead of warning only
       if (joint_states[1].position < flat_ankle_angle + min_tilt_angle) {
         logger::warn("Left foot: outward collision");
       } else if (joint_states[1].position > flat_ankle_angle + max_tilt_angle) {

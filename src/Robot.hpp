@@ -62,7 +62,25 @@ class Robot : public RCRadioChannelChangedHandler {
    */
   const double max_tilt_angle = 35;
 
+  /**
+   * false = pump off, true = pump on.
+   */
   bool pump_state = false;
+
+  /**
+   * If speed is less than this value assume robot is stopped and stop motors.
+   */
+  const double min_speed = 0.01;
+
+  /**
+   * 1 = max speed forward, 0 = stopped, -1 = max speed backward.
+   */
+  double move_speed = 0;
+
+  /**
+   * -1 = max speed turn left, 0 = stopped, 1 = max speed turn right.
+   */
+  double turn_speed = 0;
 
   RCChannelState left_motor_channel = RCChannelState::high;
   RCChannelState right_motor_channel = RCChannelState::high;
