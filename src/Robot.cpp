@@ -242,9 +242,11 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
     case 4:
       left_motor_channel = state;
       if (state == RCChannelState::low) {
+        logger::info("Left side motors off");
         kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::off);
         kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
       } else {
+        logger::info("Left side motors on");
         kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
         kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::velocity);
       }
@@ -270,9 +272,11 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
     case 7:
       right_motor_channel = state;
       if (state == RCChannelState::low) {
+        logger::info("Right side motors off");
         kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::off);
         kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
       } else {
+        logger::info("Right side motors on");
         kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
         kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::velocity);
       }
@@ -289,8 +293,8 @@ void Robot::turn(double speed) {
   }
   if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::middle) {
     kinematics.set_joint_speed({
-      { hardware::Joint::left_wheel, -MAX_RPM * move_speed },
-      { hardware::Joint::right_wheel, MAX_RPM * move_speed }
+      { hardware::Joint::left_wheel, -MAX_RPM * turn_speed },
+      { hardware::Joint::right_wheel, MAX_RPM * turn_speed }
     });
   }
 }
