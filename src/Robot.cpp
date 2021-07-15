@@ -247,8 +247,8 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
         kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::off);
       } else {
         logger::info("Left side motors on");
-        kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity);
-        kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::velocity);
+        kinematics.set_joint_control_mode(hardware::Joint::left_wheel, hardware::JointControlMode::velocity, 2000);
+        kinematics.set_joint_control_mode(hardware::Joint::left_ankle, hardware::JointControlMode::velocity, 2000);
       }
       break;
     case 5:
@@ -277,8 +277,8 @@ void Robot::on_rc_radio_channel_change(int channel, int new_value) {
         kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::off);
       } else {
         logger::info("Right side motors on");
-        kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity);
-        kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::velocity);
+        kinematics.set_joint_control_mode(hardware::Joint::right_wheel, hardware::JointControlMode::velocity, 2000);
+        kinematics.set_joint_control_mode(hardware::Joint::right_ankle, hardware::JointControlMode::velocity, 2000);
       }
       break;
   }
