@@ -298,11 +298,11 @@ void Robot::turn(double speed) {
     });
   } else if (left_motor_channel == RCChannelState::high && right_motor_channel == RCChannelState::middle) {
     kinematics.set_joint_speed({
-      { hardware::Joint::left_ankle, MAX_RPM * move_speed }
+      { hardware::Joint::left_ankle, MAX_RPM * turn_speed }
     });
   } else if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::high) {
     kinematics.set_joint_speed({
-      { hardware::Joint::right_ankle, MAX_RPM * move_speed }
+      { hardware::Joint::right_ankle, MAX_RPM * turn_speed }
     });
   }
 }
