@@ -18,7 +18,7 @@
 #include "Logger.hpp"
 #include "Robot.hpp"
 
-#define MAX_RPM 40
+#define MAX_RPM 30
 #define CONTROL_LOOP_FREQUENCY 100
 
 void Robot::add_locomotion(Locomotion* locomotion, std::string key) {
@@ -296,6 +296,14 @@ void Robot::turn(double speed) {
       { hardware::Joint::left_wheel, -MAX_RPM * turn_speed },
       { hardware::Joint::right_wheel, MAX_RPM * turn_speed }
     });
+  } else if (left_motor_channel == RCChannelState::high && right_motor_channel == RCChannelState::middle) {
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_ankle, MAX_RPM * move_speed }
+    });
+  } else if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::high) {
+    kinematics.set_joint_speed({
+      { hardware::Joint::right_ankle, MAX_RPM * move_speed }
+    });
   }
 }
 
@@ -316,6 +324,14 @@ void Robot::move(double speed) {
       { hardware::Joint::left_ankle, MAX_RPM * move_speed },
       { hardware::Joint::left_wheel, MAX_RPM * move_speed },
       { hardware::Joint::right_ankle, MAX_RPM * move_speed },
+      { hardware::Joint::right_wheel, MAX_RPM * move_speed }
+    });
+  } else if (left_motor_channel == RCChannelState::high && right_motor_channel == RCChannelState::middle) {
+    kinematics.set_joint_speed({
+      { hardware::Joint::left_wheel, MAX_RPM * move_speed }
+    });
+  } else if (left_motor_channel == RCChannelState::middle && right_motor_channel == RCChannelState::high) {
+    kinematics.set_joint_speed({
       { hardware::Joint::right_wheel, MAX_RPM * move_speed }
     });
   }
